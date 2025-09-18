@@ -2,9 +2,8 @@
 
 import { ChevronUp } from 'lucide-react';
 import Image from 'next/image';
-import type { User } from 'next-auth';
-import { signOut, useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
+import { useSupabase } from '@/components/supabase-provider';
 
 import {
   DropdownMenu,
@@ -21,21 +20,39 @@ import {
 import { useRouter } from 'next/navigation';
 import { toast } from './toast';
 import { LoaderIcon } from './icons';
-import { guestRegex } from '@/lib/constants';
 
-export function SidebarUserNav({ user }: { user: User }) {
+export function SidebarUserNav() {
   const router = useRouter();
-  const { data, status } = useSession();
+  const { user: currentUser, loading, signOut } = useSupabase();
   const { setTheme, resolvedTheme } = useTheme();
 
-  const isGuest = guestRegex.test(data?.user?.email ?? '');
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        type: 'success',
+        description: 'Successfully signed out',
+      });
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      toast({
+        type: 'error',
+        description: 'Error signing out',
+      });
+    }
+  };
+
+  // Déterminer l'affichage utilisateur
+  const displayEmail = currentUser?.email || 'Guest';
+  const isGuest = !currentUser;
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            {status === 'loading' ? (
+            {loading ? (
               <SidebarMenuButton className="h-10 justify-between bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                 <div className="flex flex-row gap-2">
                   <div className="size-6 animate-pulse rounded-full bg-zinc-500/30" />
@@ -53,14 +70,14 @@ export function SidebarUserNav({ user }: { user: User }) {
                 className="h-10 bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Image
-                  src={`https://avatar.vercel.sh/${user.email}`}
-                  alt={user.email ?? 'User Avatar'}
+                  src={`https://avatar.vercel.sh/${displayEmail}`}
+                  alt={displayEmail}
                   width={24}
                   height={24}
                   className="rounded-full"
                 />
                 <span data-testid="user-email" className="truncate">
-                  {isGuest ? 'Guest' : user?.email}
+                  {isGuest ? 'Guest' : displayEmail}
                 </span>
                 <ChevronUp className="ml-auto" />
               </SidebarMenuButton>
@@ -86,22 +103,19 @@ export function SidebarUserNav({ user }: { user: User }) {
                 type="button"
                 className="w-full cursor-pointer"
                 onClick={() => {
-                  if (status === 'loading') {
+                  if (loading) {
                     toast({
                       type: 'error',
                       description:
                         'Checking authentication status, please try again!',
                     });
-
                     return;
                   }
 
                   if (isGuest) {
                     router.push('/login');
                   } else {
-                    signOut({
-                      redirectTo: '/',
-                    });
+                    handleSignOut();
                   }
                 }}
               >

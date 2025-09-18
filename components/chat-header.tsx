@@ -10,7 +10,7 @@ import { PlusIcon, VercelIcon } from './icons';
 import { useSidebar } from './ui/sidebar';
 import { memo } from 'react';
 import { type VisibilityType, VisibilitySelector } from './visibility-selector';
-import type { Session } from 'next-auth';
+import type { AuthSession } from '@/lib/auth/types';
 
 function PureChatHeader({
   chatId,
@@ -21,7 +21,7 @@ function PureChatHeader({
   chatId: string;
   selectedVisibilityType: VisibilityType;
   isReadonly: boolean;
-  session: Session;
+  session?: AuthSession;
 }) {
   const router = useRouter();
   const { open } = useSidebar();
@@ -29,13 +29,29 @@ function PureChatHeader({
   const { width: windowWidth } = useWindowSize();
 
   return (
-    <header className="sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2">
+    <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
       <SidebarToggle />
 
       {(!open || windowWidth < 768) && (
+        <Link
+          href="/"
+          className="flex flex-row gap-2 items-center"
+          onClick={() => {
+            router.push('/');
+            router.refresh();
+          }}
+        >
+          <VercelIcon />
+          <span className="font-semibold text-sm hover:bg-muted p-1 rounded-md cursor-pointer">
+            Chatbot
+          </span>
+        </Link>
+      )}
+
+      <div className="flex flex-row gap-2 items-center">
         <Button
-          variant="outline"
-          className="order-2 ml-auto h-8 px-2 md:order-1 md:ml-0 md:h-fit md:px-2"
+          variant="ghost"
+          className="md:px-2 md:h-fit order-2 md:order-1 ml-auto md:ml-0"
           onClick={() => {
             router.push('/');
             router.refresh();
@@ -44,29 +60,15 @@ function PureChatHeader({
           <PlusIcon />
           <span className="md:sr-only">New Chat</span>
         </Button>
-      )}
 
-      {!isReadonly && (
-        <VisibilitySelector
-          chatId={chatId}
-          selectedVisibilityType={selectedVisibilityType}
-          className="order-1 md:order-2"
-        />
-      )}
-
-      <Button
-        className="order-3 hidden bg-zinc-900 px-2 text-zinc-50 hover:bg-zinc-800 md:ml-auto md:flex md:h-fit dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-        asChild
-      >
-        <Link
-          href={`https://vercel.com/templates/next.js/nextjs-ai-chatbot`}
-          target="_noblank"
-          rel="noreferrer"
-        >
-          <VercelIcon size={16} />
-          Deploy with Vercel
-        </Link>
-      </Button>
+        {!isReadonly && (
+          <VisibilitySelector
+            chatId={chatId}
+            selectedVisibilityType={selectedVisibilityType}
+            className="order-1 md:order-2"
+          />
+        )}
+      </div>
     </header>
   );
 }

@@ -12,24 +12,28 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { chatModels } from '@/lib/ai/models';
 import { cn } from '@/lib/utils';
+import { useSupabase } from '@/components/supabase-provider';
+import { getUserType, type AuthSession } from '@/lib/auth/types';
 
 import { CheckCircleFillIcon, ChevronDownIcon } from './icons';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
-import type { Session } from 'next-auth';
 
 export function ModelSelector({
   session,
   selectedModelId,
   className,
 }: {
-  session: Session;
+  session?: AuthSession;
   selectedModelId: string;
 } & React.ComponentProps<typeof Button>) {
   const [open, setOpen] = useState(false);
   const [optimisticModelId, setOptimisticModelId] =
     useOptimistic(selectedModelId);
-
-  const userType = session.user.type;
+  
+  const { user } = useSupabase();
+  
+  // Déterminer le type d'utilisateur basé sur la session Supabase
+  const userType = getUserType(user);
   const { availableChatModelIds } = entitlementsByUserType[userType];
 
   const availableChatModels = chatModels.filter((chatModel) =>
