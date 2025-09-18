@@ -8,10 +8,12 @@ import {
 } from 'ai';
 import { createClient } from '@/lib/supabase/server';
 import type { UserType } from '@/lib/auth/types';
+import { getUserType } from '@/lib/auth/types';
 import { type RequestHints, systemPrompt } from '@/lib/ai/prompts';
 import {
   createStreamId,
   deleteChatById,
+  ensureSupabaseUserExists,
   getChatById,
   getMessageCountByUserId,
   getMessagesByChatId,
@@ -111,41 +113,60 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      return new ChatSDKError('unauthorized:chat').toResponse();
+    const userType: UserType = getUserType(user);
+
+    // For guest users, we skip message count checking or use a default guest user ID
+    let messageCount = 0;
+    if (user) {
+      messageCount = await getMessageCountByUserId({
+        id: user.id,
+        differenceInHours: 24,
+      });
     }
-
-    const userType: UserType = 'free';
-
-    const messageCount = await getMessageCountByUserId({
-      id: user.id,
-      differenceInHours: 24,
-    });
 
     if (messageCount > entitlementsByUserType[userType].maxMessagesPerDay) {
       return new ChatSDKError('rate_limit:chat').toResponse();
     }
 
-    const chat = await getChatById({ id });
+    // For guest users, skip database operations entirely
+    let chat = null;
+    if (user) {
+      try {
+        // Ensure the Supabase user exists in our database
+        await ensureSupabaseUserExists(user.id, user.email!);
+        
+        chat = await getChatById({ id });
+      } catch (error) {
+        console.error('Error getting chat by ID:', error);
+        // Chat doesn't exist, we'll create it
+      }
 
-    if (!chat) {
-      const title = await generateTitleFromUserMessage({
-        message,
-      });
+      if (!chat) {
+        try {
+          const title = await generateTitleFromUserMessage({
+            message,
+          });
 
-      await saveChat({
-        id,
-        userId: user.id,
-        title,
-        visibility: selectedVisibilityType,
-      });
-    } else {
-      if (chat.userId !== user.id) {
-        return new ChatSDKError('forbidden:chat').toResponse();
+          await saveChat({
+            id,
+            userId: user.id,
+            title,
+            visibility: selectedVisibilityType,
+          });
+        } catch (error) {
+          console.error('Error saving chat:', error);
+          throw error;
+        }
+      } else {
+        // Check ownership for authenticated users
+        if (chat.userId !== user.id) {
+          return new ChatSDKError('forbidden:chat').toResponse();
+        }
       }
     }
 
-    const messagesFromDb = await getMessagesByChatId({ id });
+    // For guest users, start with empty message history
+    const messagesFromDb = user ? await getMessagesByChatId({ id }) : [];
     const uiMessages = [...convertToUIMessages(messagesFromDb), message];
 
     const { longitude, latitude, city, country } = geolocation(request);
@@ -157,21 +178,27 @@ export async function POST(request: Request) {
       country,
     };
 
-    await saveMessages({
-      messages: [
-        {
-          chatId: id,
-          id: message.id,
-          role: 'user',
-          parts: message.parts,
-          attachments: [],
-          createdAt: new Date(),
-        },
-      ],
-    });
+    // Only save messages for authenticated users
+    if (user) {
+      await saveMessages({
+        messages: [
+          {
+            chatId: id,
+            id: message.id,
+            role: 'user',
+            parts: message.parts,
+            attachments: [],
+            createdAt: new Date(),
+          },
+        ],
+      });
+    }
 
     const streamId = generateUUID();
-    await createStreamId({ streamId, chatId: id });
+    // Only create stream ID for authenticated users
+    if (user) {
+      await createStreamId({ streamId, chatId: id });
+    }
 
     let finalMergedUsage: AppUsage | undefined;
 
@@ -194,10 +221,10 @@ export async function POST(request: Request) {
           experimental_transform: smoothStream({ chunking: 'word' }),
           tools: {
             getWeather,
-            createDocument: createDocument({ session: { user }, dataStream }),
-            updateDocument: updateDocument({ session: { user }, dataStream }),
+            createDocument: createDocument({ session: user ? { user } : undefined, dataStream }),
+            updateDocument: updateDocument({ session: user ? { user } : undefined, dataStream }),
             requestSuggestions: requestSuggestions({
-              session: { user },
+              session: user ? { user } : undefined,
               dataStream,
             }),
           },
@@ -243,25 +270,28 @@ export async function POST(request: Request) {
       },
       generateId: generateUUID,
       onFinish: async ({ messages }) => {
-        await saveMessages({
-          messages: messages.map((message) => ({
-            id: message.id,
-            role: message.role,
-            parts: message.parts,
-            createdAt: new Date(),
-            attachments: [],
-            chatId: id,
-          })),
-        });
-
-        if (finalMergedUsage) {
-          try {
-            await updateChatLastContextById({
+        // Only save messages and usage for authenticated users
+        if (user) {
+          await saveMessages({
+            messages: messages.map((message) => ({
+              id: message.id,
+              role: message.role,
+              parts: message.parts,
+              createdAt: new Date(),
+              attachments: [],
               chatId: id,
-              context: finalMergedUsage,
-            });
-          } catch (err) {
-            console.warn('Unable to persist last usage for chat', id, err);
+            })),
+          });
+
+          if (finalMergedUsage) {
+            try {
+              await updateChatLastContextById({
+                chatId: id,
+                context: finalMergedUsage,
+              });
+            } catch (err) {
+              console.warn('Unable to persist last usage for chat', id, err);
+            }
           }
         }
       },
@@ -272,13 +302,15 @@ export async function POST(request: Request) {
 
     const streamContext = getStreamContext();
 
-    if (streamContext) {
+    // For authenticated users with saved stream IDs, use resumable streams
+    if (streamContext && user) {
       return new Response(
         await streamContext.resumableStream(streamId, () =>
           stream.pipeThrough(new JsonToSseTransformStream()),
         ),
       );
     } else {
+      // For guest users or when resumable streams are not available, use regular streaming
       return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
     }
   } catch (error) {

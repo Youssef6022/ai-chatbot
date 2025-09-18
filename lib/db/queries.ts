@@ -124,6 +124,31 @@ export async function deleteChatById({ id }: { id: string }) {
   }
 }
 
+export async function ensureSupabaseUserExists(id: string, email: string) {
+  try {
+    // Check if user already exists with this ID
+    const [existingUser] = await db.select().from(user).where(eq(user.id, id));
+    if (existingUser) {
+      return existingUser;
+    }
+
+    // Create user with Supabase ID and email
+    const [newUser] = await db.insert(user).values({ 
+      id, 
+      email, 
+      password: null // No password for Supabase users
+    }).returning({
+      id: user.id,
+      email: user.email,
+    });
+    
+    return newUser;
+  } catch (error) {
+    console.error('Failed to ensure Supabase user exists:', error);
+    throw new ChatSDKError('bad_request:database', 'Failed to sync user');
+  }
+}
+
 export async function getChatsByUserId({
   id,
   limit,
