@@ -45,6 +45,11 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  /* custom blue colors for brand elements */
+  --blue-primary: hsl(217 91% 60%);
+  --blue-primary-foreground: hsl(0 0% 98%);
+  --blue-secondary: hsl(217 91% 95%);
+  --blue-secondary-foreground: hsl(217 91% 20%);
   /* border radius unit */
   --radius: 0.5rem;
 }
@@ -83,6 +88,11 @@
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  /* custom blue colors for brand elements (dark mode) */
+  --blue-primary: hsl(217 91% 65%);
+  --blue-primary-foreground: hsl(240 10% 3.9%);
+  --blue-secondary: hsl(217 91% 15%);
+  --blue-secondary-foreground: hsl(217 91% 75%);
 }
 
 /* define theme */
@@ -138,6 +148,11 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-blue-primary: var(--blue-primary);
+  --color-blue-primary-foreground: var(--blue-primary-foreground);
+  --color-blue-secondary: var(--blue-secondary);
+  --color-blue-secondary-foreground: var(--blue-secondary-foreground);
 }
 
 /*

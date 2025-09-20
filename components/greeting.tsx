@@ -11,7 +11,8 @@ export const Greeting = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.5 }}
-        className="font-semibold text-xl md:text-2xl"
+        className="font-semibold text-xl md:text-2xl text-blue-primary"
+        style={{ color: 'var(--blue-primary)' }}
       >
         Hello there!
       </motion.div>

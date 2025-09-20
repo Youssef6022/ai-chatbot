@@ -52,9 +52,17 @@ export function AppSidebar() {
                     setOpenMobile(false);
                     router.refresh();
                   }}
-                  className="flex items-center gap-3 px-3 py-2"
+                  className="flex items-center gap-3 px-3 py-2 text-blue-primary rounded-md hover:bg-blue-primary/10"
+                  style={{ 
+                    color: 'var(--blue-primary)'
+                  }}
                 >
-                  <PlusIcon size={16} />
+                  <div 
+                    className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-primary text-white"
+                    style={{ backgroundColor: 'var(--blue-primary)', color: 'white' }}
+                  >
+                    <PlusIcon size={12} />
+                  </div>
                   <span>New Chat</span>
                 </Link>
               </SidebarMenuButton>

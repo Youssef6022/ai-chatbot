@@ -329,7 +329,11 @@ function PureMultimodalInput({
             <PromptInputSubmit
               status={status}
               disabled={!input.trim() || uploadQueue.length > 0}
-              className="rounded-full transition-colors duration-200 size-8 bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
+              className="rounded-full transition-colors duration-200 size-8 bg-blue-primary text-blue-primary-foreground hover:bg-blue-primary/90 disabled:bg-muted disabled:text-muted-foreground"
+              style={{ 
+                backgroundColor: !input.trim() || uploadQueue.length > 0 ? undefined : 'var(--blue-primary)', 
+                color: !input.trim() || uploadQueue.length > 0 ? undefined : 'var(--blue-primary-foreground)' 
+              }}
             >
               <ArrowUpIcon size={14} />
             </PromptInputSubmit>
