@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { Chat } from '@/components/chat';
 import { getChatById, getMessagesByChatId } from '@/lib/db/queries';
 import { DataStreamHandler } from '@/components/data-stream-handler';
-import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
+import { DEFAULT_CHAT_MODEL, migrateModelId } from '@/lib/ai/models';
 import { convertToUIMessages } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/server';
 
@@ -65,7 +65,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
       <Chat
         id={chat.id}
         initialMessages={uiMessages}
-        initialChatModel={chatModelFromCookie.value}
+        initialChatModel={migrateModelId(chatModelFromCookie.value)}
         initialVisibilityType={chat.visibility}
         isReadonly={user?.id !== chat.userId}
         session={session}

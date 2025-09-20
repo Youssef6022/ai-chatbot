@@ -16,8 +16,9 @@ export const myProvider = isTestEnvironment
       } = require('./models.mock');
       return customProvider({
         languageModels: {
-          'chat-model': chatModel,
-          'chat-model-reasoning': reasoningModel,
+          'chat-model-small': chatModel,
+          'chat-model-medium': chatModel,
+          'chat-model-large': reasoningModel,
           'title-model': titleModel,
           'artifact-model': artifactModel,
         },
@@ -25,12 +26,10 @@ export const myProvider = isTestEnvironment
     })()
   : customProvider({
       languageModels: {
-        'chat-model': gateway.languageModel('xai/grok-2-vision-1212'),
-        'chat-model-reasoning': wrapLanguageModel({
-          model: gateway.languageModel('xai/grok-3-mini'),
-          middleware: extractReasoningMiddleware({ tagName: 'think' }),
-        }),
-        'title-model': gateway.languageModel('xai/grok-2-1212'),
-        'artifact-model': gateway.languageModel('xai/grok-2-1212'),
+        'chat-model-small': gateway.languageModel('google/gemini-2.5-flash-lite'),
+        'chat-model-medium': gateway.languageModel('google/gemini-2.5-flash'),
+        'chat-model-large': gateway.languageModel('google/gemini-2.5-pro'),
+        'title-model': gateway.languageModel('google/gemini-2.0-flash'),
+        'artifact-model': gateway.languageModel('google/gemini-2.5-flash'),
       },
     });

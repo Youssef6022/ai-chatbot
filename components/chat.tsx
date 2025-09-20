@@ -23,6 +23,7 @@ import { ChatSDKError } from '@/lib/errors';
 import type { Attachment, ChatMessage } from '@/lib/types';
 import type { AppUsage } from '@/lib/usage';
 import { useDataStream } from './data-stream-provider';
+import { DEFAULT_CHAT_MODEL, migrateModelId, chatModels } from '@/lib/ai/models';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -64,7 +65,14 @@ export function Chat({
   const [input, setInput] = useState<string>('');
   const [usage, setUsage] = useState<AppUsage | undefined>(initialLastContext);
   const [showCreditCardAlert, setShowCreditCardAlert] = useState(false);
-  const [currentModelId, setCurrentModelId] = useState(initialChatModel);
+  // Valider et migrer le modèle initial
+  const validatedInitialModel = (() => {
+    const migrated = migrateModelId(initialChatModel);
+    const isValid = chatModels.some(model => model.id === migrated);
+    return isValid ? migrated : DEFAULT_CHAT_MODEL;
+  })();
+  
+  const [currentModelId, setCurrentModelId] = useState(validatedInitialModel);
   const currentModelIdRef = useRef(currentModelId);
   
   useEffect(() => {

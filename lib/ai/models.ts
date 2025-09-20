@@ -1,4 +1,14 @@
-export const DEFAULT_CHAT_MODEL: string = 'chat-model';
+export const DEFAULT_CHAT_MODEL: string = 'chat-model-medium';
+
+// Migration des anciens modèles vers les nouveaux
+export function migrateModelId(modelId: string): string {
+  const migrations: Record<string, string> = {
+    'chat-model': 'chat-model-medium',
+    'chat-model-reasoning': 'chat-model-large',
+  };
+  
+  return migrations[modelId] || modelId;
+}
 
 export interface ChatModel {
   id: string;
@@ -8,14 +18,18 @@ export interface ChatModel {
 
 export const chatModels: Array<ChatModel> = [
   {
-    id: 'chat-model',
-    name: 'Grok Vision',
-    description: 'Advanced multimodal model with vision and text capabilities',
+    id: 'chat-model-small',
+    name: 'Gemini Flash Lite',
+    description: 'Lightweight and fast model for simple conversations',
   },
   {
-    id: 'chat-model-reasoning',
-    name: 'Grok Reasoning',
-    description:
-      'Uses advanced chain-of-thought reasoning for complex problems',
+    id: 'chat-model-medium',
+    name: 'Gemini Flash',
+    description: 'Balanced model for everyday conversations',
+  },
+  {
+    id: 'chat-model-large',
+    name: 'Gemini Pro',
+    description: 'Most advanced model for complex tasks and reasoning',
   },
 ];

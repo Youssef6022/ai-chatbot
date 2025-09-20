@@ -363,7 +363,7 @@ function PureAttachmentsButton({
   status: UseChatHelpers<ChatMessage>['status'];
   selectedModelId: string;
 }) {
-  const isReasoningModel = selectedModelId === 'chat-model-reasoning';
+  const isReasoningModel = false; // Tous les modèles supportent maintenant les attachements
 
   return (
     <Button
