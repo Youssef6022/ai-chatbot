@@ -1208,3 +1208,37 @@ export const WarningIcon = ({ size = 16 }: { size?: number }) => {
     </svg>
   );
 };
+
+export const LibraryIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    height={size}
+    strokeLinejoin="round"
+    viewBox="0 0 16 16"
+    width={size}
+    style={{ color: 'currentcolor' }}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M1 1.75C1 1.33579 1.33579 1 1.75 1H14.25C14.6642 1 15 1.33579 15 1.75V14.25C15 14.6642 14.6642 15 14.25 15H1.75C1.33579 15 1 14.6642 1 14.25V1.75ZM2.5 2.5V13.5H13.5V2.5H2.5ZM4 4H12V5.5H4V4ZM4 7H12V8.5H4V7ZM4 10H8V11.5H4V10Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+export const WorkflowIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    height={size}
+    strokeLinejoin="round"
+    viewBox="0 0 16 16"
+    width={size}
+    style={{ color: 'currentcolor' }}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M2 2.5C2 1.67157 2.67157 1 3.5 1H5.5C6.32843 1 7 1.67157 7 2.5V4.5C7 5.32843 6.32843 6 5.5 6H3.5C2.67157 6 2 5.32843 2 4.5V2.5ZM3.5 2.5V4.5H5.5V2.5H3.5ZM10.5 1C9.67157 1 9 1.67157 9 2.5V4.5C9 5.32843 9.67157 6 10.5 6H12.5C13.3284 6 14 5.32843 14 4.5V2.5C14 1.67157 13.3284 1 12.5 1H10.5ZM10.5 2.5V4.5H12.5V2.5H10.5ZM2 11.5C2 10.6716 2.67157 10 3.5 10H5.5C6.32843 10 7 10.6716 7 11.5V13.5C7 14.3284 6.32843 15 5.5 15H3.5C2.67157 15 2 14.3284 2 13.5V11.5ZM3.5 11.5V13.5H5.5V11.5H3.5ZM4.5 6.75V8.5H7.5V9.25H4.5V6.75ZM8.5 3.25H7.75V8.5H8.5V3.25Z"
+      fill="currentColor"
+    />
+  </svg>
+);

@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
-import { PlusIcon } from '@/components/icons';
+import { PlusIcon, LibraryIcon, WorkflowIcon } from '@/components/icons';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,8 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
   useSidebar,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
@@ -62,6 +64,67 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <div className="flex flex-col gap-2 p-2">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link
+                  href="/"
+                  onClick={() => {
+                    setOpenMobile(false);
+                    router.refresh();
+                  }}
+                  className="flex items-center gap-3 px-3 py-2"
+                >
+                  <PlusIcon size={16} />
+                  <span>New Chat</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link
+                  href="/library"
+                  onClick={() => setOpenMobile(false)}
+                  className="flex items-center gap-3 px-3 py-2"
+                >
+                  <LibraryIcon size={16} />
+                  <span>Library</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link
+                  href="/workflows"
+                  onClick={() => setOpenMobile(false)}
+                  className="flex items-center gap-3 px-3 py-2"
+                >
+                  <WorkflowIcon size={16} />
+                  <span>Workflows</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link
+                  href="/workflows/new"
+                  onClick={() => setOpenMobile(false)}
+                  className="flex items-center gap-3 px-3 py-2"
+                >
+                  <WorkflowIcon size={16} />
+                  <span>New Workflow</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </div>
+        
+        <div className="border-t border-sidebar-border mx-2" />
+        
         <SidebarHistory user={user} />
       </SidebarContent>
       <SidebarFooter>
