@@ -1,0 +1,92 @@
+'use client';
+
+import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { LoaderIcon } from '@/components/icons';
+import { chatModels } from '@/lib/ai/models';
+
+interface GenerateNodeData {
+  label: string;
+  selectedModel: string;
+  result: string;
+  isLoading?: boolean;
+  onModelChange: (model: string) => void;
+}
+
+export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
+  return (
+    <Card className={`min-w-[400px] ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          🤖 {data.label}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0 space-y-3">
+        <Handle
+          type="target"
+          position={Position.Left}
+          id="input"
+          className="w-3 h-3 !bg-green-500 !border-2 !border-white"
+        />
+        
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">
+            AI Model
+          </label>
+          <Select
+            value={data.selectedModel}
+            onValueChange={data.onModelChange}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a model" />
+            </SelectTrigger>
+            <SelectContent>
+              {chatModels.map((model) => (
+                <SelectItem key={model.id} value={model.id}>
+                  <div className="flex flex-col items-start">
+                    <span className="font-medium">{model.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {model.description}
+                    </span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">
+            Result
+          </label>
+          <Card className="border-dashed">
+            <CardContent className="p-3">
+              {data.isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <LoaderIcon size={24} />
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    Generating...
+                  </span>
+                </div>
+              ) : (
+                <ScrollArea className="h-[150px] w-full">
+                  {data.result ? (
+                    <div className="text-sm whitespace-pre-wrap">
+                      {data.result}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground italic">
+                      Connect a prompt and run to see results...
+                    </div>
+                  )}
+                </ScrollArea>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

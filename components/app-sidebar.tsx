@@ -71,19 +71,6 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link
-                  href="/library"
-                  onClick={() => setOpenMobile(false)}
-                  className="flex items-center gap-3 px-3 py-2"
-                >
-                  <LibraryIcon size={16} />
-                  <span>Library</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link
                   href="/workflows"
                   onClick={() => setOpenMobile(false)}
                   className="flex items-center gap-3 px-3 py-2"
@@ -94,18 +81,6 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
             
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link
-                  href="/workflows/new"
-                  onClick={() => setOpenMobile(false)}
-                  className="flex items-center gap-3 px-3 py-2"
-                >
-                  <WorkflowIcon size={16} />
-                  <span>New Workflow</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
           </SidebarMenu>
         </div>
         

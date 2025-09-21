@@ -51,17 +51,22 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Schema Location**: `lib/db/schema.ts`
 - **Migrations**: `lib/db/migrations/` directory
 - **Core Tables**:
-  - `User`: User accounts with email/password
-  - `Chat`: Chat sessions with visibility and context
-  - `Message` (deprecated): Old message format
-  - New message parts system for improved message handling
+  - `User`: User accounts with email/password authentication
+  - `Chat`: Chat sessions with visibility (public/private) and context tracking
+  - `Message_v2`: Current message format with parts and attachments support
+  - `Message` (deprecated): Legacy message format - migration guide available
+  - `Vote_v2`: Message voting system with chat/message relationships
+  - `Document`: Document management with different types (text, code, image, sheet)
+  - `Suggestion`: Document editing suggestions with resolution tracking
+  - `Stream`: Stream tracking for real-time chat functionality
 - **Database Queries**: Centralized in `lib/db/queries.ts`
+- **Migration Helper**: `lib/db/helpers/01-core-to-parts.ts` for message format migration
 
-### Authentication (Auth.js/NextAuth)
-- **Configuration**: `app/(auth)/auth.config.ts`
-- **Providers**: Google OAuth, GitHub OAuth, Email/Password, Guest mode
-- **Session Management**: Server-side session handling
-- **Auth Secret**: Configurable via `AUTH_SECRET` environment variable
+### Authentication (Supabase Auth)
+- **Middleware**: `middleware.ts` handles session management with Supabase
+- **Auth Routes**: Login (`/login`), Register (`/register`), Auth callback (`/auth/callback`)
+- **Session Updates**: Automatic session refresh via Supabase middleware
+- **Guest Support**: Allows unauthenticated access with appropriate route protection
 
 ### File Storage
 - **Provider**: Vercel Blob Storage
@@ -69,12 +74,14 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Supports**: File uploads in chat interface
 
 ### Application Structure
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 15 with App Router and Turbopack for development
 - **UI Library**: shadcn/ui components with Radix UI primitives
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React + Simple Icons
-- **Editor**: ProseMirror integration for document editing
-- **Code Highlighting**: Shiki with multiple language support
+- **Styling**: Tailwind CSS v4 with custom configuration
+- **Icons**: Lucide React + Simple Icons (`@icons-pack/react-simple-icons`)
+- **Editor**: ProseMirror integration for rich document editing
+- **Code Highlighting**: Shiki with multiple language support + CodeMirror for interactive editing
+- **Data Fetching**: SWR for client-side data management
+- **Animations**: Framer Motion for smooth UI transitions
 
 ## Environment Variables
 
@@ -104,10 +111,12 @@ REDIS_URL=**** # Optional Redis for caching/performance
 - Integration with AI for document generation
 
 ### Advanced AI Features
-- Multi-turn conversations with context
-- Tool calling capabilities (weather, documents, suggestions)
-- Reasoning model support with thinking middleware
-- Token usage tracking and analytics
+- Multi-turn conversations with context preservation
+- Tool calling capabilities (weather via `get-weather.ts`, document management, suggestions)
+- Model migration system for backward compatibility (`migrateModelId` function)
+- AI entitlements system for usage control (`lib/ai/entitlements.ts`)
+- Custom prompts and AI personas (`lib/ai/prompts.ts`)
+- Token usage tracking and analytics with `tokenlens` integration
 
 ## Development Workflow
 
@@ -117,11 +126,43 @@ REDIS_URL=**** # Optional Redis for caching/performance
 4. **Start Development**: `pnpm dev`
 5. **Code Quality**: Run `pnpm run lint:fix` before commits
 
+## Code Quality and Standards
+
+### Biome Configuration
+- **Linting and Formatting**: Uses Biome instead of ESLint/Prettier
+- **Configuration**: `biome.jsonc` with custom rules for accessibility, complexity, and style
+- **Pre-commit**: Run `pnpm run lint:fix` to auto-fix issues before commits
+- **Accessibility**: Custom a11y rules with intentional exceptions for UX patterns
+
+### Testing Strategy
+- **E2E Testing**: Playwright tests with environment variable `PLAYWRIGHT=True`
+- **Mock AI Models**: Test environment automatically uses mock providers
+- **Test Routes**: `/ping` endpoint for Playwright health checks
+
+## Key Architectural Patterns
+
+### API Route Structure
+- **Chat API**: `/api/chat/` with streaming support and individual chat endpoints
+- **File Upload**: `/api/files/upload/` for Vercel Blob storage integration
+- **Documents**: `/api/document/` for document CRUD operations
+- **History**: `/api/history/` for chat history management
+
+### State Management
+- **Server Actions**: Used in `app/(chat)/actions.ts` for server-side operations
+- **Client State**: SWR for API data fetching and caching
+- **Context**: React Context for global state like theme and user preferences
+
+### Security Considerations
+- **Middleware Protection**: Routes protected via Supabase session middleware
+- **API Security**: Server-only imports for sensitive operations
+- **Environment Isolation**: Separate configuration for test vs production environments
+
 ## Important Development Notes
 
-- Always run database migrations after schema changes
-- Use Biome for code formatting and linting (configured in project)
-- Test environment uses mock AI providers (see `lib/ai/models.mock.ts`)
-- Port 9627 is used for development to avoid conflicts
-- Authentication supports both authenticated and guest users
-- Redis is optional but recommended for production performance
+- Always run database migrations after schema changes (`pnpm run db:migrate`)
+- Use Biome for all code formatting and linting (configured in `biome.jsonc`)
+- Test environment automatically uses mock AI providers (see `lib/ai/models.mock.ts`)
+- Port 9627 is used for development to avoid conflicts with other services
+- Authentication supports both authenticated and guest users via Supabase
+- Redis is optional but recommended for production performance and caching
+- Message format migration: Legacy `Message` table is deprecated, use `Message_v2` for new code
