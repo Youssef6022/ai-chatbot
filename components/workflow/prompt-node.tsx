@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { TrashIcon } from '@/components/icons';
 import type { Variable } from './variables-panel';
 
 interface PromptNodeData {
@@ -14,6 +15,7 @@ interface PromptNodeData {
   variables?: Variable[];
   connectedResults?: { [key: string]: string }; // Results from connected Generate nodes
   onTextChange: (text: string) => void;
+  onDelete?: () => void;
 }
 
 export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
@@ -31,10 +33,22 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
   }, [localText, handleTextChange]);
 
   return (
-    <Card className={`min-w-[350px] ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+    <Card className={`min-w-[350px] border-2 border-gray-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          📝 {data.label}
+        <CardTitle className="text-sm font-medium flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            📝 Text Input
+          </span>
+          {data.onDelete && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={data.onDelete}
+              className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+            >
+              <TrashIcon size={12} />
+            </Button>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
@@ -42,13 +56,13 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
           type="target"
           position={Position.Left}
           id="input"
-          className="w-3 h-3 !bg-purple-500 !border-2 !border-white"
+          className="w-3 h-3 !bg-blue-500 !border-2 !border-white"
         />
         
         <Textarea
           value={localText}
           onChange={(e) => handleTextChange(e.target.value)}
-          placeholder="Enter your prompt here... Use {variable_name} to insert variables."
+          placeholder="Enter your text here... Use {variable_name} to insert variables."
           className="min-h-[100px] resize-none"
         />
         
@@ -83,7 +97,7 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
                       key={resultName}
                       variant="outline"
                       size="sm"
-                      className="h-6 px-2 text-xs bg-purple-50"
+                      className="h-6 px-2 text-xs bg-blue-50"
                       onClick={() => insertVariable(resultName)}
                     >
                       {resultName}

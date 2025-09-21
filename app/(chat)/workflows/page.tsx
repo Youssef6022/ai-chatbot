@@ -13,6 +13,7 @@ import {
   type Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import './workflow-styles.css';
 
 import { Button } from '@/components/ui/button';
 import { PromptNode } from '@/components/workflow/prompt-node';
@@ -31,9 +32,10 @@ const initialNodes = [
     type: 'prompt',
     position: { x: 100, y: 100 },
     data: { 
-      label: 'Prompt',
+      label: 'Text Input',
       text: 'Write a short story about...',
       onTextChange: () => {},
+      onDelete: () => {},
     },
   },
   {
@@ -41,12 +43,13 @@ const initialNodes = [
     type: 'generate',
     position: { x: 400, y: 100 },
     data: { 
-      label: 'Generate',
+      label: 'Generate Text',
       selectedModel: 'chat-model-medium',
       result: '',
       variableName: 'result_1',
       onModelChange: () => {},
       onVariableNameChange: () => {},
+      onDelete: () => {},
     },
   },
 ];
@@ -62,21 +65,35 @@ export default function WorkflowsPage() {
   const onConnect = useCallback(
     (params: Connection) => {
       setEdges((eds) => {
-        // Supprimer toute connexion existante depuis la même source (un Prompt ne peut avoir qu'une sortie)
-        const edgesWithoutSourceConnection = eds.filter(edge => 
-          !(edge.source === params.source && edge.sourceHandle === params.sourceHandle)
-        );
+        // Identifier les types de connexions
+        const sourceNode = nodes.find(n => n.id === params.source);
+        const targetNode = nodes.find(n => n.id === params.target);
         
-        // Supprimer toute connexion existante vers la même cible (un Generate ne peut avoir qu'une entrée)
-        const edgesWithoutTargetConnection = edgesWithoutSourceConnection.filter(edge => 
-          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
-        );
+        if (!sourceNode || !targetNode) return eds;
         
-        // Ajouter la nouvelle connexion
-        return addEdge(params, edgesWithoutTargetConnection);
+        // Cas 1: Prompt → Generate (un prompt peut avoir plusieurs sorties vers différents Generate)
+        if (sourceNode.type === 'prompt' && targetNode.type === 'generate' && params.sourceHandle === 'output' && params.targetHandle === 'input') {
+          // Supprimer toute connexion existante vers la même cible Generate (un Generate ne peut avoir qu'une entrée)
+          const edgesWithoutTargetConnection = eds.filter(edge => 
+            !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+          );
+          return addEdge(params, edgesWithoutTargetConnection);
+        }
+        
+        // Cas 2: Generate → Prompt (un Generate peut avoir qu'une sortie, un Prompt peut avoir plusieurs entrées)
+        if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && params.sourceHandle === 'output' && params.targetHandle === 'input') {
+          // Supprimer toute connexion existante depuis la même source Generate (un Generate ne peut avoir qu'une sortie)
+          const edgesWithoutSourceConnection = eds.filter(edge => 
+            !(edge.source === params.source && edge.sourceHandle === params.sourceHandle)
+          );
+          return addEdge(params, edgesWithoutSourceConnection);
+        }
+        
+        // Rejeter les connexions non valides
+        return eds;
       });
     },
-    [setEdges]
+    [setEdges, nodes]
   );
 
   const onEdgesDelete = useCallback(
@@ -99,16 +116,22 @@ export default function WorkflowsPage() {
     );
   }, [setNodes]);
 
+  const deleteNode = useCallback((nodeId: string) => {
+    setNodes((nds) => nds.filter(node => node.id !== nodeId));
+    setEdges((eds) => eds.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
+  }, [setNodes, setEdges]);
+
   const addPromptNode = useCallback(() => {
     const newNode = {
       id: `prompt-${Date.now()}`,
       type: 'prompt',
       position: { x: Math.random() * 300, y: Math.random() * 300 },
       data: {
-        label: 'Prompt',
+        label: 'Text Input',
         text: '',
         variables,
         onTextChange: () => {},
+        onDelete: () => {},
       },
     };
     setNodes((nds) => [...nds, newNode]);
@@ -124,12 +147,13 @@ export default function WorkflowsPage() {
       type: 'generate',
       position: { x: Math.random() * 300 + 400, y: Math.random() * 300 },
       data: {
-        label: 'Generate',
+        label: 'Generate Text',
         selectedModel: 'chat-model-medium',
         result: '',
         variableName: `result_${nextNumber}`,
         onModelChange: () => {},
         onVariableNameChange: () => {},
+        onDelete: () => {},
       },
     };
     setNodes((nds) => [...nds, newNode]);
@@ -235,6 +259,7 @@ export default function WorkflowsPage() {
         onVariableNameChange: node.type === 'generate'
           ? (name: string) => updateNodeData(node.id, { variableName: name })
           : undefined,
+        onDelete: () => deleteNode(node.id),
       }
     };
   });
@@ -250,7 +275,7 @@ export default function WorkflowsPage() {
           className="flex items-center gap-2"
         >
           <PlusIcon size={14} />
-          📝 Prompt
+          📝 Text Input
         </Button>
         <Button
           onClick={addGenerateNode}
@@ -259,7 +284,7 @@ export default function WorkflowsPage() {
           className="flex items-center gap-2"
         >
           <PlusIcon size={14} />
-          🤖 Generate
+          🤖 Generate Text
         </Button>
         <div className="border-l h-6 mx-2" />
         <VariablesPanel 

@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { LoaderIcon } from '@/components/icons';
+import { Button } from '@/components/ui/button';
+import { LoaderIcon, TrashIcon } from '@/components/icons';
 import { chatModels } from '@/lib/ai/models';
 
 interface GenerateNodeData {
@@ -18,6 +19,7 @@ interface GenerateNodeData {
   isLoading?: boolean;
   onModelChange: (model: string) => void;
   onVariableNameChange: (name: string) => void;
+  onDelete?: () => void;
 }
 
 export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
@@ -29,10 +31,22 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
   }, [data]);
 
   return (
-    <Card className={`min-w-[400px] ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+    <Card className={`min-w-[400px] border-2 border-gray-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          🤖 {data.label}
+        <CardTitle className="text-sm font-medium flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            🤖 Generate Text
+          </span>
+          {data.onDelete && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={data.onDelete}
+              className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+            >
+              <TrashIcon size={12} />
+            </Button>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
@@ -40,7 +54,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="target"
           position={Position.Left}
           id="input"
-          className="w-3 h-3 !bg-green-500 !border-2 !border-white"
+          className="w-3 h-3 !bg-blue-500 !border-2 !border-white"
         />
         
         <div>
@@ -118,7 +132,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="source"
           position={Position.Right}
           id="output"
-          className="w-3 h-3 !bg-purple-500 !border-2 !border-white"
+          className="w-3 h-3 !bg-blue-500 !border-2 !border-white"
         />
       </CardContent>
     </Card>
