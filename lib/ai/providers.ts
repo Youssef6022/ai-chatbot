@@ -4,6 +4,7 @@ import {
   wrapLanguageModel,
 } from 'ai';
 import { gateway } from '@ai-sdk/gateway';
+import { google } from '@ai-sdk/google';
 import { isTestEnvironment } from '../constants';
 
 export const myProvider = isTestEnvironment
@@ -26,10 +27,10 @@ export const myProvider = isTestEnvironment
     })()
   : customProvider({
       languageModels: {
-        'chat-model-small': gateway.languageModel('google/gemini-2.5-flash-lite'),
-        'chat-model-medium': gateway.languageModel('google/gemini-2.5-flash'),
-        'chat-model-large': gateway.languageModel('google/gemini-2.5-pro'),
-        'title-model': gateway.languageModel('google/gemini-2.0-flash'),
-        'artifact-model': gateway.languageModel('google/gemini-2.5-flash'),
+        'chat-model-small': google('gemini-1.5-flash'),
+        'chat-model-medium': google('gemini-1.5-flash'),
+        'chat-model-large': google('gemini-1.5-pro'),
+        'title-model': google('gemini-1.5-flash'),
+        'artifact-model': google('gemini-1.5-flash'),
       },
     });
