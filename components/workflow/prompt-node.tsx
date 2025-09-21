@@ -12,6 +12,7 @@ interface PromptNodeData {
   label: string;
   text: string;
   variables?: Variable[];
+  connectedResults?: { [key: string]: string }; // Results from connected Generate nodes
   onTextChange: (text: string) => void;
 }
 
@@ -37,6 +38,13 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
+        <Handle
+          type="target"
+          position={Position.Left}
+          id="input"
+          className="w-3 h-3 !bg-purple-500 !border-2 !border-white"
+        />
+        
         <Textarea
           value={localText}
           onChange={(e) => handleTextChange(e.target.value)}
@@ -45,22 +53,45 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         />
         
         {/* Variables section */}
-        {data.variables && data.variables.length > 0 && (
-          <div>
-            <div className="text-xs font-medium text-muted-foreground mb-2">Available Variables:</div>
-            <div className="flex flex-wrap gap-1">
-              {data.variables.map((variable) => (
-                <Button
-                  key={variable.id}
-                  variant="outline"
-                  size="sm"
-                  className="h-6 px-2 text-xs"
-                  onClick={() => insertVariable(variable.name)}
-                >
-                  {variable.name}
-                </Button>
-              ))}
-            </div>
+        {((data.variables && data.variables.length > 0) || (data.connectedResults && Object.keys(data.connectedResults).length > 0)) && (
+          <div className="space-y-2">
+            {data.variables && data.variables.length > 0 && (
+              <div>
+                <div className="text-xs font-medium text-muted-foreground mb-2">Global Variables:</div>
+                <div className="flex flex-wrap gap-1">
+                  {data.variables.map((variable) => (
+                    <Button
+                      key={variable.id}
+                      variant="outline"
+                      size="sm"
+                      className="h-6 px-2 text-xs"
+                      onClick={() => insertVariable(variable.name)}
+                    >
+                      {variable.name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {data.connectedResults && Object.keys(data.connectedResults).length > 0 && (
+              <div>
+                <div className="text-xs font-medium text-muted-foreground mb-2">Connected Results:</div>
+                <div className="flex flex-wrap gap-1">
+                  {Object.keys(data.connectedResults).map((resultName) => (
+                    <Button
+                      key={resultName}
+                      variant="outline"
+                      size="sm"
+                      className="h-6 px-2 text-xs bg-purple-50"
+                      onClick={() => insertVariable(resultName)}
+                    >
+                      {resultName}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
         

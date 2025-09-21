@@ -1,9 +1,12 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { LoaderIcon } from '@/components/icons';
 import { chatModels } from '@/lib/ai/models';
 
@@ -11,11 +14,20 @@ interface GenerateNodeData {
   label: string;
   selectedModel: string;
   result: string;
+  variableName: string;
   isLoading?: boolean;
   onModelChange: (model: string) => void;
+  onVariableNameChange: (name: string) => void;
 }
 
 export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
+  const [localVariableName, setLocalVariableName] = useState(data.variableName || '');
+
+  const handleVariableNameChange = useCallback((value: string) => {
+    setLocalVariableName(value);
+    data.onVariableNameChange?.(value);
+  }, [data]);
+
   return (
     <Card className={`min-w-[400px] ${selected ? 'ring-2 ring-blue-500' : ''}`}>
       <CardHeader className="pb-2">
@@ -32,9 +44,24 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
         />
         
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">
+          <Label className="text-xs font-medium text-muted-foreground mb-1 block">
+            Variable Name
+          </Label>
+          <Input
+            value={localVariableName}
+            onChange={(e) => handleVariableNameChange(e.target.value)}
+            placeholder="result_1"
+            className="h-8"
+          />
+          <div className="text-xs text-muted-foreground mt-1">
+            Use as: {'{' + (localVariableName || 'result_1') + '}'}
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-xs font-medium text-muted-foreground mb-1 block">
             AI Model
-          </label>
+          </Label>
           <Select
             value={data.selectedModel}
             onValueChange={data.onModelChange}
@@ -86,6 +113,13 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             </CardContent>
           </Card>
         </div>
+
+        <Handle
+          type="source"
+          position={Position.Right}
+          id="output"
+          className="w-3 h-3 !bg-purple-500 !border-2 !border-white"
+        />
       </CardContent>
     </Card>
   );

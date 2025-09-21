@@ -44,7 +44,9 @@ const initialNodes = [
       label: 'Generate',
       selectedModel: 'chat-model-medium',
       result: '',
+      variableName: 'result_1',
       onModelChange: () => {},
+      onVariableNameChange: () => {},
     },
   },
 ];
@@ -113,6 +115,10 @@ export default function WorkflowsPage() {
   }, [setNodes, variables]);
 
   const addGenerateNode = useCallback(() => {
+    // Generate a unique variable name based on existing Generate nodes
+    const generateNodes = nodes.filter(node => node.type === 'generate');
+    const nextNumber = generateNodes.length + 1;
+    
     const newNode = {
       id: `generate-${Date.now()}`,
       type: 'generate',
@@ -121,11 +127,13 @@ export default function WorkflowsPage() {
         label: 'Generate',
         selectedModel: 'chat-model-medium',
         result: '',
+        variableName: `result_${nextNumber}`,
         onModelChange: () => {},
+        onVariableNameChange: () => {},
       },
     };
     setNodes((nds) => [...nds, newNode]);
-  }, [setNodes]);
+  }, [setNodes, nodes]);
 
   const handleRun = useCallback(async () => {
     setIsRunning(true);
@@ -145,11 +153,24 @@ export default function WorkflowsPage() {
             // Clear previous result
             updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true });
             
-            // Replace variables in prompt text
+            // Replace variables in prompt text (global variables + connected results)
             let processedPrompt = promptNode.data.text;
+            
+            // Replace global variables
             variables.forEach(variable => {
               const placeholder = `{${variable.name}}`;
               processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), variable.value);
+            });
+            
+            // Replace connected Generate results
+            const connectedGenerateEdges = edges.filter(edge => edge.target === promptNode.id && edge.targetHandle === 'input');
+            connectedGenerateEdges.forEach(edge => {
+              const connectedGenerateNode = nodes.find(node => node.id === edge.source && node.type === 'generate');
+              if (connectedGenerateNode && connectedGenerateNode.data.result) {
+                const variableName = connectedGenerateNode.data.variableName || 'result_1';
+                const placeholder = `{${variableName}}`;
+                processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), connectedGenerateNode.data.result);
+              }
             });
             
             // Call the AI API
@@ -184,19 +205,39 @@ export default function WorkflowsPage() {
   }, [nodes, edges, updateNodeData]);
 
   // Update nodes with callback functions and variables
-  const nodesWithCallbacks = nodes.map(node => ({
-    ...node,
-    data: {
-      ...node.data,
-      variables: node.type === 'prompt' ? variables : undefined,
-      onTextChange: node.type === 'prompt' 
-        ? (text: string) => updateNodeData(node.id, { text })
-        : undefined,
-      onModelChange: node.type === 'generate'
-        ? (model: string) => updateNodeData(node.id, { selectedModel: model })
-        : undefined,
+  const nodesWithCallbacks = nodes.map(node => {
+    let connectedResults = {};
+    
+    if (node.type === 'prompt') {
+      // Find connected Generate nodes for this Prompt
+      const incomingEdges = edges.filter(edge => edge.target === node.id && edge.targetHandle === 'input');
+      incomingEdges.forEach(edge => {
+        const connectedGenerateNode = nodes.find(n => n.id === edge.source && n.type === 'generate');
+        if (connectedGenerateNode && connectedGenerateNode.data.result) {
+          const variableName = connectedGenerateNode.data.variableName || 'result_1';
+          connectedResults[variableName] = connectedGenerateNode.data.result;
+        }
+      });
     }
-  }));
+    
+    return {
+      ...node,
+      data: {
+        ...node.data,
+        variables: node.type === 'prompt' ? variables : undefined,
+        connectedResults: node.type === 'prompt' ? connectedResults : undefined,
+        onTextChange: node.type === 'prompt' 
+          ? (text: string) => updateNodeData(node.id, { text })
+          : undefined,
+        onModelChange: node.type === 'generate'
+          ? (model: string) => updateNodeData(node.id, { selectedModel: model })
+          : undefined,
+        onVariableNameChange: node.type === 'generate'
+          ? (name: string) => updateNodeData(node.id, { variableName: name })
+          : undefined,
+      }
+    };
+  });
 
   return (
     <div className="flex flex-col h-screen">
