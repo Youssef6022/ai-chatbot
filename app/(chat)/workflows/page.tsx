@@ -17,6 +17,7 @@ import '@xyflow/react/dist/style.css';
 import { Button } from '@/components/ui/button';
 import { PromptNode } from '@/components/workflow/prompt-node';
 import { GenerateNode } from '@/components/workflow/generate-node';
+import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
 import { PlayIcon, PlusIcon } from '@/components/icons';
 
 const nodeTypes = {
@@ -54,9 +55,34 @@ export default function WorkflowsPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isRunning, setIsRunning] = useState(false);
+  const [variables, setVariables] = useState<Variable[]>([]);
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    (params: Connection) => {
+      setEdges((eds) => {
+        // Supprimer toute connexion existante depuis la même source (un Prompt ne peut avoir qu'une sortie)
+        const edgesWithoutSourceConnection = eds.filter(edge => 
+          !(edge.source === params.source && edge.sourceHandle === params.sourceHandle)
+        );
+        
+        // Supprimer toute connexion existante vers la même cible (un Generate ne peut avoir qu'une entrée)
+        const edgesWithoutTargetConnection = edgesWithoutSourceConnection.filter(edge => 
+          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+        );
+        
+        // Ajouter la nouvelle connexion
+        return addEdge(params, edgesWithoutTargetConnection);
+      });
+    },
+    [setEdges]
+  );
+
+  const onEdgesDelete = useCallback(
+    (edgesToDelete: Edge[]) => {
+      setEdges((eds) => eds.filter(edge => 
+        !edgesToDelete.find(deletedEdge => deletedEdge.id === edge.id)
+      ));
+    },
     [setEdges]
   );
 
@@ -79,11 +105,12 @@ export default function WorkflowsPage() {
       data: {
         label: 'Prompt',
         text: '',
+        variables,
         onTextChange: () => {},
       },
     };
     setNodes((nds) => [...nds, newNode]);
-  }, [setNodes]);
+  }, [setNodes, variables]);
 
   const addGenerateNode = useCallback(() => {
     const newNode = {
@@ -118,6 +145,13 @@ export default function WorkflowsPage() {
             // Clear previous result
             updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true });
             
+            // Replace variables in prompt text
+            let processedPrompt = promptNode.data.text;
+            variables.forEach(variable => {
+              const placeholder = `{${variable.name}}`;
+              processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), variable.value);
+            });
+            
             // Call the AI API
             const response = await fetch('/api/workflow/generate', {
               method: 'POST',
@@ -125,7 +159,7 @@ export default function WorkflowsPage() {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                prompt: promptNode.data.text,
+                prompt: processedPrompt,
                 model: generateNode.data.selectedModel,
               }),
             });
@@ -149,11 +183,12 @@ export default function WorkflowsPage() {
     }
   }, [nodes, edges, updateNodeData]);
 
-  // Update nodes with callback functions
+  // Update nodes with callback functions and variables
   const nodesWithCallbacks = nodes.map(node => ({
     ...node,
     data: {
       ...node.data,
+      variables: node.type === 'prompt' ? variables : undefined,
       onTextChange: node.type === 'prompt' 
         ? (text: string) => updateNodeData(node.id, { text })
         : undefined,
@@ -185,6 +220,11 @@ export default function WorkflowsPage() {
           <PlusIcon size={14} />
           🤖 Generate
         </Button>
+        <div className="border-l h-6 mx-2" />
+        <VariablesPanel 
+          variables={variables} 
+          onVariablesChange={setVariables} 
+        />
         <div className="flex-1" />
         <Button 
           onClick={handleRun} 
@@ -203,22 +243,14 @@ export default function WorkflowsPage() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onEdgesDelete={onEdgesDelete}
           nodeTypes={nodeTypes}
           fitView
           className="bg-background"
+          deleteKeyCode={['Delete', 'Backspace']}
         >
           <Controls />
           <Background />
-          <Panel position="top-right">
-            <Button 
-              onClick={handleRun} 
-              disabled={isRunning}
-              className="flex items-center gap-2"
-            >
-              <PlayIcon size={16} />
-              {isRunning ? 'Running...' : 'Run'}
-            </Button>
-          </Panel>
         </ReactFlow>
       </div>
     </div>

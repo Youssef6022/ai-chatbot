@@ -4,10 +4,14 @@ import { useState, useCallback } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import type { Variable } from './variables-panel';
 
 interface PromptNodeData {
   label: string;
   text: string;
+  variables?: Variable[];
   onTextChange: (text: string) => void;
 }
 
@@ -19,20 +23,47 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
     data.onTextChange?.(value);
   }, [data]);
 
+  const insertVariable = useCallback((varName: string) => {
+    const cursorPosition = (document.activeElement as HTMLTextAreaElement)?.selectionStart || localText.length;
+    const newText = localText.slice(0, cursorPosition) + `{${varName}}` + localText.slice(cursorPosition);
+    handleTextChange(newText);
+  }, [localText, handleTextChange]);
+
   return (
-    <Card className={`min-w-[300px] ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+    <Card className={`min-w-[350px] ${selected ? 'ring-2 ring-blue-500' : ''}`}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
           📝 {data.label}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 space-y-3">
         <Textarea
           value={localText}
           onChange={(e) => handleTextChange(e.target.value)}
-          placeholder="Enter your prompt here..."
+          placeholder="Enter your prompt here... Use {variable_name} to insert variables."
           className="min-h-[100px] resize-none"
         />
+        
+        {/* Variables section */}
+        {data.variables && data.variables.length > 0 && (
+          <div>
+            <div className="text-xs font-medium text-muted-foreground mb-2">Available Variables:</div>
+            <div className="flex flex-wrap gap-1">
+              {data.variables.map((variable) => (
+                <Button
+                  key={variable.id}
+                  variant="outline"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => insertVariable(variable.name)}
+                >
+                  {variable.name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+        
         <Handle
           type="source"
           position={Position.Right}
