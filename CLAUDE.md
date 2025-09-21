@@ -31,18 +31,21 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ### Testing
 - **Run tests**: `pnpm test` (Playwright end-to-end tests)
+- **Test Environment Variable**: Set `PLAYWRIGHT=True` to enable test mode with mock AI models
 
 ## Architecture Overview
 
 ### AI Integration
 - **Primary Framework**: Vercel AI SDK with multiple provider support
-- **Default Provider**: xAI (Grok models) via Vercel AI Gateway
+- **Default Provider**: Google (Gemini models) via Vercel AI Gateway
 - **Models Configuration**: `lib/ai/providers.ts` defines model mappings
 - **Available Models**: 
-  - `chat-model`: `grok-2-vision-1212` (main chat)
-  - `chat-model-reasoning`: `grok-3-mini` with reasoning middleware
-  - `title-model`: `grok-2-1212` (chat titles)
-  - `artifact-model`: `grok-2-1212` (document generation)
+  - `chat-model-small`: `google/gemini-2.5-flash-lite`
+  - `chat-model-medium`: `google/gemini-2.5-flash`
+  - `chat-model-large`: `google/gemini-2.5-pro`
+  - `title-model`: `google/gemini-2.0-flash`
+  - `artifact-model`: `google/gemini-2.5-flash`
+- **Test Environment**: Uses mock models from `lib/ai/models.mock.ts`
 
 ### Database Architecture (PostgreSQL + Drizzle ORM)
 - **Schema Location**: `lib/db/schema.ts`
