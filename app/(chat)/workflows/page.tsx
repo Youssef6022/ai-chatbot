@@ -8,6 +8,7 @@ import {
   addEdge,
   Controls,
   Background,
+  BackgroundVariant,
   type Connection,
   type Edge,
 } from '@xyflow/react';
@@ -95,6 +96,9 @@ export default function WorkflowsPage() {
   const addMenuRef = useRef<HTMLDivElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
 
+  // Track theme for dots color
+  const [dotsColor, setDotsColor] = useState('#e2e8f0');
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -114,6 +118,26 @@ export default function WorkflowsPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showAddMenu, showSettingsMenu]);
+
+  // Update dots color based on theme
+  useEffect(() => {
+    const updateDotsColor = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setDotsColor(isDark ? '#374151' : '#e2e8f0');
+    };
+
+    // Initial color
+    updateDotsColor();
+
+    // Watch for theme changes
+    const observer = new MutationObserver(updateDotsColor);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Export workflow to JSON
   const exportWorkflow = useCallback(() => {
@@ -440,7 +464,7 @@ export default function WorkflowsPage() {
     <div className='h-screen flex flex-col relative'>
       {/* Floating Minimal Toolbar */}
       <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="flex items-center gap-1 p-1.5 bg-background/60 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl hover:shadow-3xl transition-shadow duration-300">
+        <div className="flex items-center gap-1 p-1.5 bg-background/90 backdrop-blur-xl border border-white/20 rounded-full shadow-2xl hover:shadow-3xl transition-shadow duration-300">
           {/* Library Button */}
           <Button
             variant="ghost"
@@ -615,11 +639,23 @@ export default function WorkflowsPage() {
           onEdgesDelete={onEdgesDelete}
           nodeTypes={nodeTypes}
           fitView
-          className="bg-background"
+          className="react-flow-custom"
+          style={{
+            backgroundColor: '#fafbfd'
+          }}
           deleteKeyCode={['Delete', 'Backspace']}
         >
           <Controls />
-          <Background />
+          <Background 
+            variant={BackgroundVariant.Dots} 
+            gap={20} 
+            size={1.5}
+            color="#e2e8f0"
+            style={{
+              zIndex: 0,
+              opacity: 0.8
+            }}
+          />
         </ReactFlow>
       </div>
     </div>

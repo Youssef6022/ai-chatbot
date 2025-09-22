@@ -65,3 +65,37 @@
   width: 16px !important;
   height: 16px !important;
 }
+
+/* Custom ReactFlow with moving background */
+.react-flow-custom {
+  background-color: #fafbfd !important;
+}
+
+.dark .react-flow-custom {
+  background-color: #1b1b1b !important;
+}
+
+/* Force ReactFlow background to be visible and on top */
+.react-flow-custom .react-flow__background {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 0 !important;
+}
+
+.react-flow-custom .react-flow__background svg {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.react-flow-custom .react-flow__background circle {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  fill: #cbd5e1 !important; /* Plus contrasté */
+}
+
+.dark .react-flow-custom .react-flow__background circle {
+  fill: #4b5563 !important; /* Plus contrasté */
+}
