@@ -20,6 +20,36 @@ import { GenerateNode } from '@/components/workflow/generate-node';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
 import { PlayIcon, PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
 
+// Settings Icon
+const SettingsIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    height={size}
+    strokeLinejoin="round"
+    viewBox="0 0 16 16"
+    width={size}
+    style={{ color: 'currentcolor' }}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M8 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm0-1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"
+      fill="currentColor"
+    />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M6.42 2h3.16c.2 0 .39.11.49.28l1.92 3.32c.1.17.1.39 0 .56L10.07 9.5c-.1.17-.29.28-.49.28H6.42c-.2 0-.39-.11-.49-.28L4.01 6.16c-.1-.17-.1-.39 0-.56L5.93 2.28c.1-.17.29-.28.49-.28zM5.5 8.5h5l1.5-2.5L10.5 3.5h-5L4 6l1.5 2.5z"
+      fill="currentColor"
+    />
+    <path
+      d="M8 0v2M8 14v2M2.1 2.1l1.4 1.4M12.5 12.5l1.4 1.4M0 8h2M14 8h2M2.1 13.9l1.4-1.4M12.5 3.5l1.4-1.4"
+      stroke="currentColor"
+      strokeWidth="1"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
 const nodeTypes = {
   prompt: PromptNode,
   generate: GenerateNode,
@@ -61,7 +91,9 @@ export default function WorkflowsPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [variables, setVariables] = useState<Variable[]>([]);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const addMenuRef = useRef<HTMLDivElement>(null);
+  const settingsMenuRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -69,16 +101,19 @@ export default function WorkflowsPage() {
       if (addMenuRef.current && !addMenuRef.current.contains(event.target as Node)) {
         setShowAddMenu(false);
       }
+      if (settingsMenuRef.current && !settingsMenuRef.current.contains(event.target as Node)) {
+        setShowSettingsMenu(false);
+      }
     };
 
-    if (showAddMenu) {
+    if (showAddMenu || showSettingsMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showAddMenu]);
+  }, [showAddMenu, showSettingsMenu]);
 
   // Export workflow to JSON
   const exportWorkflow = useCallback(() => {
@@ -482,39 +517,60 @@ export default function WorkflowsPage() {
           {/* Separator */}
           <div className="w-px h-4 bg-border/30 mx-1" />
 
-          {/* Export Button */}
-          <Button
-            onClick={exportWorkflow}
-            variant="ghost"
-            size="sm"
-            className="rounded-full h-8 px-3 hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 group"
-            title="Export workflow"
-          >
-            <DownloadIcon size={12} className="group-hover:scale-110 group-hover:-translate-y-0.5 transition-all duration-300" />
-            <span className="text-sm font-medium">Export</span>
-          </Button>
-
-          {/* Import Button */}
-          <div className="relative">
-            <input
-              type="file"
-              accept=".json"
-              onChange={importWorkflow}
-              className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
-              id="import-workflow"
-            />
+          {/* Settings Menu Button */}
+          <div className="relative" ref={settingsMenuRef}>
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-full h-8 px-3 hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 group"
-              title="Import workflow"
-              asChild
+              className="rounded-full h-8 w-8 p-0 hover:bg-white/10 hover:scale-110 transition-all duration-300 group"
+              onClick={() => setShowSettingsMenu(!showSettingsMenu)}
+              title="Settings"
             >
-              <label htmlFor="import-workflow" className="cursor-pointer">
-                <UploadIcon size={12} className="group-hover:scale-110 group-hover:translate-y-0.5 transition-all duration-300" />
-                <span className="text-sm font-medium">Import</span>
-              </label>
+              <SettingsIcon size={14} className="group-hover:rotate-90 transition-transform duration-300" />
             </Button>
+            
+            {/* Settings Dropdown Menu */}
+            {showSettingsMenu && (
+              <div className="absolute top-full mt-3 right-0 bg-background/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl min-w-[180px] overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start gap-3 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 group"
+                    onClick={() => {
+                      exportWorkflow();
+                      setShowSettingsMenu(false);
+                    }}
+                  >
+                    <DownloadIcon size={12} className="group-hover:scale-110 group-hover:-translate-y-0.5 transition-all duration-300" />
+                    <span className="font-medium">Export JSON</span>
+                  </Button>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={(e) => {
+                        importWorkflow(e);
+                        setShowSettingsMenu(false);
+                      }}
+                      className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
+                      id="import-workflow-settings"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start gap-3 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 group"
+                      asChild
+                    >
+                      <label htmlFor="import-workflow-settings" className="cursor-pointer">
+                        <UploadIcon size={12} className="group-hover:scale-110 group-hover:translate-y-0.5 transition-all duration-300" />
+                        <span className="font-medium">Import JSON</span>
+                      </label>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Separator */}
@@ -524,10 +580,25 @@ export default function WorkflowsPage() {
           <Button 
             onClick={handleRun} 
             disabled={isRunning}
-            className="rounded-full h-8 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 hover:scale-105 transition-all duration-300 flex items-center gap-2 group disabled:opacity-50"
+            className="rounded-full h-8 px-4 bg-blue-primary hover:bg-blue-primary/90 hover:scale-105 transition-all duration-300 flex items-center gap-2 group disabled:opacity-50"
+            style={{ backgroundColor: isRunning ? 'var(--blue-primary)' : 'var(--blue-primary)' }}
           >
-            <PlayIcon size={12} className={`transition-all duration-300 ${isRunning ? 'animate-spin' : 'group-hover:scale-110'}`} />
-            <span className="text-sm font-bold text-white">
+            <div className={`transition-all duration-300 ${isRunning ? 'animate-spin' : 'group-hover:scale-110'}`} style={{ color: 'white' }}>
+              <svg
+                height={12}
+                strokeLinejoin="round"
+                viewBox="0 0 16 16"
+                width={12}
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M13.4549 7.22745L13.3229 7.16146L2.5 1.74999L2.4583 1.72914L1.80902 1.4045L1.3618 1.18089C1.19558 1.09778 1 1.21865 1 1.4045L1 1.9045L1 2.63041L1 2.67704L1 13.3229L1 13.3696L1 14.0955L1 14.5955C1 14.7813 1.19558 14.9022 1.3618 14.8191L1.80902 14.5955L2.4583 14.2708L2.5 14.25L13.3229 8.83852L13.4549 8.77253L14.2546 8.37267L14.5528 8.2236C14.737 8.13147 14.737 7.86851 14.5528 7.77638L14.2546 7.62731L13.4549 7.22745ZM11.6459 7.99999L2.5 3.42704L2.5 12.5729L11.6459 7.99999Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
+            <span className="text-sm font-medium text-white">
               {isRunning ? 'Running...' : 'Run'}
             </span>
           </Button>
