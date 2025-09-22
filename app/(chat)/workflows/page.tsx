@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { PromptNode } from '@/components/workflow/prompt-node';
 import { GenerateNode } from '@/components/workflow/generate-node';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
-import { PlayIcon, PlusIcon, DownloadIcon, UploadIcon } from '@/components/icons';
+import { PlayIcon, PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
 
 const nodeTypes = {
   prompt: PromptNode,
@@ -60,6 +60,25 @@ export default function WorkflowsPage() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isRunning, setIsRunning] = useState(false);
   const [variables, setVariables] = useState<Variable[]>([]);
+  const [showAddMenu, setShowAddMenu] = useState(false);
+  const addMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (addMenuRef.current && !addMenuRef.current.contains(event.target as Node)) {
+        setShowAddMenu(false);
+      }
+    };
+
+    if (showAddMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAddMenu]);
 
   // Export workflow to JSON
   const exportWorkflow = useCallback(() => {
@@ -383,73 +402,136 @@ export default function WorkflowsPage() {
   });
 
   return (
-    <div className='flex h-screen flex-col'>
-      {/* Toolbar */}
-      <div className='flex items-center gap-2 border-b bg-background p-4'>
-        <Button
-          onClick={addPromptNode}
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2"
-        >
-          <PlusIcon size={14} />
-          📝 Text Input
-        </Button>
-        <Button
-          onClick={addGenerateNode}
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2"
-        >
-          <PlusIcon size={14} />
-          🤖 Generate Text
-        </Button>
-        <div className='mx-2 h-6 border-l' />
-        <VariablesPanel 
-          variables={variables} 
-          onVariablesChange={setVariables} 
-        />
-        <div className='mx-2 h-6 border-l' />
-        <Button
-          onClick={exportWorkflow}
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2"
-          title="Exporter le workflow en JSON"
-        >
-          <DownloadIcon size={14} />
-          Export JSON
-        </Button>
-        <div className="relative">
-          <input
-            type="file"
-            accept=".json"
-            onChange={importWorkflow}
-            className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
-            id="import-workflow"
-          />
+    <div className='h-screen flex flex-col relative'>
+      {/* Floating Minimal Toolbar */}
+      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="flex items-center gap-1 p-1.5 bg-background/60 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl hover:shadow-3xl transition-shadow duration-300">
+          {/* Library Button */}
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="flex items-center gap-2"
-            title="Importer un workflow depuis un fichier JSON"
-            asChild
+            className="rounded-full h-8 w-8 p-0 hover:bg-white/10 hover:scale-110 transition-all duration-300 group"
+            title="Workflow Library"
+            onClick={() => {
+              alert('Workflow Library - Coming Soon!');
+            }}
           >
-            <label htmlFor="import-workflow" className="cursor-pointer">
-              <UploadIcon size={14} />
-              Import JSON
-            </label>
+            <LibraryIcon size={14} className="group-hover:scale-110 transition-transform duration-300" />
+          </Button>
+
+          {/* Separator */}
+          <div className="w-px h-5 bg-foreground/40 mx-2" />
+
+          {/* Add Menu Button */}
+          <div className="relative" ref={addMenuRef}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-full h-8 px-3 hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 group"
+              onClick={() => setShowAddMenu(!showAddMenu)}
+            >
+              <PlusIcon size={14} className="group-hover:rotate-90 transition-transform duration-300" />
+              <span className="text-sm font-medium">Add</span>
+              <ChevronDownIcon size={10} className={`transition-all duration-300 ${showAddMenu ? 'rotate-180 scale-110' : 'group-hover:scale-110'}`} />
+            </Button>
+            
+            {/* Dropdown Menu */}
+            {showAddMenu && (
+              <div className="absolute top-full mt-3 left-0 bg-background/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl min-w-[180px] overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start gap-3 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 group"
+                    onClick={() => {
+                      addPromptNode();
+                      setShowAddMenu(false);
+                    }}
+                  >
+                    <span className="text-lg group-hover:scale-110 transition-transform duration-200">📝</span>
+                    <span className="font-medium">Prompt</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start gap-3 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 group"
+                    onClick={() => {
+                      addGenerateNode();
+                      setShowAddMenu(false);
+                    }}
+                  >
+                    <span className="text-lg group-hover:scale-110 transition-transform duration-200">🤖</span>
+                    <span className="font-medium">AI Generator</span>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Separator */}
+          <div className="w-px h-4 bg-border/30 mx-1" />
+
+          {/* Variables Panel */}
+          <div className="flex items-center">
+            <VariablesPanel 
+              variables={variables} 
+              onVariablesChange={setVariables} 
+            />
+          </div>
+
+          {/* Separator */}
+          <div className="w-px h-4 bg-border/30 mx-1" />
+
+          {/* Export Button */}
+          <Button
+            onClick={exportWorkflow}
+            variant="ghost"
+            size="sm"
+            className="rounded-full h-8 px-3 hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 group"
+            title="Export workflow"
+          >
+            <DownloadIcon size={12} className="group-hover:scale-110 group-hover:-translate-y-0.5 transition-all duration-300" />
+            <span className="text-sm font-medium">Export</span>
+          </Button>
+
+          {/* Import Button */}
+          <div className="relative">
+            <input
+              type="file"
+              accept=".json"
+              onChange={importWorkflow}
+              className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
+              id="import-workflow"
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-full h-8 px-3 hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 group"
+              title="Import workflow"
+              asChild
+            >
+              <label htmlFor="import-workflow" className="cursor-pointer">
+                <UploadIcon size={12} className="group-hover:scale-110 group-hover:translate-y-0.5 transition-all duration-300" />
+                <span className="text-sm font-medium">Import</span>
+              </label>
+            </Button>
+          </div>
+
+          {/* Separator */}
+          <div className="w-px h-5 bg-foreground/40 mx-2" />
+
+          {/* Run Button */}
+          <Button 
+            onClick={handleRun} 
+            disabled={isRunning}
+            className="rounded-full h-8 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 border-0 hover:scale-105 transition-all duration-300 flex items-center gap-2 group disabled:opacity-50"
+          >
+            <PlayIcon size={12} className={`transition-all duration-300 ${isRunning ? 'animate-spin' : 'group-hover:scale-110'}`} />
+            <span className="text-sm font-bold text-white">
+              {isRunning ? 'Running...' : 'Run'}
+            </span>
           </Button>
         </div>
-        <div className="flex-1" />
-        <Button 
-          onClick={handleRun} 
-          disabled={isRunning}
-          className="flex items-center gap-2"
-        >
-          <PlayIcon size={16} />
-          {isRunning ? 'Running...' : 'Run'}
-        </Button>
       </div>
       
       <div className="flex-1">
