@@ -2,10 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 
-import { PlusIcon, LibraryIcon, WorkflowIcon } from '@/components/icons';
+import { PlusIcon, WorkflowIcon } from '@/components/icons';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
-import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -52,13 +51,13 @@ export function AppSidebar() {
                     setOpenMobile(false);
                     router.refresh();
                   }}
-                  className="flex items-center gap-3 px-3 py-2 text-blue-primary rounded-md hover:bg-blue-primary/10"
+                  className='flex items-center gap-3 rounded-md px-3 py-2 text-blue-primary hover:bg-blue-primary/10'
                   style={{ 
                     color: 'var(--blue-primary)'
                   }}
                 >
                   <div 
-                    className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-primary text-white"
+                    className='flex h-6 w-6 items-center justify-center rounded-full bg-blue-primary text-white'
                     style={{ backgroundColor: 'var(--blue-primary)', color: 'white' }}
                   >
                     <PlusIcon size={12} />
@@ -84,7 +83,7 @@ export function AppSidebar() {
           </SidebarMenu>
         </div>
         
-        <div className="border-t border-sidebar-border mx-2" />
+        <div className='mx-2 border-sidebar-border border-t' />
         
         <SidebarHistory user={user} />
       </SidebarContent>

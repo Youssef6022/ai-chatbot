@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { PlusIcon, TrashIcon } from '@/components/icons';
 
 export interface Variable {
@@ -63,7 +62,7 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
       </Button>
       
       {isOpen && (
-        <Card className="absolute top-full left-0 mt-2 w-[500px] max-h-[70vh] overflow-y-auto z-50 shadow-lg">
+        <Card className='absolute top-full left-0 z-50 mt-2 max-h-[70vh] w-[500px] overflow-y-auto shadow-lg'>
           <CardHeader>
             <CardTitle className="text-sm">Workflow Variables</CardTitle>
           </CardHeader>
@@ -112,7 +111,7 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
 
           {/* Variables list */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Current Variables</Label>
+            <Label className='font-medium text-sm'>Current Variables</Label>
             {variables.length === 0 ? (
               <Card>
                 <CardContent className="p-4 text-center text-muted-foreground text-sm">
@@ -124,7 +123,7 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
                 <Card key={variable.id}>
                   <CardContent className="p-3">
                     <div className="flex items-center gap-3">
-                      <div className="grid grid-cols-2 gap-3 flex-1">
+                      <div className='grid flex-1 grid-cols-2 gap-3'>
                         <div>
                           <Label className="text-xs">Name</Label>
                           <Input
@@ -132,8 +131,8 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
                             onChange={(e) => updateVariable(variable.id, 'name', e.target.value)}
                             className="h-8"
                           />
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Use: {'{' + variable.name + '}'}
+                          <div className='mt-1 text-muted-foreground text-xs'>
+                            Use: {`{${variable.name}}`}
                           </div>
                         </div>
                         <div>

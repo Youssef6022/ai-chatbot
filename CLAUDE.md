@@ -37,14 +37,14 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ### AI Integration
 - **Primary Framework**: Vercel AI SDK with multiple provider support
-- **Default Provider**: Google (Gemini models) via Vercel AI Gateway
+- **Default Provider**: Google (Gemini models) direct integration
 - **Models Configuration**: `lib/ai/providers.ts` defines model mappings
 - **Available Models**: 
-  - `chat-model-small`: `google/gemini-2.5-flash-lite`
-  - `chat-model-medium`: `google/gemini-2.5-flash`
-  - `chat-model-large`: `google/gemini-2.5-pro`
-  - `title-model`: `google/gemini-2.0-flash`
-  - `artifact-model`: `google/gemini-2.5-flash`
+  - `chat-model-small`: `gemini-1.5-flash`
+  - `chat-model-medium`: `gemini-1.5-flash`
+  - `chat-model-large`: `gemini-1.5-pro`
+  - `title-model`: `gemini-1.5-flash`
+  - `artifact-model`: `gemini-1.5-flash`
 - **Test Environment**: Uses mock models from `lib/ai/models.mock.ts`
 
 ### Database Architecture (PostgreSQL + Drizzle ORM)
@@ -64,7 +64,7 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ### Authentication (Supabase Auth)
 - **Middleware**: `middleware.ts` handles session management with Supabase
-- **Auth Routes**: Login (`/login`), Register (`/register`), Auth callback (`/auth/callback`)
+- **Auth Routes**: Login (`/login`), Register (`/register`), Auth callback (`/auth/callback`), Signout (`/api/auth/signout`)
 - **Session Updates**: Automatic session refresh via Supabase middleware
 - **Guest Support**: Allows unauthenticated access with appropriate route protection
 
@@ -93,6 +93,7 @@ AI_GATEWAY_API_KEY=**** # Required for non-Vercel deployments
 BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token
 POSTGRES_URL=**** # PostgreSQL database connection string
 REDIS_URL=**** # Optional Redis for caching/performance
+GOOGLE_GENERATIVE_AI_API_KEY=**** # Google AI API key for Gemini models
 ```
 
 ## Key Features
@@ -109,6 +110,13 @@ REDIS_URL=**** # Optional Redis for caching/performance
 - ProseMirror-based rich text editor
 - Document creation and editing tools
 - Integration with AI for document generation
+
+### Workflow Builder
+- Visual workflow designer using ReactFlow
+- Two node types: Text Input (prompt) and Generate Text (AI generation)
+- Variable replacement system with global variables and connected node results
+- JSON export/import functionality for workflow persistence
+- Real-time execution with API integration at `/api/workflow/generate`
 
 ### Advanced AI Features
 - Multi-turn conversations with context preservation
@@ -146,6 +154,9 @@ REDIS_URL=**** # Optional Redis for caching/performance
 - **File Upload**: `/api/files/upload/` for Vercel Blob storage integration
 - **Documents**: `/api/document/` for document CRUD operations
 - **History**: `/api/history/` for chat history management
+- **Workflow**: `/api/workflow/generate` for workflow execution
+- **Voting**: `/api/vote/` for message voting functionality
+- **Suggestions**: `/api/suggestions/` for document editing suggestions
 
 ### State Management
 - **Server Actions**: Used in `app/(chat)/actions.ts` for server-side operations

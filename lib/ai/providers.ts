@@ -1,9 +1,6 @@
 import {
   customProvider,
-  extractReasoningMiddleware,
-  wrapLanguageModel,
 } from 'ai';
-import { gateway } from '@ai-sdk/gateway';
 import { google } from '@ai-sdk/google';
 import { isTestEnvironment } from '../constants';
 
