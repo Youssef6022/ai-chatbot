@@ -55,15 +55,15 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
       <Button
         variant="ghost"
         size="sm"
-        className="rounded-full h-8 px-3 hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 group"
+        className='group flex h-8 items-center gap-1.5 rounded-full px-3 transition-all duration-300 hover:scale-105 hover:bg-white/10'
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="text-sm group-hover:scale-110 transition-transform duration-300">🔧</span>
-        <span className="text-sm font-medium">Variables ({variables.length})</span>
+        <span className='text-sm transition-transform duration-300 group-hover:scale-110'>🔧</span>
+        <span className='font-medium text-sm'>Variables ({variables.length})</span>
       </Button>
       
       {isOpen && (
-        <Card className='absolute top-full left-0 z-50 mt-3 max-h-[70vh] w-[500px] overflow-y-auto bg-background/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300'>
+        <Card className='fade-in slide-in-from-top-2 absolute top-full left-0 z-50 mt-3 max-h-[70vh] w-[500px] animate-in overflow-y-auto rounded-xl border border-white/10 bg-background/80 shadow-2xl backdrop-blur-xl duration-300'>
           <CardHeader>
             <CardTitle className="text-sm">Workflow Variables</CardTitle>
           </CardHeader>

@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { PromptNode } from '@/components/workflow/prompt-node';
 import { GenerateNode } from '@/components/workflow/generate-node';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
-import { PlayIcon, PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
+import { PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
 
 // Settings Icon
 const SettingsIcon = ({ size = 16 }: { size?: number }) => (
@@ -359,70 +359,167 @@ export default function WorkflowsPage() {
     setIsRunning(true);
     
     try {
-      // Find prompt nodes and their connected generate nodes
-      const promptNodes = nodes.filter(node => node.type === 'prompt');
+      // First, clear all previous results from Generate nodes before starting
+      const generateNodes = nodes.filter(node => node.type === 'generate');
+      generateNodes.forEach(node => {
+        updateNodeData(node.id, { result: '', isLoading: false });
+      });
+
+      // Wait for state to update
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Create execution order based on dependencies
+      const executionOrder = getExecutionOrder();
       
-      for (const promptNode of promptNodes) {
-        // Find connected generate nodes
-        const connectedEdges = edges.filter(edge => edge.source === promptNode.id);
+      // Execute nodes in proper order
+      for (const nodeId of executionOrder) {
+        const currentNodeState = await new Promise<any>(resolve => {
+          setNodes(currentNodes => {
+            const node = currentNodes.find(n => n.id === nodeId);
+            resolve(node);
+            return currentNodes;
+          });
+        });
         
-        for (const edge of connectedEdges) {
-          const generateNode = nodes.find(node => node.id === edge.target && node.type === 'generate');
-          
-          if (generateNode && promptNode.data.text) {
-            // Clear previous result
-            updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true });
-            
-            // Replace variables in prompt text (global variables + connected results)
-            let processedPrompt = promptNode.data.text;
-            
-            // Replace global variables
-            variables.forEach(variable => {
-              const placeholder = `{${variable.name}}`;
-              processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), variable.value);
-            });
-            
-            // Replace connected Generate results
-            const connectedGenerateEdges = edges.filter(edge => edge.target === promptNode.id && edge.targetHandle === 'input');
-            connectedGenerateEdges.forEach(edge => {
-              const connectedGenerateNode = nodes.find(node => node.id === edge.source && node.type === 'generate');
-              if (connectedGenerateNode?.data.result) {
-                const variableName = connectedGenerateNode.data.variableName || 'result_1';
-                const placeholder = `{${variableName}}`;
-                processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), connectedGenerateNode.data.result);
-              }
-            });
-            
-            // Call the AI API
-            const response = await fetch('/api/workflow/generate', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                prompt: processedPrompt,
-                model: generateNode.data.selectedModel,
-              }),
-            });
-            
-            if (response.ok) {
-              const result = await response.text();
-              updateNodeData(generateNode.id, { result, isLoading: false });
-            } else {
-              updateNodeData(generateNode.id, { 
-                result: 'Error: Failed to generate content', 
-                isLoading: false 
-              });
-            }
-          }
+        if (currentNodeState?.type === 'generate') {
+          await processGenerateNodeInOrder(nodeId);
         }
       }
+      
     } catch (error) {
       console.error('Error running workflow:', error);
     } finally {
       setIsRunning(false);
     }
-  }, [nodes, edges, updateNodeData, variables]);
+  }, [nodes, updateNodeData, setNodes]);
+  
+  const getExecutionOrder = () => {
+    const visited = new Set<string>();
+    const order: string[] = [];
+    
+    const visit = (nodeId: string) => {
+      if (visited.has(nodeId)) return;
+      visited.add(nodeId);
+      
+      // First visit all dependencies (nodes that this node depends on)
+      const incomingEdges = edges.filter(edge => edge.target === nodeId);
+      incomingEdges.forEach(edge => {
+        visit(edge.source);
+      });
+      
+      // Then add this node to execution order
+      order.push(nodeId);
+    };
+    
+    // Start with generate nodes
+    nodes.filter(node => node.type === 'generate').forEach(node => {
+      visit(node.id);
+    });
+    
+    return order.filter(nodeId => {
+      const node = nodes.find(n => n.id === nodeId);
+      return node?.type === 'generate';
+    });
+  };
+  
+  const processGenerateNodeInOrder = async (generateNodeId: string) => {
+    return new Promise<void>((resolve, reject) => {
+      setNodes(currentNodes => {
+        const generateNode = currentNodes.find(n => n.id === generateNodeId);
+        if (!generateNode) {
+          resolve();
+          return currentNodes;
+        }
+        
+        // Find the connected prompt node
+        const connectedEdge = edges.find(edge => edge.target === generateNodeId);
+        const promptNode = connectedEdge ? currentNodes.find(n => n.id === connectedEdge.source) : null;
+        
+        if (!promptNode || !promptNode.data.text) {
+          resolve();
+          return currentNodes;
+        }
+        
+        // Process in background
+        (async () => {
+          try {
+            await processGenerateNode(promptNode, generateNode, currentNodes);
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        })();
+        
+        return currentNodes;
+      });
+    });
+  };
+  
+  const processGenerateNode = async (promptNode: any, generateNode: any, currentNodes: any[]) => {
+    try {
+      // Set loading state
+      updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true });
+      
+      // Get the latest node state to ensure fresh data
+      const latestNodes = await new Promise<any[]>(resolve => {
+        setNodes(current => {
+          resolve(current);
+          return current;
+        });
+      });
+      
+      // Replace variables in prompt text (global variables + connected results)
+      let processedPrompt = promptNode.data.text;
+      
+      // Replace global variables
+      variables.forEach(variable => {
+        const placeholder = `{${variable.name}}`;
+        processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), variable.value);
+      });
+      
+      // Replace connected Generate results (using latest node state)
+      const connectedGenerateEdges = edges.filter(edge => edge.target === promptNode.id && edge.targetHandle === 'input');
+      connectedGenerateEdges.forEach(edge => {
+        const connectedGenerateNode = latestNodes.find(node => node.id === edge.source && node.type === 'generate');
+        if (connectedGenerateNode?.data.result && 
+            connectedGenerateNode.data.result.trim() !== '' && 
+            connectedGenerateNode.data.result !== 'Generating...' &&
+            !(connectedGenerateNode.data as any).isLoading) {
+          const variableName = connectedGenerateNode.data.variableName || 'result_1';
+          const placeholder = `{${variableName}}`;
+          processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), connectedGenerateNode.data.result);
+        }
+      });
+      
+      // Call the AI API
+      const response = await fetch('/api/workflow/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: processedPrompt,
+          model: generateNode.data.selectedModel,
+        }),
+      });
+      
+      if (response.ok) {
+        const result = await response.text();
+        updateNodeData(generateNode.id, { result, isLoading: false });
+      } else {
+        updateNodeData(generateNode.id, { 
+          result: 'Error: Failed to generate content', 
+          isLoading: false 
+        });
+      }
+    } catch (error) {
+      console.error('Error processing generate node:', error);
+      updateNodeData(generateNode.id, { 
+        result: 'Error: Failed to generate content', 
+        isLoading: false 
+      });
+    }
+  };
 
   // Update nodes with callback functions and variables
   const nodesWithCallbacks = nodes.map(node => {
@@ -435,7 +532,7 @@ export default function WorkflowsPage() {
         const connectedGenerateNode = nodes.find(n => n.id === edge.source && n.type === 'generate');
         if (connectedGenerateNode?.data.result) {
           const variableName = connectedGenerateNode.data.variableName || 'result_1';
-          connectedResults[variableName] = connectedGenerateNode.data.result;
+          (connectedResults as any)[variableName] = connectedGenerateNode.data.result;
         }
       });
     }
@@ -461,65 +558,65 @@ export default function WorkflowsPage() {
   });
 
   return (
-    <div className='h-screen flex flex-col relative'>
+    <div className='relative flex h-screen flex-col'>
       {/* Floating Minimal Toolbar */}
-      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="flex items-center gap-1 p-1.5 bg-background/90 backdrop-blur-xl border border-white/20 rounded-full shadow-2xl hover:shadow-3xl transition-shadow duration-300">
+      <div className='-translate-x-1/2 absolute top-6 left-1/2 z-50 transform'>
+        <div className='flex items-center gap-1 rounded-full border border-white/20 bg-background/90 p-1.5 shadow-2xl backdrop-blur-xl transition-shadow duration-300 hover:shadow-3xl'>
           {/* Library Button */}
           <Button
             variant="ghost"
             size="sm"
-            className="rounded-full h-8 w-8 p-0 hover:bg-white/10 hover:scale-110 transition-all duration-300 group"
+            className='group h-8 w-8 rounded-full p-0 transition-all duration-300 hover:scale-110 hover:bg-white/10'
             title="Workflow Library"
             onClick={() => {
               alert('Workflow Library - Coming Soon!');
             }}
           >
-            <LibraryIcon size={14} className="group-hover:scale-110 transition-transform duration-300" />
+            <LibraryIcon size={14} />
           </Button>
 
           {/* Separator */}
-          <div className="w-px h-5 bg-foreground/40 mx-2" />
+          <div className='mx-2 h-5 w-px bg-foreground/40' />
 
           {/* Add Menu Button */}
           <div className="relative" ref={addMenuRef}>
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-full h-8 px-3 hover:bg-white/10 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 group"
+              className='group flex h-8 items-center gap-1.5 rounded-full px-3 transition-all duration-300 hover:scale-105 hover:bg-white/10'
               onClick={() => setShowAddMenu(!showAddMenu)}
             >
-              <PlusIcon size={14} className="group-hover:rotate-90 transition-transform duration-300" />
-              <span className="text-sm font-medium">Add</span>
-              <ChevronDownIcon size={10} className={`transition-all duration-300 ${showAddMenu ? 'rotate-180 scale-110' : 'group-hover:scale-110'}`} />
+              <PlusIcon size={14} />
+              <span className='font-medium text-sm'>Add</span>
+              <ChevronDownIcon size={10} />
             </Button>
             
             {/* Dropdown Menu */}
             {showAddMenu && (
-              <div className="absolute top-full mt-3 left-0 bg-background/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl min-w-[180px] overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className='fade-in slide-in-from-top-2 absolute top-full left-0 z-20 mt-3 min-w-[180px] animate-in overflow-hidden rounded-xl border border-white/10 bg-background/80 shadow-2xl backdrop-blur-xl duration-300'>
                 <div className="p-1">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start gap-3 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 group"
+                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
                     onClick={() => {
                       addPromptNode();
                       setShowAddMenu(false);
                     }}
                   >
-                    <span className="text-lg group-hover:scale-110 transition-transform duration-200">📝</span>
+                    <span className='text-lg transition-transform duration-200 group-hover:scale-110'>📝</span>
                     <span className="font-medium">Prompt</span>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start gap-3 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 group"
+                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
                     onClick={() => {
                       addGenerateNode();
                       setShowAddMenu(false);
                     }}
                   >
-                    <span className="text-lg group-hover:scale-110 transition-transform duration-200">🤖</span>
+                    <span className='text-lg transition-transform duration-200 group-hover:scale-110'>🤖</span>
                     <span className="font-medium">AI Generator</span>
                   </Button>
                 </div>
@@ -528,7 +625,7 @@ export default function WorkflowsPage() {
           </div>
 
           {/* Separator */}
-          <div className="w-px h-4 bg-border/30 mx-1" />
+          <div className='mx-1 h-4 w-px bg-border/30' />
 
           {/* Variables Panel */}
           <div className="flex items-center">
@@ -539,34 +636,34 @@ export default function WorkflowsPage() {
           </div>
 
           {/* Separator */}
-          <div className="w-px h-4 bg-border/30 mx-1" />
+          <div className='mx-1 h-4 w-px bg-border/30' />
 
           {/* Settings Menu Button */}
           <div className="relative" ref={settingsMenuRef}>
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-full h-8 w-8 p-0 hover:bg-white/10 hover:scale-110 transition-all duration-300 group"
+              className='group h-8 w-8 rounded-full p-0 transition-all duration-300 hover:scale-110 hover:bg-white/10'
               onClick={() => setShowSettingsMenu(!showSettingsMenu)}
               title="Settings"
             >
-              <SettingsIcon size={14} className="group-hover:rotate-90 transition-transform duration-300" />
+              <SettingsIcon size={14} />
             </Button>
             
             {/* Settings Dropdown Menu */}
             {showSettingsMenu && (
-              <div className="absolute top-full mt-3 right-0 bg-background/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl min-w-[180px] overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className='fade-in slide-in-from-top-2 absolute top-full right-0 z-20 mt-3 min-w-[180px] animate-in overflow-hidden rounded-xl border border-white/10 bg-background/80 shadow-2xl backdrop-blur-xl duration-300'>
                 <div className="p-1">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start gap-3 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 group"
+                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
                     onClick={() => {
                       exportWorkflow();
                       setShowSettingsMenu(false);
                     }}
                   >
-                    <DownloadIcon size={12} className="group-hover:scale-110 group-hover:-translate-y-0.5 transition-all duration-300" />
+                    <DownloadIcon size={12} />
                     <span className="font-medium">Export JSON</span>
                   </Button>
                   <div className="relative">
@@ -583,11 +680,11 @@ export default function WorkflowsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start gap-3 rounded-lg hover:bg-white/10 transition-all duration-200 hover:scale-105 group"
+                      className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
                       asChild
                     >
                       <label htmlFor="import-workflow-settings" className="cursor-pointer">
-                        <UploadIcon size={12} className="group-hover:scale-110 group-hover:translate-y-0.5 transition-all duration-300" />
+                        <UploadIcon size={12} />
                         <span className="font-medium">Import JSON</span>
                       </label>
                     </Button>
@@ -598,13 +695,13 @@ export default function WorkflowsPage() {
           </div>
 
           {/* Separator */}
-          <div className="w-px h-5 bg-foreground/40 mx-2" />
+          <div className='mx-2 h-5 w-px bg-foreground/40' />
 
           {/* Run Button */}
           <Button 
             onClick={handleRun} 
             disabled={isRunning}
-            className="rounded-full h-8 px-4 bg-blue-primary hover:bg-blue-primary/90 hover:scale-105 transition-all duration-300 flex items-center gap-2 group disabled:opacity-50"
+            className='group flex h-8 items-center gap-2 rounded-full bg-blue-primary px-4 transition-all duration-300 hover:scale-105 hover:bg-blue-primary/90 disabled:opacity-50'
             style={{ backgroundColor: isRunning ? 'var(--blue-primary)' : 'var(--blue-primary)' }}
           >
             <div className={`transition-all duration-300 ${isRunning ? 'animate-spin' : 'group-hover:scale-110'}`} style={{ color: 'white' }}>
@@ -622,7 +719,7 @@ export default function WorkflowsPage() {
                 />
               </svg>
             </div>
-            <span className="text-sm font-medium text-white">
+            <span className='font-medium text-sm text-white'>
               {isRunning ? 'Running...' : 'Run'}
             </span>
           </Button>
