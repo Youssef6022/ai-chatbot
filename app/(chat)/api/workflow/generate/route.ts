@@ -6,19 +6,36 @@ export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, model } = await request.json();
-
-    if (!prompt || typeof prompt !== 'string') {
-      return new Response('Invalid prompt', { status: 400 });
-    }
+    const { prompt, systemPrompt, userPrompt, model } = await request.json();
 
     if (!model || typeof model !== 'string') {
       return new Response('Invalid model', { status: 400 });
     }
 
+    // Support both old format (prompt) and new format (systemPrompt + userPrompt)
+    let messages = [];
+    
+    if (prompt && typeof prompt === 'string') {
+      // Old format - single prompt
+      messages = [{ role: 'user', content: prompt }];
+    } else {
+      // New format - system and user prompts
+      if (systemPrompt && typeof systemPrompt === 'string' && systemPrompt.trim()) {
+        messages.push({ role: 'system', content: systemPrompt });
+      }
+      if (userPrompt && typeof userPrompt === 'string' && userPrompt.trim()) {
+        messages.push({ role: 'user', content: userPrompt });
+      }
+      
+      // If no messages, return error
+      if (messages.length === 0) {
+        return new Response('At least one prompt (system or user) is required', { status: 400 });
+      }
+    }
+
     const result = await streamText({
       model: myProvider.languageModel(model),
-      prompt: prompt,
+      messages: messages,
       temperature: 0.7,
       maxTokens: 1000,
     });

@@ -267,22 +267,35 @@ export default function WorkflowsPage() {
         
         if (!sourceNode || !targetNode) return eds;
         
-        // Cas 1: Prompt → Generate (un prompt peut avoir plusieurs sorties vers différents Generate)
-        if (sourceNode.type === 'prompt' && targetNode.type === 'generate' && params.sourceHandle === 'output' && params.targetHandle === 'input') {
-          // Supprimer toute connexion existante vers la même cible Generate (un Generate ne peut avoir qu'une entrée)
+        // Cas 1: Prompt → Generate (via system ou user handles)
+        if (sourceNode.type === 'prompt' && targetNode.type === 'generate' && 
+            params.sourceHandle === 'output' && 
+            (params.targetHandle === 'system' || params.targetHandle === 'user')) {
+          // Supprimer toute connexion existante vers le même handle du même nœud Generate
           const edgesWithoutTargetConnection = eds.filter(edge => 
             !(edge.target === params.target && edge.targetHandle === params.targetHandle)
           );
           return addEdge(params, edgesWithoutTargetConnection);
         }
         
-        // Cas 2: Generate → Prompt (un Generate peut avoir qu'une sortie, un Prompt peut avoir plusieurs entrées)
-        if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && params.sourceHandle === 'output' && params.targetHandle === 'input') {
-          // Supprimer toute connexion existante depuis la même source Generate (un Generate ne peut avoir qu'une sortie)
-          const edgesWithoutSourceConnection = eds.filter(edge => 
-            !(edge.source === params.source && edge.sourceHandle === params.sourceHandle)
+        // Cas 2: Generate → Generate (sortie vers system ou user)
+        if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
+            params.sourceHandle === 'output' && 
+            (params.targetHandle === 'system' || params.targetHandle === 'user')) {
+          // Supprimer toute connexion existante vers le même handle du même nœud Generate
+          const edgesWithoutTargetConnection = eds.filter(edge => 
+            !(edge.target === params.target && edge.targetHandle === params.targetHandle)
           );
-          return addEdge(params, edgesWithoutSourceConnection);
+          return addEdge(params, edgesWithoutTargetConnection);
+        }
+        
+        // Cas 3: Generate → Prompt (rétrocompatibilité pour les anciens workflows)
+        if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && 
+            params.sourceHandle === 'output' && params.targetHandle === 'input') {
+          const edgesWithoutTargetConnection = eds.filter(edge => 
+            !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+          );
+          return addEdge(params, edgesWithoutTargetConnection);
         }
         
         // Rejeter les connexions non valides
@@ -291,6 +304,36 @@ export default function WorkflowsPage() {
     },
     [setEdges, nodes]
   );
+
+  // Fonction pour valider les connexions
+  const isValidConnection = useCallback((connection: Connection) => {
+    const sourceNode = nodes.find(n => n.id === connection.source);
+    const targetNode = nodes.find(n => n.id === connection.target);
+    
+    if (!sourceNode || !targetNode) return false;
+    
+    // Prompt → Generate (system ou user)
+    if (sourceNode.type === 'prompt' && targetNode.type === 'generate' && 
+        connection.sourceHandle === 'output' && 
+        (connection.targetHandle === 'system' || connection.targetHandle === 'user')) {
+      return true;
+    }
+    
+    // Generate → Generate (system ou user)
+    if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
+        connection.sourceHandle === 'output' && 
+        (connection.targetHandle === 'system' || connection.targetHandle === 'user')) {
+      return true;
+    }
+    
+    // Generate → Prompt (rétrocompatibilité)
+    if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && 
+        connection.sourceHandle === 'output' && connection.targetHandle === 'input') {
+      return true;
+    }
+    
+    return false;
+  }, [nodes]);
 
   const onEdgesDelete = useCallback(
     (edgesToDelete: Edge[]) => {
@@ -393,6 +436,33 @@ export default function WorkflowsPage() {
     }
   }, [nodes, updateNodeData, setNodes]);
   
+  // Helper function to process prompt text with variables
+  const processPromptText = (text: string, latestNodes: any[]) => {
+    let processedText = text;
+    
+    // Replace global variables
+    variables.forEach(variable => {
+      const placeholder = `{${variable.name}}`;
+      processedText = processedText.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), variable.value);
+    });
+    
+    // Replace connected Generate results
+    const connectedGenerateEdges = edges.filter(edge => edge.targetHandle === 'input');
+    connectedGenerateEdges.forEach(edge => {
+      const connectedGenerateNode = latestNodes.find(node => node.id === edge.source && node.type === 'generate');
+      if (connectedGenerateNode?.data.result && 
+          connectedGenerateNode.data.result.trim() !== '' && 
+          connectedGenerateNode.data.result !== 'Generating...' &&
+          !(connectedGenerateNode.data as any).isLoading) {
+        const variableName = connectedGenerateNode.data.variableName || 'result_1';
+        const placeholder = `{${variableName}}`;
+        processedText = processedText.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), connectedGenerateNode.data.result);
+      }
+    });
+    
+    return processedText;
+  };
+  
   const getExecutionOrder = () => {
     const visited = new Set<string>();
     const order: string[] = [];
@@ -431,19 +501,14 @@ export default function WorkflowsPage() {
           return currentNodes;
         }
         
-        // Find the connected prompt node
-        const connectedEdge = edges.find(edge => edge.target === generateNodeId);
-        const promptNode = connectedEdge ? currentNodes.find(n => n.id === connectedEdge.source) : null;
-        
-        if (!promptNode || !promptNode.data.text) {
-          resolve();
-          return currentNodes;
-        }
+        // Find connected system and user nodes
+        const systemEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'system');
+        const userEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'user');
         
         // Process in background
         (async () => {
           try {
-            await processGenerateNode(promptNode, generateNode, currentNodes);
+            await processGenerateNode(generateNode, currentNodes, systemEdge, userEdge);
             resolve();
           } catch (error) {
             reject(error);
@@ -455,7 +520,7 @@ export default function WorkflowsPage() {
     });
   };
   
-  const processGenerateNode = async (promptNode: any, generateNode: any, currentNodes: any[]) => {
+  const processGenerateNode = async (generateNode: any, currentNodes: any[], systemEdge?: any, userEdge?: any) => {
     try {
       // Set loading state
       updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true });
@@ -468,37 +533,48 @@ export default function WorkflowsPage() {
         });
       });
       
-      // Replace variables in prompt text (global variables + connected results)
-      let processedPrompt = promptNode.data.text;
+      let systemPrompt = '';
+      let userPrompt = '';
       
-      // Replace global variables
-      variables.forEach(variable => {
-        const placeholder = `{${variable.name}}`;
-        processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), variable.value);
-      });
-      
-      // Replace connected Generate results (using latest node state)
-      const connectedGenerateEdges = edges.filter(edge => edge.target === promptNode.id && edge.targetHandle === 'input');
-      connectedGenerateEdges.forEach(edge => {
-        const connectedGenerateNode = latestNodes.find(node => node.id === edge.source && node.type === 'generate');
-        if (connectedGenerateNode?.data.result && 
-            connectedGenerateNode.data.result.trim() !== '' && 
-            connectedGenerateNode.data.result !== 'Generating...' &&
-            !(connectedGenerateNode.data as any).isLoading) {
-          const variableName = connectedGenerateNode.data.variableName || 'result_1';
-          const placeholder = `{${variableName}}`;
-          processedPrompt = processedPrompt.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), connectedGenerateNode.data.result);
+      // Process system input (from connected node)
+      if (systemEdge) {
+        const systemNode = latestNodes.find(node => node.id === systemEdge.source);
+        if (systemNode) {
+          if (systemNode.type === 'prompt' && systemNode.data.text) {
+            systemPrompt = processPromptText(systemNode.data.text, latestNodes);
+          } else if (systemNode.type === 'generate' && systemNode.data.result && 
+                     systemNode.data.result.trim() !== '' && 
+                     systemNode.data.result !== 'Generating...' &&
+                     !(systemNode.data as any).isLoading) {
+            systemPrompt = systemNode.data.result;
+          }
         }
-      });
+      }
       
-      // Call the AI API
+      // Process user input (from connected node)
+      if (userEdge) {
+        const userNode = latestNodes.find(node => node.id === userEdge.source);
+        if (userNode) {
+          if (userNode.type === 'prompt' && userNode.data.text) {
+            userPrompt = processPromptText(userNode.data.text, latestNodes);
+          } else if (userNode.type === 'generate' && userNode.data.result && 
+                     userNode.data.result.trim() !== '' && 
+                     userNode.data.result !== 'Generating...' &&
+                     !(userNode.data as any).isLoading) {
+            userPrompt = userNode.data.result;
+          }
+        }
+      }
+      
+      // Call the AI API with system and user prompts
       const response = await fetch('/api/workflow/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: processedPrompt,
+          systemPrompt: systemPrompt,
+          userPrompt: userPrompt,
           model: generateNode.data.selectedModel,
         }),
       });
@@ -734,6 +810,7 @@ export default function WorkflowsPage() {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onEdgesDelete={onEdgesDelete}
+          isValidConnection={isValidConnection}
           nodeTypes={nodeTypes}
           fitView
           className="react-flow-custom"

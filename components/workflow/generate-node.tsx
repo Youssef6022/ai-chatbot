@@ -50,13 +50,36 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
         </CardTitle>
       </CardHeader>
       <CardContent className='space-y-3 pt-0'>
+        {/* System Handle */}
         <Handle
           type="target"
           position={Position.Left}
-          id="input"
-          className='!bg-blue-500 !border-2 !border-white h-3 w-3'
+          id="system"
+          style={{ top: '25%' }}
+          className='!bg-orange-500 !border-2 !border-white h-3 w-3'
         />
         
+        {/* User Handle */}
+        <Handle
+          type="target"
+          position={Position.Left}
+          id="user"
+          style={{ top: '75%' }}
+          className='!bg-green-500 !border-2 !border-white h-3 w-3'
+        />
+        
+        {/* Connection Status */}
+        <div className='space-y-2'>
+          <div className='flex items-center gap-2 text-xs'>
+            <div className='h-2 w-2 rounded-full bg-orange-500' />
+            <span className='text-muted-foreground'>System: Prompt système</span>
+          </div>
+          <div className='flex items-center gap-2 text-xs'>
+            <div className='h-2 w-2 rounded-full bg-green-500' />
+            <span className='text-muted-foreground'>User: Prompt utilisateur</span>
+          </div>
+        </div>
+
         <div>
           <Label className='mb-1 block font-medium text-muted-foreground text-xs'>
             Variable Name
@@ -119,7 +142,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
                     </div>
                   ) : (
                     <div className='text-muted-foreground text-sm italic'>
-                      Connect a prompt and run to see results...
+                      Connect system/user prompts and run to see results...
                     </div>
                   )}
                 </ScrollArea>
