@@ -8,6 +8,7 @@ import {
   addEdge,
   Controls,
   Background,
+  MiniMap,
   BackgroundVariant,
   type Connection,
   type Edge,
@@ -828,6 +829,24 @@ export default function WorkflowsPage() {
             style={{
               zIndex: 0,
               opacity: 0.8
+            }}
+          />
+          <MiniMap 
+            nodeColor={(node) => {
+              switch (node.type) {
+                case 'prompt': return '#3b82f6';
+                case 'generate': return '#10b981';
+                default: return '#6b7280';
+              }
+            }}
+            nodeStrokeWidth={3}
+            zoomable
+            pannable
+            position="bottom-right"
+            style={{
+              backgroundColor: 'hsl(var(--background))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '8px',
             }}
           />
         </ReactFlow>
