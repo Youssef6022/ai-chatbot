@@ -24,10 +24,10 @@ export const myProvider = isTestEnvironment
     })()
   : customProvider({
       languageModels: {
-        'chat-model-small': google('gemini-1.5-flash'),
-        'chat-model-medium': google('gemini-1.5-flash'),
-        'chat-model-large': google('gemini-1.5-pro'),
-        'title-model': google('gemini-1.5-flash'),
-        'artifact-model': google('gemini-1.5-flash'),
+        'chat-model-small': google('gemini-2.5-flash-lite'),
+        'chat-model-medium': google('gemini-2.5-flash'),
+        'chat-model-large': google('gemini-2.5-pro'),
+        'title-model': google('gemini-2.5-flash-lite'),
+        'artifact-model': google('gemini-2.5-flash'),
       },
     });

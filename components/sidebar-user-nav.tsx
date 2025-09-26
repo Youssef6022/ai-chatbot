@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from './toast';
 import { LoaderIcon } from './icons';
 
-export function SidebarUserNav() {
+export function SidebarUserNav({ isCollapsed }: { isCollapsed?: boolean }) {
   const router = useRouter();
   const { user: currentUser, loading, signOut } = useSupabase();
   const { setTheme, resolvedTheme } = useTheme();
@@ -53,21 +53,28 @@ export function SidebarUserNav() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {loading ? (
-              <SidebarMenuButton className="h-10 justify-between bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                <div className="flex flex-row gap-2">
+              <SidebarMenuButton className={`h-10 bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+                {isCollapsed ? (
                   <div className="size-6 animate-pulse rounded-full bg-zinc-500/30" />
-                  <span className="animate-pulse rounded-md bg-zinc-500/30 text-transparent">
-                    Loading auth status
-                  </span>
-                </div>
-                <div className="animate-spin text-zinc-500">
-                  <LoaderIcon />
-                </div>
+                ) : (
+                  <>
+                    <div className="flex flex-row gap-2">
+                      <div className="size-6 animate-pulse rounded-full bg-zinc-500/30" />
+                      <span className="animate-pulse rounded-md bg-zinc-500/30 text-transparent">
+                        Loading auth status
+                      </span>
+                    </div>
+                    <div className="animate-spin text-zinc-500">
+                      <LoaderIcon />
+                    </div>
+                  </>
+                )}
               </SidebarMenuButton>
             ) : (
               <SidebarMenuButton
                 data-testid="user-nav-button"
-                className="h-10 bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                className={`h-10 bg-background data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${isCollapsed ? 'justify-center' : ''}`}
+                title={isCollapsed ? (isGuest ? 'Guest' : displayEmail) : undefined}
               >
                 <Image
                   src={`https://avatar.vercel.sh/${displayEmail}`}
@@ -76,10 +83,14 @@ export function SidebarUserNav() {
                   height={24}
                   className="rounded-full"
                 />
-                <span data-testid="user-email" className="truncate">
-                  {isGuest ? 'Guest' : displayEmail}
-                </span>
-                <ChevronUp className="ml-auto" />
+                {!isCollapsed && (
+                  <>
+                    <span data-testid="user-email" className="truncate">
+                      {isGuest ? 'Guest' : displayEmail}
+                    </span>
+                    <ChevronUp className="ml-auto" />
+                  </>
+                )}
               </SidebarMenuButton>
             )}
           </DropdownMenuTrigger>

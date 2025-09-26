@@ -1,13 +1,6 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useWindowSize } from 'usehooks-ts';
-
-import { SidebarToggle } from '@/components/sidebar-toggle';
-import { Button } from '@/components/ui/button';
-import { PlusIcon, VercelIcon } from './icons';
-import { useSidebar } from './ui/sidebar';
 import { memo } from 'react';
 import { type VisibilityType, VisibilitySelector } from './visibility-selector';
 import type { AuthSession } from '@/lib/auth/types';
@@ -23,52 +16,15 @@ function PureChatHeader({
   isReadonly: boolean;
   session?: AuthSession;
 }) {
-  const router = useRouter();
-  const { open } = useSidebar();
-
-  const { width: windowWidth } = useWindowSize();
 
   return (
-    <header className='sticky top-0 flex items-center gap-2 bg-background px-2 py-1.5 md:px-2'>
-      <SidebarToggle />
-
-      {(!open || windowWidth < 768) && (
-        <Link
-          href="/"
-          className='flex flex-row items-center gap-2'
-          onClick={() => {
-            router.push('/');
-            router.refresh();
-          }}
-        >
-          <VercelIcon />
-          <span className='cursor-pointer rounded-md p-1 font-semibold text-sm hover:bg-muted'>
-            Chatbot
-          </span>
-        </Link>
+    <header className='sticky top-0 flex items-center justify-end gap-2 bg-background px-2 py-1.5 md:px-2'>
+      {!isReadonly && (
+        <VisibilitySelector
+          chatId={chatId}
+          selectedVisibilityType={selectedVisibilityType}
+        />
       )}
-
-      <div className='flex flex-row items-center gap-2'>
-        <Button
-          variant="ghost"
-          className='order-2 ml-auto md:order-1 md:ml-0 md:h-fit md:px-2'
-          onClick={() => {
-            router.push('/');
-            router.refresh();
-          }}
-        >
-          <PlusIcon />
-          <span className="md:sr-only">New Chat</span>
-        </Button>
-
-        {!isReadonly && (
-          <VisibilitySelector
-            chatId={chatId}
-            selectedVisibilityType={selectedVisibilityType}
-            className="order-1 md:order-2"
-          />
-        )}
-      </div>
     </header>
   );
 }
