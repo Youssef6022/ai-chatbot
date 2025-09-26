@@ -46,6 +46,7 @@ import { saveChatModelAsCookie } from '@/app/(chat)/actions';
 import { startTransition } from 'react';
 import { Context } from './elements/context';
 import { myProvider } from '@/lib/ai/providers';
+import { FileSelectionModal } from './library/file-selection-modal';
 
 function PureMultimodalInput({
   chatId,
@@ -128,6 +129,7 @@ function PureMultimodalInput({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
+  const [isFileModalOpen, setIsFileModalOpen] = useState(false);
 
   const submitForm = useCallback(() => {
     window.history.replaceState({}, '', `/chat/${chatId}`);
@@ -231,6 +233,16 @@ function PureMultimodalInput({
     [setAttachments],
   );
 
+  const handleLibraryFilesSelected = useCallback(
+    (libraryFiles: Array<{ url: string; name: string; contentType: string }>) => {
+      setAttachments((currentAttachments) => [
+        ...currentAttachments,
+        ...libraryFiles,
+      ]);
+    },
+    [setAttachments],
+  );
+
   return (
     <div className='relative flex w-full flex-col gap-4'>
 
@@ -319,6 +331,7 @@ function PureMultimodalInput({
               fileInputRef={fileInputRef}
               status={status}
               selectedModelId={selectedModelId}
+              onFileModalOpen={() => setIsFileModalOpen(true)}
             />
             <ModelSelectorCompact selectedModelId={selectedModelId} onModelChange={onModelChange} />
           </PromptInputTools>
@@ -340,6 +353,13 @@ function PureMultimodalInput({
           )}
         </PromptInputToolbar>
       </PromptInput>
+
+      <FileSelectionModal
+        isOpen={isFileModalOpen}
+        onClose={() => setIsFileModalOpen(false)}
+        onFilesSelected={handleLibraryFilesSelected}
+        fileInputRef={fileInputRef}
+      />
     </div>
   );
 }
@@ -362,10 +382,12 @@ function PureAttachmentsButton({
   fileInputRef,
   status,
   selectedModelId,
+  onFileModalOpen,
 }: {
   fileInputRef: React.MutableRefObject<HTMLInputElement | null>;
   status: UseChatHelpers<ChatMessage>['status'];
   selectedModelId: string;
+  onFileModalOpen: () => void;
 }) {
   const isReasoningModel = false; // Tous les modèles supportent maintenant les attachements
 
@@ -375,7 +397,7 @@ function PureAttachmentsButton({
       className='aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent'
       onClick={(event) => {
         event.preventDefault();
-        fileInputRef.current?.click();
+        onFileModalOpen();
       }}
       disabled={status !== 'ready' || isReasoningModel}
       variant="ghost"

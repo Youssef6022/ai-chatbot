@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { PlusIcon, WorkflowIcon } from '@/components/icons';
+import { PlusIcon, WorkflowIcon, FileIcon } from '@/components/icons';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
 import {
@@ -95,6 +95,20 @@ export function AppSidebar() {
                 >
                   <WorkflowIcon size={16} />
                   {!isCollapsed && <span>Workflows</span>}
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link
+                  href="/library"
+                  onClick={() => setOpenMobile(false)}
+                  className={`flex items-center ${isCollapsed ? 'justify-center p-3' : 'gap-3 px-3 py-3'}`}
+                  title={isCollapsed ? "Library" : undefined}
+                >
+                  <FileIcon size={16} />
+                  {!isCollapsed && <span>Library</span>}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

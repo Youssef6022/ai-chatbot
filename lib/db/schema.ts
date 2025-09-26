@@ -10,6 +10,7 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  integer,
 } from 'drizzle-orm/pg-core';
 import type { AppUsage } from '../usage';
 
@@ -171,3 +172,38 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const userFiles = pgTable('user_files', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('user_id').notNull(),
+  filename: varchar('filename').notNull(),
+  originalName: varchar('original_name').notNull(),
+  mimeType: varchar('mime_type').notNull(),
+  sizeBytes: integer('size_bytes').notNull(),
+  blobUrl: varchar('blob_url').notNull(),
+  tags: text('tags').array(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export type UserFile = InferSelectModel<typeof userFiles>;
+
+export const chatFileAttachments = pgTable(
+  'chat_file_attachments',
+  {
+    chatId: varchar('chat_id').notNull(),
+    fileId: uuid('file_id').notNull(),
+    attachedAt: timestamp('attached_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.chatId, table.fileId] }),
+    fileRef: foreignKey({
+      columns: [table.fileId],
+      foreignColumns: [userFiles.id],
+    }),
+    // Pas de foreign key pour chatId car les types sont incompatibles
+    // La relation sera gérée au niveau application
+  }),
+);
+
+export type ChatFileAttachment = InferSelectModel<typeof chatFileAttachments>;
