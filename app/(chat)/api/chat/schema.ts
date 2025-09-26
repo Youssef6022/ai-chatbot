@@ -7,7 +7,42 @@ const textPartSchema = z.object({
 
 const filePartSchema = z.object({
   type: z.enum(['file']),
-  mediaType: z.enum(['image/jpeg', 'image/png']),
+  mediaType: z.enum([
+    // Images
+    'image/jpeg', 
+    'image/png', 
+    'image/gif',
+    'image/webp',
+    'image/heic',
+    'image/heif',
+    // Documents
+    'application/pdf',
+    'text/plain',
+    'text/html',
+    'text/css',
+    'text/javascript',
+    'application/x-javascript',
+    'text/x-typescript',
+    'application/json',
+    'text/markdown',
+    // Audio
+    'audio/wav',
+    'audio/mp3',
+    'audio/aiff',
+    'audio/aac',
+    'audio/ogg',
+    'audio/flac',
+    // Video
+    'video/mp4',
+    'video/mpeg',
+    'video/mov',
+    'video/avi',
+    'video/x-flv',
+    'video/mpg',
+    'video/webm',
+    'video/wmv',
+    'video/3gpp'
+  ]),
   name: z.string().min(1).max(100),
   url: z.string().url(),
 });
