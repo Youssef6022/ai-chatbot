@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
         hostname: 'avatar.vercel.sh',
       },
       {
+        hostname: '*.supabase.co',
+      },
+      {
         hostname: '*.public.blob.vercel-storage.com',
       },
     ],

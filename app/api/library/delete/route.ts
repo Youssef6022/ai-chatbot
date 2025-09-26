@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { del } from '@vercel/blob';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -30,12 +30,19 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
-    // Supprimer de Vercel Blob
+    // Supprimer de Supabase Storage
     try {
-      await del(file.blob_url);
-    } catch (blobError) {
-      console.error('Blob deletion error:', blobError);
-      // Continue même si la suppression blob échoue
+      const adminSupabase = createAdminClient();
+      const { error: storageError } = await adminSupabase.storage
+        .from('user-files')
+        .remove([file.filename]);
+        
+      if (storageError) {
+        console.error('Storage deletion error:', storageError);
+      }
+    } catch (storageError) {
+      console.error('Storage deletion error:', storageError);
+      // Continue même si la suppression storage échoue
     }
 
     // Supprimer de la base de données

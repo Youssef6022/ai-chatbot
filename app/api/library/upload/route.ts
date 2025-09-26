@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { generateUUID } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
@@ -47,18 +47,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File type not allowed' }, { status: 400 });
     }
 
-    // Vérifier si le token Blob est configuré
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    // Upload vers Supabase Storage
+    const filename = `${user.id}/${generateUUID()}-${file.name}`;
+    console.log('Uploading file:', filename, 'Size:', file.size, 'Type:', file.type);
+    
+    const fileBuffer = await file.arrayBuffer();
+    console.log('File buffer length:', fileBuffer.byteLength);
+    
+    // Utiliser le client admin pour bypasser RLS sur le Storage
+    const adminSupabase = createAdminClient();
+    const { data: uploadData, error: uploadError } = await adminSupabase.storage
+      .from('user-files')
+      .upload(filename, fileBuffer, {
+        contentType: file.type,
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('Storage upload error details:', uploadError);
       return NextResponse.json({ 
-        error: 'Vercel Blob Storage non configuré. Ajoutez BLOB_READ_WRITE_TOKEN dans .env.local' 
+        error: 'Failed to upload file', 
+        details: uploadError.message 
       }, { status: 500 });
     }
+    
+    console.log('Upload successful:', uploadData);
 
-    // Upload vers Vercel Blob
-    const filename = `${user.id}/${generateUUID()}-${file.name}`;
-    const blob = await put(filename, file, {
-      access: 'public',
-    });
+    // Récupérer l'URL publique
+    const { data: urlData } = adminSupabase.storage
+      .from('user-files')
+      .getPublicUrl(filename);
+      
+    const publicUrl = urlData.publicUrl;
 
     // Sauvegarder les métadonnées en base
     const { data: fileRecord, error } = await supabase
@@ -69,7 +90,7 @@ export async function POST(request: NextRequest) {
         original_name: file.name,
         mime_type: file.type,
         size_bytes: file.size,
-        blob_url: blob.url,
+        blob_url: publicUrl,
       })
       .select()
       .single();
