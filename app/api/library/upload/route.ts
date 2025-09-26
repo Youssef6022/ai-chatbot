@@ -3,6 +3,14 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateUUID } from '@/lib/utils';
 
+// Nettoyer le nom de fichier pour Supabase Storage
+function sanitizeFilename(filename: string): string {
+  return filename
+    .replace(/[^a-zA-Z0-9.-]/g, '_') // Remplacer les caractères spéciaux par _
+    .replace(/_{2,}/g, '_') // Remplacer les multiples _ par un seul
+    .replace(/^_|_$/g, ''); // Supprimer les _ au début et à la fin
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -48,7 +56,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Upload vers Supabase Storage
-    const filename = `${user.id}/${generateUUID()}-${file.name}`;
+    const sanitizedName = sanitizeFilename(file.name);
+    const filename = `${user.id}/${generateUUID()}-${sanitizedName}`;
     console.log('Uploading file:', filename, 'Size:', file.size, 'Type:', file.type);
     
     const fileBuffer = await file.arrayBuffer();
