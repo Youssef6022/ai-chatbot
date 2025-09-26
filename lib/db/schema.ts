@@ -182,11 +182,22 @@ export const userFiles = pgTable('user_files', {
   sizeBytes: integer('size_bytes').notNull(),
   blobUrl: varchar('blob_url').notNull(),
   tags: text('tags').array(),
+  folderId: uuid('folder_id'), // Référence vers le dossier parent (null = racine)
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const userFolders = pgTable('user_folders', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('user_id').notNull(),
+  name: varchar('name').notNull(),
+  parentFolderId: uuid('parent_folder_id'), // Pour les sous-dossiers (null = racine)
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 export type UserFile = InferSelectModel<typeof userFiles>;
+export type UserFolder = InferSelectModel<typeof userFolders>;
 
 export const chatFileAttachments = pgTable(
   'chat_file_attachments',

@@ -71,6 +71,13 @@
       "when": 1758869679298,
       "tag": "0009_lean_skrulls",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1758893513453,
+      "tag": "0010_yellow_mac_gargan",
+      "breakpoints": true
     }
   ]
 }

@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const folderId = formData.get('folderId') as string | null;
     
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -100,6 +101,7 @@ export async function POST(request: NextRequest) {
         mime_type: file.type,
         size_bytes: file.size,
         blob_url: publicUrl,
+        folder_id: folderId || null,
       })
       .select()
       .single();
