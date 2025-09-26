@@ -318,7 +318,7 @@ export const ThinkingMessage = () => {
 
         <div className="flex w-full flex-col gap-2 md:gap-4">
           <div className="p-0 text-muted-foreground text-sm">
-            <LoadingText>Thinking...</LoadingText>
+            <span className="animate-pulse">Thinking...</span>
           </div>
         </div>
       </div>
