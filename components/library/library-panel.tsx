@@ -468,7 +468,8 @@ export function LibraryPanel() {
                 <ChevronLeft size={14} />
                 Retour
               </Button>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center">
+                <span className="text-sm text-muted-foreground font-mono">/</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -476,12 +477,12 @@ export function LibraryPanel() {
                     setCurrentFolderId(null);
                     setFolderPath([]);
                   }}
-                  className="h-8 px-2 text-xs font-mono"
+                  className="h-8 px-0 text-xs font-mono"
                 >
-                  /
+                  home
                 </Button>
                 {folderPath.map((folder, index) => (
-                  <div key={folder.id} className="flex items-center gap-1">
+                  <div key={folder.id} className="flex items-center">
                     <span className="text-sm text-muted-foreground">/</span>
                     <Button
                       variant="ghost"
@@ -491,7 +492,7 @@ export function LibraryPanel() {
                         setFolderPath(newPath);
                         setCurrentFolderId(folder.id);
                       }}
-                      className="h-8 px-2 text-xs font-mono"
+                      className="h-8 px-0 text-xs font-mono"
                     >
                       {folder.name}
                     </Button>
