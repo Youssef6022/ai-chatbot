@@ -19,6 +19,7 @@ import './workflow-styles.css';
 import { Button } from '@/components/ui/button';
 import { PromptNode } from '@/components/workflow/prompt-node';
 import { GenerateNode } from '@/components/workflow/generate-node';
+import { FilesNode } from '@/components/workflow/files-node';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
 import { PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
 
@@ -55,6 +56,7 @@ const SettingsIcon = ({ size = 16 }: { size?: number }) => (
 const nodeTypes = {
   prompt: PromptNode,
   generate: GenerateNode,
+  files: FilesNode,
 };
 
 const initialNodes = [
@@ -172,6 +174,7 @@ export default function WorkflowsPage() {
           selectedModel: node.data.selectedModel,
           variableName: node.data.variableName,
           result: node.data.result || '',
+          selectedFiles: node.data.selectedFiles || [],
         }
       })),
       edges: edges.map(edge => ({
@@ -227,6 +230,7 @@ export default function WorkflowsPage() {
             onTextChange: () => {},
             onModelChange: () => {},
             onVariableNameChange: () => {},
+            onFilesChange: () => {},
             onDelete: () => {},
           }
         }));
@@ -290,7 +294,15 @@ export default function WorkflowsPage() {
           return addEdge(params, edgesWithoutTargetConnection);
         }
         
-        // Cas 3: Generate → Prompt (rétrocompatibilité pour les anciens workflows)
+        // Cas 3: Files → Generate (connexions de fichiers)
+        if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
+            params.sourceHandle === 'files' && params.targetHandle === 'files') {
+          // Permettre plusieurs connexions de Files vers le même handle Generate
+          // Ne pas supprimer les connexions existantes, juste ajouter la nouvelle
+          return addEdge(params, eds);
+        }
+        
+        // Cas 4: Generate → Prompt (rétrocompatibilité pour les anciens workflows)
         if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && 
             params.sourceHandle === 'output' && params.targetHandle === 'input') {
           const edgesWithoutTargetConnection = eds.filter(edge => 
@@ -324,6 +336,12 @@ export default function WorkflowsPage() {
     if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
         connection.sourceHandle === 'output' && 
         (connection.targetHandle === 'system' || connection.targetHandle === 'user')) {
+      return true;
+    }
+    
+    // Files → Generate (files seulement)
+    if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
+        connection.sourceHandle === 'files' && connection.targetHandle === 'files') {
       return true;
     }
     
@@ -398,6 +416,21 @@ export default function WorkflowsPage() {
     };
     setNodes((nds) => [...nds, newNode]);
   }, [setNodes, nodes]);
+
+  const addFilesNode = useCallback(() => {
+    const newNode = {
+      id: `files-${Date.now()}`,
+      type: 'files',
+      position: { x: Math.random() * 300, y: Math.random() * 300 + 200 },
+      data: {
+        label: 'Files',
+        selectedFiles: [],
+        onFilesChange: () => {},
+        onDelete: () => {},
+      },
+    };
+    setNodes((nds) => [...nds, newNode]);
+  }, [setNodes]);
 
   const handleRun = useCallback(async () => {
     setIsRunning(true);
@@ -502,14 +535,15 @@ export default function WorkflowsPage() {
           return currentNodes;
         }
         
-        // Find connected system and user nodes
+        // Find connected system, user, and files nodes
         const systemEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'system');
         const userEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'user');
+        const filesEdges = edges.filter(edge => edge.target === generateNodeId && edge.targetHandle === 'files');
         
         // Process in background
         (async () => {
           try {
-            await processGenerateNode(generateNode, currentNodes, systemEdge, userEdge);
+            await processGenerateNode(generateNode, currentNodes, systemEdge, userEdge, filesEdges);
             resolve();
           } catch (error) {
             reject(error);
@@ -521,7 +555,7 @@ export default function WorkflowsPage() {
     });
   };
   
-  const processGenerateNode = async (generateNode: any, currentNodes: any[], systemEdge?: any, userEdge?: any) => {
+  const processGenerateNode = async (generateNode: any, currentNodes: any[], systemEdge?: any, userEdge?: any, filesEdges?: any[]) => {
     try {
       // Set loading state
       updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true });
@@ -567,7 +601,22 @@ export default function WorkflowsPage() {
         }
       }
       
-      // Call the AI API with system and user prompts
+      // Process files from connected Files nodes
+      let allFiles: any[] = [];
+      if (filesEdges && filesEdges.length > 0) {
+        filesEdges.forEach(edge => {
+          const filesNode = latestNodes.find(node => node.id === edge.source);
+          if (filesNode && filesNode.type === 'files' && filesNode.data.selectedFiles) {
+            // Ajouter tous les fichiers de ce nœud Files, en évitant les doublons
+            const newFiles = filesNode.data.selectedFiles.filter((newFile: any) => 
+              !allFiles.some(existingFile => existingFile.url === newFile.url)
+            );
+            allFiles = [...allFiles, ...newFiles];
+          }
+        });
+      }
+      
+      // Call the AI API with system and user prompts and files
       const response = await fetch('/api/workflow/generate', {
         method: 'POST',
         headers: {
@@ -577,6 +626,7 @@ export default function WorkflowsPage() {
           systemPrompt: systemPrompt,
           userPrompt: userPrompt,
           model: generateNode.data.selectedModel,
+          files: allFiles.length > 0 ? allFiles : undefined,
         }),
       });
       
@@ -628,6 +678,9 @@ export default function WorkflowsPage() {
           : undefined,
         onVariableNameChange: node.type === 'generate'
           ? (name: string) => updateNodeData(node.id, { variableName: name })
+          : undefined,
+        onFilesChange: node.type === 'files'
+          ? (files: any[]) => updateNodeData(node.id, { selectedFiles: files })
           : undefined,
         onDelete: () => deleteNode(node.id),
       }
@@ -695,6 +748,18 @@ export default function WorkflowsPage() {
                   >
                     <span className='text-lg transition-transform duration-200 group-hover:scale-110'>🤖</span>
                     <span className="font-medium">AI Generator</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
+                    onClick={() => {
+                      addFilesNode();
+                      setShowAddMenu(false);
+                    }}
+                  >
+                    <span className='text-lg transition-transform duration-200 group-hover:scale-110'>📁</span>
+                    <span className="font-medium">Files</span>
                   </Button>
                 </div>
               </div>

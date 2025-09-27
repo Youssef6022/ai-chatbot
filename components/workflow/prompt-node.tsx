@@ -68,7 +68,7 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         type="target"
         position={Position.Left}
         id="input"
-        className='!bg-blue-500 !border-2 !border-white h-3 w-3'
+        className='!bg-blue-500 !border-2 !border-white h-4 w-4'
       />
       
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -174,7 +174,7 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         type="source"
         position={Position.Right}
         id="output"
-        className='!bg-blue-500 !border-2 !border-white h-3 w-3'
+        className='!bg-blue-500 !border-2 !border-white h-4 w-4'
       />
     </>
   );

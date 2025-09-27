@@ -56,7 +56,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           position={Position.Left}
           id="system"
           style={{ top: '25%' }}
-          className='!bg-orange-500 !border-2 !border-white h-3 w-3'
+          className='!bg-orange-500 !border-2 !border-white h-4 w-4'
         />
         
         {/* User Handle */}
@@ -64,8 +64,17 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="target"
           position={Position.Left}
           id="user"
-          style={{ top: '75%' }}
-          className='!bg-green-500 !border-2 !border-white h-3 w-3'
+          style={{ top: '60%' }}
+          className='!bg-green-500 !border-2 !border-white h-4 w-4'
+        />
+        
+        {/* Files Handle */}
+        <Handle
+          type="target"
+          position={Position.Left}
+          id="files"
+          style={{ top: '90%' }}
+          className='!bg-purple-500 !border-2 !border-white h-4 w-4'
         />
         
         {/* Connection Status */}
@@ -77,6 +86,10 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           <div className='flex items-center gap-2 text-xs'>
             <div className='h-2 w-2 rounded-full bg-green-500' />
             <span className='text-muted-foreground'>User: Prompt utilisateur</span>
+          </div>
+          <div className='flex items-center gap-2 text-xs'>
+            <div className='h-2 w-2 rounded-full bg-purple-500' />
+            <span className='text-muted-foreground'>Files: Fichiers en entrée</span>
           </div>
         </div>
 
@@ -155,7 +168,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="source"
           position={Position.Right}
           id="output"
-          className='!bg-blue-500 !border-2 !border-white h-3 w-3'
+          className='!bg-blue-500 !border-2 !border-white h-4 w-4'
         />
       </CardContent>
     </Card>
