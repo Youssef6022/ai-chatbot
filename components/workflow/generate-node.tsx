@@ -216,15 +216,15 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           className={getHandleClassName('system', 'target')}
           style={{ 
             left: '25%', 
-            top: '-10px',
-            width: '40px', 
-            height: '20px', 
+            top: '-8px',
+            width: '32px', 
+            height: '16px', 
             backgroundColor: '#d1d5db', 
-            border: '3px solid white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            border: '2px solid white',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
             transform: 'translateX(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-            borderRadius: '4px',
+            borderRadius: '3px',
             zIndex: 10
           }}
         />
@@ -237,15 +237,15 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           className={getHandleClassName('user', 'target')}
           style={{ 
             left: '50%', 
-            top: '-10px',
-            width: '40px', 
-            height: '20px', 
+            top: '-8px',
+            width: '32px', 
+            height: '16px', 
             backgroundColor: '#d1d5db', 
-            border: '3px solid white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            border: '2px solid white',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
             transform: 'translateX(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-            borderRadius: '4px',
+            borderRadius: '3px',
             zIndex: 10
           }}
         />
@@ -258,15 +258,15 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           className={getHandleClassName('files', 'target')}
           style={{ 
             left: '75%', 
-            top: '-10px',
-            width: '40px', 
-            height: '20px', 
+            top: '-8px',
+            width: '32px', 
+            height: '16px', 
             backgroundColor: '#d1d5db', 
-            border: '3px solid white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            border: '2px solid white',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
             transform: 'translateX(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-            borderRadius: '4px',
+            borderRadius: '3px',
             zIndex: 10
           }}
         />
@@ -301,12 +301,12 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           id="output"
           className={getHandleClassName('output', 'source')}
           style={{ 
-            right: '-12px',
-            width: '24px', 
-            height: '24px', 
+            right: '-10px',
+            width: '20px', 
+            height: '20px', 
             backgroundColor: '#d1d5db', 
-            border: '3px solid white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            border: '2px solid white',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
             transform: 'none',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
           }}

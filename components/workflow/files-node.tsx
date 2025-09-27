@@ -89,12 +89,12 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
             id="files"
             className={getHandleClassName('files', 'source')}
             style={{ 
-              right: '-12px',
-              width: '24px', 
-              height: '24px', 
+              right: '-10px',
+              width: '20px', 
+              height: '20px', 
               backgroundColor: '#d1d5db', 
-              border: '3px solid white',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              border: '2px solid white',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
               transform: 'none',
               transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
             }}

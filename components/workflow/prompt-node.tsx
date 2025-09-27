@@ -84,17 +84,17 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         id="input"
         className={getHandleClassName('input', 'target')}
         style={{ 
-          left: '-10px',
+          left: '-8px',
           top: '50%',
-          width: '20px', 
-          height: '40px', 
+          width: '16px', 
+          height: '32px', 
           backgroundColor: '#d1d5db', 
-          border: '3px solid white',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          border: '2px solid white',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
           transform: 'translateY(-50%)',
           transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
           zIndex: 10,
-          borderRadius: '4px'
+          borderRadius: '3px'
         }}
       />
       
@@ -201,18 +201,18 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
       
       <Handle
         type="source"
-        position={Position.Right}
+        position={Position.Bottom}
         id="output"
         className={getHandleClassName('output', 'source')}
         style={{ 
-          right: '-12px',
-          top: '50%',
-          width: '24px', 
-          height: '24px', 
+          bottom: '-10px',
+          left: '50%',
+          width: '20px', 
+          height: '20px', 
           backgroundColor: '#d1d5db', 
-          border: '3px solid white',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-          transform: 'translateY(-50%)',
+          border: '2px solid white',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+          transform: 'translateX(-50%)',
           transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
           zIndex: 10
         }}
