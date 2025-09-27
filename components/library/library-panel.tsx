@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { UploadIcon, FileIcon, TrashIcon, Eye, Loader2, FolderPlus, Folder, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { UploadIcon, FileIcon, TrashIcon, Eye, Loader2, FolderPlus, Folder, ChevronLeft, ChevronRight, MoreHorizontal, Move } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserFile {
@@ -32,14 +33,17 @@ export function LibraryPanel() {
   const [folderPath, setFolderPath] = useState<UserFolder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
-  const [draggedItem, setDraggedItem] = useState<{id: string, type: 'file' | 'folder'} | null>(null);
   const [newFolderName, setNewFolderName] = useState('');
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
+  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<{id: string, type: 'file' | 'folder', name: string} | null>(null);
+  const [allFolders, setAllFolders] = useState<UserFolder[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Chargement automatique au démarrage
   useEffect(() => {
     loadItems();
+    loadAllFolders();
   }, [currentFolderId]);
 
   // Charger les fichiers et dossiers
@@ -144,6 +148,29 @@ export function LibraryPanel() {
     }
   };
 
+  // Charger tous les dossiers pour le sélecteur de déplacement
+  const loadAllFolders = async () => {
+    try {
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: allFoldersData, error } = await supabase
+        .from('user_folders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('name');
+
+      if (!error) {
+        setAllFolders(allFoldersData || []);
+      }
+    } catch (error) {
+      console.error('Load all folders error:', error);
+    }
+  };
+
   // Créer un dossier
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) return;
@@ -227,21 +254,15 @@ export function LibraryPanel() {
     }
   };
 
-  // Drag and Drop
-  const handleDragStart = (e: React.DragEvent, itemId: string, itemType: 'file' | 'folder') => {
-    setDraggedItem({ id: itemId, type: itemType });
-    e.dataTransfer.effectAllowed = 'move';
+  // Ouvrir le dialogue de déplacement
+  const openMoveDialog = (item: {id: string, type: 'file' | 'folder', name: string}) => {
+    setSelectedItem(item);
+    setIsMoveDialogOpen(true);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = async (e: React.DragEvent, targetFolderId: string | null) => {
-    e.preventDefault();
-    
-    if (!draggedItem) return;
+  // Déplacer un élément
+  const handleMoveItem = async (targetFolderId: string) => {
+    if (!selectedItem) return;
 
     try {
       const { createClient } = await import('@/lib/supabase/client');
@@ -254,12 +275,14 @@ export function LibraryPanel() {
         return;
       }
 
-      if (draggedItem.type === 'file') {
+      const targetFolder = targetFolderId === 'root' ? null : targetFolderId;
+
+      if (selectedItem.type === 'file') {
         // Déplacer un fichier
         const { error } = await supabase
           .from('user_files')
-          .update({ folder_id: targetFolderId })
-          .eq('id', draggedItem.id)
+          .update({ folder_id: targetFolder })
+          .eq('id', selectedItem.id)
           .eq('user_id', user.id);
 
         if (error) {
@@ -271,8 +294,8 @@ export function LibraryPanel() {
         // Déplacer un dossier
         const { error } = await supabase
           .from('user_folders')
-          .update({ parent_folder_id: targetFolderId })
-          .eq('id', draggedItem.id)
+          .update({ parent_folder_id: targetFolder })
+          .eq('id', selectedItem.id)
           .eq('user_id', user.id);
 
         if (error) {
@@ -284,13 +307,14 @@ export function LibraryPanel() {
 
       // Recharger les éléments
       loadItems();
-      toast.success(`${draggedItem.type === 'file' ? 'Fichier' : 'Dossier'} déplacé avec succès !`);
+      loadAllFolders();
+      setIsMoveDialogOpen(false);
+      setSelectedItem(null);
+      toast.success(`${selectedItem.type === 'file' ? 'Fichier' : 'Dossier'} déplacé avec succès !`);
 
     } catch (error) {
       console.error('Move error:', error);
       toast.error('Erreur lors du déplacement');
-    } finally {
-      setDraggedItem(null);
     }
   };
 
@@ -424,11 +448,7 @@ export function LibraryPanel() {
 
         {/* Files List */}
         <ScrollArea className="flex-1">
-          <div 
-            className="p-4 space-y-3 min-h-full"
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, null)}
-          >
+          <div className="p-4 space-y-3 min-h-full">
             {/* Loading State */}
             {isLoading && (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
@@ -476,10 +496,6 @@ export function LibraryPanel() {
                   key={folder.id}
                   className="group relative p-3 border border-border rounded-lg bg-card hover:shadow-md hover:border-blue-200 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
                   onClick={() => navigateToFolder(folder)}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, folder.id, 'folder')}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, folder.id)}
                 >
                   {/* Folder Icon */}
                   <div className="w-full aspect-square mb-2 flex items-center justify-center">
@@ -514,12 +530,12 @@ export function LibraryPanel() {
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // TODO: Add folder options (rename, delete, etc.)
+                        openMoveDialog({id: folder.id, type: 'folder', name: folder.name});
                       }}
                       className="h-6 w-6 p-0 hover:bg-blue-50 hover:text-blue-600"
-                      title="Options"
+                      title="Déplacer le dossier"
                     >
-                      <MoreHorizontal size={12} />
+                      <Move size={12} />
                     </Button>
                   </div>
                 </div>
@@ -530,8 +546,6 @@ export function LibraryPanel() {
                 <div
                   key={file.id}
                   className="group relative p-3 border border-border rounded-lg bg-card hover:shadow-md hover:border-blue-200 transition-all duration-200 hover:-translate-y-0.5"
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, file.id, 'file')}
                 >
                   {/* File Preview/Icon */}
                   <div className="w-full aspect-square mb-2 flex items-center justify-center">
@@ -570,6 +584,15 @@ export function LibraryPanel() {
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => openMoveDialog({id: file.id, type: 'file', name: file.original_name})}
+                      className="h-6 w-6 p-0 hover:bg-blue-50 hover:text-blue-600"
+                      title="Déplacer le fichier"
+                    >
+                      <Move size={12} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleDelete(file.id)}
                       className="h-6 w-6 p-0 text-red-400 hover:bg-red-50 hover:text-red-600"
                       title="Delete file"
@@ -583,6 +606,38 @@ export function LibraryPanel() {
           </div>
         </ScrollArea>
       </div>
+
+      {/* Move Dialog */}
+      <Dialog open={isMoveDialogOpen} onOpenChange={setIsMoveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Déplacer {selectedItem?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Sélectionnez le dossier de destination :
+            </p>
+            <Select onValueChange={handleMoveItem}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir un dossier" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="root">📁 Racine (/)</SelectItem>
+                {allFolders.map((folder) => (
+                  <SelectItem key={folder.id} value={folder.id}>
+                    📁 {folder.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setIsMoveDialogOpen(false)}>
+                Annuler
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </>
   );
