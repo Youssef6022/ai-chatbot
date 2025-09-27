@@ -359,82 +359,6 @@ export function LibraryPanel() {
   return (
     <>
       <div className="flex h-full flex-col bg-background">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center">
-              <svg 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                className="text-background"
-              >
-                <path 
-                  d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z" 
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
-            <h2 className="font-semibold text-lg">Library</h2>
-            <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-              {files.length} files, {folders.length} folders
-            </span>
-          </div>
-          <div className="flex gap-2">
-            <Dialog open={isCreateFolderOpen} onOpenChange={setIsCreateFolderOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                >
-                  <FolderPlus size={16} />
-                  Folder
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Créer un nouveau dossier</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <Input
-                    placeholder="Nom du dossier"
-                    value={newFolderName}
-                    onChange={(e) => setNewFolderName(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleCreateFolder()}
-                  />
-                  <div className="flex gap-2 justify-end">
-                    <Button variant="outline" onClick={() => setIsCreateFolderOpen(false)}>
-                      Annuler
-                    </Button>
-                    <Button onClick={handleCreateFolder} disabled={!newFolderName.trim()}>
-                      Créer
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              size="sm"
-              className="gap-2"
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <UploadIcon size={16} />
-                  Upload
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
 
         {/* File Input */}
         <Input
@@ -457,47 +381,118 @@ export function LibraryPanel() {
             )}
 
             {/* Breadcrumbs Navigation */}
-            <div className="flex items-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={navigateUp}
-                disabled={folderPath.length === 0}
-                className="h-8 px-2 text-xs"
-              >
-                <ChevronLeft size={14} />
-                Retour
-              </Button>
-              <div className="flex items-center">
-                <span className="text-sm text-muted-foreground font-mono">/</span>
+            <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-foreground rounded flex items-center justify-center">
+                  <svg 
+                    width="12" 
+                    height="12" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    className="text-background"
+                  >
+                    <path 
+                      d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z" 
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    setCurrentFolderId(null);
-                    setFolderPath([]);
-                  }}
-                  className="h-8 px-0 text-xs font-mono"
+                  onClick={navigateUp}
+                  disabled={folderPath.length === 0}
+                  className="h-8 px-2 text-xs"
                 >
-                  home
+                  <ChevronLeft size={14} />
+                  Retour
                 </Button>
-                {folderPath.map((folder, index) => (
-                  <div key={folder.id} className="flex items-center">
-                    <span className="text-sm text-muted-foreground">/</span>
+                <div className="flex items-center">
+                  <span className="text-sm text-muted-foreground font-mono">/</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setCurrentFolderId(null);
+                      setFolderPath([]);
+                    }}
+                    className="h-8 px-0 text-xs font-mono"
+                  >
+                    home
+                  </Button>
+                  {folderPath.map((folder, index) => (
+                    <div key={folder.id} className="flex items-center">
+                      <span className="text-sm text-muted-foreground">/</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const newPath = folderPath.slice(0, index + 1);
+                          setFolderPath(newPath);
+                          setCurrentFolderId(folder.id);
+                        }}
+                        className="h-8 px-0 text-xs font-mono"
+                      >
+                        {folder.name}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <Dialog open={isCreateFolderOpen} onOpenChange={setIsCreateFolderOpen}>
+                  <DialogTrigger asChild>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      onClick={() => {
-                        const newPath = folderPath.slice(0, index + 1);
-                        setFolderPath(newPath);
-                        setCurrentFolderId(folder.id);
-                      }}
-                      className="h-8 px-0 text-xs font-mono"
+                      className="gap-2 w-[100px]"
                     >
-                      {folder.name}
+                      <FolderPlus size={16} />
+                      Folder
                     </Button>
-                  </div>
-                ))}
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Créer un nouveau dossier</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <Input
+                        placeholder="Nom du dossier"
+                        value={newFolderName}
+                        onChange={(e) => setNewFolderName(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleCreateFolder()}
+                      />
+                      <div className="flex gap-2 justify-end">
+                        <Button variant="outline" onClick={() => setIsCreateFolderOpen(false)}>
+                          Annuler
+                        </Button>
+                        <Button onClick={handleCreateFolder} disabled={!newFolderName.trim()}>
+                          Créer
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 w-[100px]"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Upload
+                    </>
+                  ) : (
+                    <>
+                      <UploadIcon size={16} />
+                      Upload
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
 
