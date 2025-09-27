@@ -69,16 +69,17 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         position={Position.Left}
         id="input"
         style={{ 
-          left: '-12px',
+          left: '-10px',
           top: '50%',
-          width: '24px', 
-          height: '24px', 
+          width: '20px', 
+          height: '40px', 
           backgroundColor: '#d1d5db', 
           border: '3px solid white',
           boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
           transform: 'translateY(-50%)',
           transition: 'none',
-          zIndex: 10
+          zIndex: 10,
+          borderRadius: '4px'
         }}
       />
       
