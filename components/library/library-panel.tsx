@@ -482,8 +482,19 @@ export function LibraryPanel() {
                   onDrop={(e) => handleDrop(e, folder.id)}
                 >
                   {/* Folder Icon */}
-                  <div className="w-full aspect-square mb-2 rounded-lg overflow-hidden bg-blue-50 border flex items-center justify-center">
-                    <Folder size={32} className="text-blue-600" />
+                  <div className="w-full aspect-square mb-2 flex items-center justify-center">
+                    <svg 
+                      width="64" 
+                      height="64" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      className="text-yellow-500"
+                    >
+                      <path 
+                        d="M10 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2z" 
+                        fill="currentColor"
+                      />
+                    </svg>
                   </div>
                   
                   {/* Folder Info */}
@@ -523,15 +534,15 @@ export function LibraryPanel() {
                   onDragStart={(e) => handleDragStart(e, file.id, 'file')}
                 >
                   {/* File Preview/Icon */}
-                  <div className="w-full aspect-square mb-2 rounded-lg overflow-hidden bg-muted border flex items-center justify-center">
+                  <div className="w-full aspect-square mb-2 flex items-center justify-center">
                     {file.mime_type.startsWith('image/') ? (
                       <img
                         src={file.blob_url}
                         alt={file.original_name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover rounded-lg"
                       />
                     ) : (
-                      <span className="text-3xl">{getFileIcon(file.mime_type)}</span>
+                      <span className="text-6xl">{getFileIcon(file.mime_type)}</span>
                     )}
                   </div>
                   
