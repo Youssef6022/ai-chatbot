@@ -498,7 +498,7 @@ export default function WorkflowsPage() {
       // First, clear all previous results from Generate nodes before starting
       const generateNodes = nodes.filter(node => node.type === 'generate');
       generateNodes.forEach(node => {
-        updateNodeData(node.id, { result: '', isLoading: false });
+        updateNodeData(node.id, { result: '', isLoading: false, executionState: 'idle' });
       });
 
       // Wait for state to update
@@ -616,8 +616,8 @@ export default function WorkflowsPage() {
   
   const processGenerateNode = async (generateNode: any, currentNodes: any[], systemEdge?: any, userEdge?: any, filesEdges?: any[]) => {
     try {
-      // Set loading state
-      updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true });
+      // Set processing state (orange)
+      updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true, executionState: 'processing' });
       
       // Get the latest node state to ensure fresh data
       const latestNodes = await new Promise<any[]>(resolve => {
@@ -691,18 +691,21 @@ export default function WorkflowsPage() {
       
       if (response.ok) {
         const result = await response.text();
-        updateNodeData(generateNode.id, { result, isLoading: false });
+        // Set completed state (green) and keep it
+        updateNodeData(generateNode.id, { result, isLoading: false, executionState: 'completed' });
       } else {
         updateNodeData(generateNode.id, { 
           result: 'Error: Failed to generate content', 
-          isLoading: false 
+          isLoading: false,
+          executionState: 'error'
         });
       }
     } catch (error) {
       console.error('Error processing generate node:', error);
       updateNodeData(generateNode.id, { 
         result: 'Error: Failed to generate content', 
-        isLoading: false 
+        isLoading: false,
+        executionState: 'error'
       });
     }
   };

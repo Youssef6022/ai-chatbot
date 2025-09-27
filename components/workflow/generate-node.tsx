@@ -18,6 +18,7 @@ interface GenerateNodeData {
   result: string;
   variableName: string;
   isLoading?: boolean;
+  executionState?: 'idle' | 'preparing' | 'processing' | 'completing' | 'completed' | 'error';
   onModelChange: (model: string) => void;
   onVariableNameChange: (name: string) => void;
   onDelete?: () => void;
@@ -67,6 +68,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
 
   // Helper function to get handle CSS classes based on highlighting state
   const getHandleClassName = useCallback((handleId: string, handleType: 'source' | 'target') => {
+    // Only apply connection highlighting when actually connecting
     if (!data.connectingFrom) return '';
     
     const isHighlighted = data.isHandleHighlighted?.(handleId, handleType);
@@ -75,7 +77,27 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
     if (isHighlighted) return 'handle-highlighted';
     if (shouldDim) return 'handle-dimmed';
     return '';
-  }, [data]);
+  }, [data.connectingFrom, data.isHandleHighlighted]);
+
+  // Helper function to get border styles based on execution state
+  const getBorderStyles = useCallback(() => {
+    const baseStyles = 'border-2 transition-all duration-300';
+    const currentState = data.executionState || 'idle';
+    
+    switch (currentState) {
+      case 'preparing':
+      case 'processing':
+      case 'completing':
+        return `${baseStyles} border-orange-400 shadow-lg shadow-orange-400/30`;
+      case 'completed':
+        return `${baseStyles} border-green-500 shadow-md shadow-green-500/20`;
+      case 'error':
+        return `${baseStyles} border-red-500 shadow-lg shadow-red-500/30`;
+      case 'idle':
+      default:
+        return `${baseStyles} border-gray-300`;
+    }
+  }, [data.executionState]);
 
   return (
     <div className="relative">
@@ -92,7 +114,14 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
         </div>
       </div>
       
-      <Card className={`group min-w-[350px] border-2 border-gray-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+      <Card 
+        className={`group min-w-[350px] ${getBorderStyles()} ${selected ? 'ring-2 ring-blue-500' : ''} ${data.result ? 'cursor-pointer' : ''}`}
+        onClick={(e) => {
+          if (data.result && !isEditingName) {
+            setIsResultModalOpen(true);
+          }
+        }}
+      >
         <CardContent className='p-0'>
           {/* Main content with robot icon and name */}
           <div className="flex h-32">
@@ -115,7 +144,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
                 {/* Agent Name */}
                 <div>
                   {isEditingName ? (
-                    <form onSubmit={handleNameSubmit}>
+                    <form onSubmit={handleNameSubmit} onClick={(e) => e.stopPropagation()}>
                       <Input
                         value={localVariableName}
                         onChange={(e) => handleVariableNameChange(e.target.value)}
@@ -127,7 +156,10 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
                     </form>
                   ) : (
                     <div 
-                      onClick={handleNameClick}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNameClick();
+                      }}
                       className="text-sm font-medium cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded"
                     >
                       {localVariableName}
@@ -136,7 +168,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
                 </div>
                 
                 {/* Model Selector */}
-                <div className="w-full max-w-[200px]">
+                <div className="w-full max-w-[200px]" onClick={(e) => e.stopPropagation()}>
                   <Select
                     value={data.selectedModel}
                     onValueChange={data.onModelChange}
@@ -157,35 +189,22 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
                 </div>
               </div>
               
-              {/* Right side - Loading or View Result */}
+              {/* Right side - Delete */}
               <div className="flex items-center gap-2">
-              {data.isLoading ? (
-                <div className="flex items-center gap-2">
-                  <LoaderIcon size={16} className="animate-spin" />
-                  <span className="text-xs text-muted-foreground">Running...</span>
-                </div>
-              ) : data.result ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsResultModalOpen(true)}
-                  className="text-xs h-6 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                >
-                  View result
-                </Button>
-              ) : null}
-              
-              {/* Delete button */}
-              {data.onDelete && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={data.onDelete}
-                  className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
-                >
-                  <TrashIcon size={12} />
-                </Button>
-              )}
+                {/* Delete button */}
+                {data.onDelete && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      data.onDelete?.();
+                    }}
+                    className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
+                  >
+                    <TrashIcon size={12} />
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -255,7 +274,10 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
 
         {/* Result Modal */}
         <Dialog open={isResultModalOpen} onOpenChange={setIsResultModalOpen}>
-          <DialogContent className='max-w-4xl max-h-[80vh]'>
+          <DialogContent 
+            className='max-w-4xl max-h-[80vh]'
+            onClick={(e) => e.stopPropagation()}
+          >
             <DialogHeader>
               <DialogTitle>{localVariableName} - Result</DialogTitle>
             </DialogHeader>
