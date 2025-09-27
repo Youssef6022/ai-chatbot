@@ -37,6 +37,7 @@ export function LibraryPanel() {
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
   const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{id: string, type: 'file' | 'folder', name: string} | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   // Computed values pour les fichiers et dossiers actuels
   const files = allFiles.filter(file => file.folder_id === currentFolderId);
@@ -222,6 +223,63 @@ export function LibraryPanel() {
     }
   };
 
+  // Drag & Drop pour fichiers depuis le bureau
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    // Upload chaque fichier
+    for (const file of files) {
+      await uploadFile(file);
+    }
+  };
+
+  const uploadFile = async (file: File) => {
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    if (currentFolderId) {
+      formData.append('folderId', currentFolderId);
+    }
+
+    try {
+      const response = await fetch('/api/library/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAllFiles(prev => [data.file, ...prev]);
+        toast.success(`${file.name} uploaded successfully!`);
+      } else {
+        const error = await response.json();
+        toast.error(`Failed to upload ${file.name}: ${error.error || 'Upload failed'}`);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error(`Failed to upload ${file.name}`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Navigation dans les dossiers (instantanée, pas de rechargement)
   const navigateToFolder = (folder: UserFolder | null) => {
     if (folder) {
@@ -358,7 +416,14 @@ export function LibraryPanel() {
 
   return (
     <>
-      <div className="flex h-full flex-col bg-background">
+      <div 
+        className={`flex h-full flex-col bg-background transition-colors ${
+          isDragOver ? 'bg-blue-50 border-2 border-dashed border-blue-300' : ''
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
 
         {/* File Input */}
         <Input
@@ -496,6 +561,23 @@ export function LibraryPanel() {
               </div>
             </div>
 
+            {/* Drag & Drop Overlay */}
+            {isDragOver && (
+              <div className="fixed inset-0 bg-blue-100/50 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-none">
+                <div className="bg-white rounded-lg shadow-lg p-8 border-2 border-dashed border-blue-400">
+                  <div className="text-center">
+                    <UploadIcon size={48} className="mx-auto mb-4 text-blue-600" />
+                    <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                      Drop files here to upload
+                    </h3>
+                    <p className="text-blue-700">
+                      Files will be uploaded to {currentFolderId ? 'this folder' : 'home'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Empty State */}
             {files.length === 0 && folders.length === 0 && !isLoading && (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
@@ -504,7 +586,7 @@ export function LibraryPanel() {
                 </div>
                 <h3 className="font-medium mb-2">No files yet</h3>
                 <p className="text-sm text-center max-w-48">
-                  Upload your first file to start building your library
+                  Upload your first file to start building your library or drag files from your desktop
                 </p>
               </div>
             )}
