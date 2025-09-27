@@ -68,14 +68,25 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         type="target"
         position={Position.Left}
         id="input"
-        className='!bg-blue-500 !border-2 !border-white h-4 w-4'
+        style={{ 
+          left: '-12px',
+          top: '50%',
+          width: '24px', 
+          height: '24px', 
+          backgroundColor: '#d1d5db', 
+          border: '3px solid white',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          transform: 'translateY(-50%)',
+          transition: 'none',
+          zIndex: 10
+        }}
       />
       
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
-          <Card className={`group relative min-w-[100px] min-h-[100px] max-w-[100px] cursor-pointer border-2 border-gray-300 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg ${selected ? 'ring-2 ring-blue-500' : ''}`}>
-            <CardContent className='flex items-center justify-center p-6 h-full'>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-300">
+          <Card className={`group relative min-w-[150px] min-h-[150px] max-w-[150px] cursor-pointer border-2 border-gray-300 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+            <CardContent className='flex items-center justify-center h-[150px] w-[150px] relative'>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-300 absolute">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14,2 14,8 20,8"/>
                 <line x1="16" y1="13" x2="8" y2="13"/>
@@ -176,7 +187,18 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         type="source"
         position={Position.Right}
         id="output"
-        className='!bg-blue-500 !border-2 !border-white h-4 w-4'
+        style={{ 
+          right: '-12px',
+          top: '50%',
+          width: '24px', 
+          height: '24px', 
+          backgroundColor: '#d1d5db', 
+          border: '3px solid white',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          transform: 'translateY(-50%)',
+          transition: 'none',
+          zIndex: 10
+        }}
       />
     </>
   );

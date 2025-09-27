@@ -55,8 +55,17 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="target"
           position={Position.Left}
           id="system"
-          style={{ top: '25%' }}
-          className='!bg-orange-500 !border-2 !border-white h-4 w-4'
+          style={{ 
+            top: '25%', 
+            left: '-12px',
+            width: '24px', 
+            height: '24px', 
+            backgroundColor: '#d1d5db', 
+            border: '3px solid white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            transform: 'none',
+            transition: 'none'
+          }}
         />
         
         {/* User Handle */}
@@ -64,8 +73,17 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="target"
           position={Position.Left}
           id="user"
-          style={{ top: '60%' }}
-          className='!bg-green-500 !border-2 !border-white h-4 w-4'
+          style={{ 
+            top: '60%', 
+            left: '-12px',
+            width: '24px', 
+            height: '24px', 
+            backgroundColor: '#d1d5db', 
+            border: '3px solid white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            transform: 'none',
+            transition: 'none'
+          }}
         />
         
         {/* Files Handle */}
@@ -73,8 +91,17 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="target"
           position={Position.Left}
           id="files"
-          style={{ top: '90%' }}
-          className='!bg-purple-500 !border-2 !border-white h-4 w-4'
+          style={{ 
+            top: '90%', 
+            left: '-12px',
+            width: '24px', 
+            height: '24px', 
+            backgroundColor: '#d1d5db', 
+            border: '3px solid white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            transform: 'none',
+            transition: 'none'
+          }}
         />
         
         {/* Connection Status */}
@@ -168,7 +195,16 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="source"
           position={Position.Right}
           id="output"
-          className='!bg-blue-500 !border-2 !border-white h-4 w-4'
+          style={{ 
+            right: '-12px',
+            width: '24px', 
+            height: '24px', 
+            backgroundColor: '#d1d5db', 
+            border: '3px solid white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            transform: 'none',
+            transition: 'none'
+          }}
         />
       </CardContent>
     </Card>

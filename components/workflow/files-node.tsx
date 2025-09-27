@@ -73,7 +73,16 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
             type="source"
             position={Position.Right}
             id="files"
-            className='!bg-purple-500 !border-2 !border-white h-4 w-4'
+            style={{ 
+              right: '-12px',
+              width: '24px', 
+              height: '24px', 
+              backgroundColor: '#d1d5db', 
+              border: '3px solid white',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              transform: 'none',
+              transition: 'none'
+            }}
           />
           
           {/* File Selection Button */}
