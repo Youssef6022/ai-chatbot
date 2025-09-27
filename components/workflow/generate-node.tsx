@@ -21,6 +21,8 @@ interface GenerateNodeData {
   onModelChange: (model: string) => void;
   onVariableNameChange: (name: string) => void;
   onDelete?: () => void;
+  isHandleHighlighted?: (handleId: string, handleType: 'source' | 'target') => boolean;
+  connectingFrom?: { nodeId: string; handleId: string; handleType: 'source' | 'target' } | null;
 }
 
 export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
@@ -30,6 +32,18 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
   const handleVariableNameChange = useCallback((value: string) => {
     setLocalVariableName(value);
     data.onVariableNameChange?.(value);
+  }, [data]);
+
+  // Helper function to get handle CSS classes based on highlighting state
+  const getHandleClassName = useCallback((handleId: string, handleType: 'source' | 'target') => {
+    if (!data.connectingFrom) return '';
+    
+    const isHighlighted = data.isHandleHighlighted?.(handleId, handleType);
+    const shouldDim = data.connectingFrom && !isHighlighted;
+    
+    if (isHighlighted) return 'handle-highlighted';
+    if (shouldDim) return 'handle-dimmed';
+    return '';
   }, [data]);
 
   return (
@@ -47,7 +61,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
         </div>
       </div>
       
-      <Card className={`min-w-[400px] border-2 border-gray-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+      <Card className={`group min-w-[400px] border-2 border-gray-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
         <CardHeader className="pb-2">
           <CardTitle className='flex items-center justify-between font-medium text-sm'>
             <span className="flex items-center gap-2">
@@ -58,7 +72,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
                 variant="ghost"
                 size="sm"
                 onClick={data.onDelete}
-                className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700'
+                className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
               >
                 <TrashIcon size={12} />
               </Button>
@@ -71,6 +85,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="target"
           position={Position.Top}
           id="system"
+          className={getHandleClassName('system', 'target')}
           style={{ 
             left: '25%', 
             top: '-10px',
@@ -80,7 +95,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             border: '3px solid white',
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             transform: 'translateX(-50%)',
-            transition: 'none',
+            transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
             borderRadius: '4px',
             zIndex: 10
           }}
@@ -91,6 +106,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="target"
           position={Position.Top}
           id="user"
+          className={getHandleClassName('user', 'target')}
           style={{ 
             left: '50%', 
             top: '-10px',
@@ -100,7 +116,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             border: '3px solid white',
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             transform: 'translateX(-50%)',
-            transition: 'none',
+            transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
             borderRadius: '4px',
             zIndex: 10
           }}
@@ -111,6 +127,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="target"
           position={Position.Top}
           id="files"
+          className={getHandleClassName('files', 'target')}
           style={{ 
             left: '75%', 
             top: '-10px',
@@ -120,7 +137,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             border: '3px solid white',
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             transform: 'translateX(-50%)',
-            transition: 'none',
+            transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
             borderRadius: '4px',
             zIndex: 10
           }}
@@ -214,6 +231,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           type="source"
           position={Position.Right}
           id="output"
+          className={getHandleClassName('output', 'source')}
           style={{ 
             right: '-12px',
             width: '24px', 
@@ -222,7 +240,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             border: '3px solid white',
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             transform: 'none',
-            transition: 'none'
+            transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
           }}
         />
       </CardContent>

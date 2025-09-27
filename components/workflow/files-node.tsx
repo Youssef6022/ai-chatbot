@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,8 @@ interface FilesNodeData {
   selectedFiles: SelectedFile[];
   onFilesChange: (files: SelectedFile[]) => void;
   onDelete?: () => void;
+  isHandleHighlighted?: (handleId: string, handleType: 'source' | 'target') => boolean;
+  connectingFrom?: { nodeId: string; handleId: string; handleType: 'source' | 'target' } | null;
 }
 
 export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
@@ -47,9 +49,21 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
     return '📎';
   };
 
+  // Helper function to get handle CSS classes based on highlighting state
+  const getHandleClassName = useCallback((handleId: string, handleType: 'source' | 'target') => {
+    if (!data.connectingFrom) return '';
+    
+    const isHighlighted = data.isHandleHighlighted?.(handleId, handleType);
+    const shouldDim = data.connectingFrom && !isHighlighted;
+    
+    if (isHighlighted) return 'handle-highlighted';
+    if (shouldDim) return 'handle-dimmed';
+    return '';
+  }, [data]);
+
   return (
     <>
-      <Card className={`min-w-[350px] border-2 border-gray-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+      <Card className={`group min-w-[350px] border-2 border-gray-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
         <CardHeader className="pb-2">
           <CardTitle className='flex items-center justify-between font-medium text-sm'>
             <span className="flex items-center gap-2">
@@ -60,7 +74,7 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
                 variant="ghost"
                 size="sm"
                 onClick={data.onDelete}
-                className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700'
+                className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
               >
                 <TrashIcon size={12} />
               </Button>
@@ -73,6 +87,7 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
             type="source"
             position={Position.Right}
             id="files"
+            className={getHandleClassName('files', 'source')}
             style={{ 
               right: '-12px',
               width: '24px', 
@@ -81,7 +96,7 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
               border: '3px solid white',
               boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
               transform: 'none',
-              transition: 'none'
+              transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
             }}
           />
           

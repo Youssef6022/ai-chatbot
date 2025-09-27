@@ -99,3 +99,25 @@
 .dark .react-flow-custom .react-flow__background circle {
   fill: #4b5563 !important; /* Plus contrasté */
 }
+
+/* Handle highlighting during connection */
+.handle-highlighted {
+  background-color: #22c55e !important;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.7) !important;
+  border-color: #16a34a !important;
+  animation: pulse-highlight 2s infinite !important;
+}
+
+.handle-dimmed {
+  opacity: 0.3 !important;
+  pointer-events: none !important;
+}
+
+@keyframes pulse-highlight {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 1);
+  }
+}

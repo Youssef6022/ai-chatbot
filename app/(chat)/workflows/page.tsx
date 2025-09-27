@@ -12,6 +12,8 @@ import {
   BackgroundVariant,
   type Connection,
   type Edge,
+  type OnConnectStart,
+  type OnConnectEnd,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import './workflow-styles.css';
@@ -98,6 +100,9 @@ export default function WorkflowsPage() {
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
+  
+  // Connection highlighting state
+  const [connectingFrom, setConnectingFrom] = useState<{ nodeId: string; handleId: string; handleType: 'source' | 'target' } | null>(null);
 
   // Track theme for dots color
   const [dotsColor, setDotsColor] = useState('#e2e8f0');
@@ -263,8 +268,62 @@ export default function WorkflowsPage() {
     event.target.value = '';
   }, [setNodes, setEdges]);
 
+  // Handle connection start to highlight compatible handles
+  const onConnectStart: OnConnectStart = useCallback((event, { nodeId, handleId, handleType }) => {
+    setConnectingFrom({ nodeId, handleId, handleType });
+  }, []);
+
+  // Handle connection end to clear highlighting
+  const onConnectEnd: OnConnectEnd = useCallback(() => {
+    setConnectingFrom(null);
+  }, []);
+
+  // Check if a handle should be highlighted based on current connection attempt
+  const isHandleHighlighted = useCallback((nodeId: string, handleId: string, handleType: 'source' | 'target') => {
+    if (!connectingFrom) return false;
+    
+    const sourceNode = nodes.find(n => n.id === connectingFrom.nodeId);
+    const targetNode = nodes.find(n => n.id === nodeId);
+    
+    if (!sourceNode || !targetNode) return false;
+    
+    // If we're connecting from a source handle, highlight compatible target handles
+    if (connectingFrom.handleType === 'source' && handleType === 'target') {
+      // Prompt output → Generate system/user
+      if (sourceNode.type === 'prompt' && targetNode.type === 'generate' && 
+          connectingFrom.handleId === 'output' && 
+          (handleId === 'system' || handleId === 'user')) {
+        return true;
+      }
+      
+      // Generate output → Generate system/user  
+      if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
+          connectingFrom.handleId === 'output' && 
+          (handleId === 'system' || handleId === 'user')) {
+        return true;
+      }
+      
+      // Files → Generate files
+      if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
+          connectingFrom.handleId === 'files' && handleId === 'files') {
+        return true;
+      }
+      
+      // Generate → Prompt (backward compatibility)
+      if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && 
+          connectingFrom.handleId === 'output' && handleId === 'input') {
+        return true;
+      }
+    }
+    
+    return false;
+  }, [connectingFrom, nodes]);
+
   const onConnect = useCallback(
     (params: Connection) => {
+      // Clear highlighting
+      setConnectingFrom(null);
+      
       setEdges((eds) => {
         // Identifier les types de connexions
         const sourceNode = nodes.find(n => n.id === params.source);
@@ -683,6 +742,9 @@ export default function WorkflowsPage() {
           ? (files: any[]) => updateNodeData(node.id, { selectedFiles: files })
           : undefined,
         onDelete: () => deleteNode(node.id),
+        isHandleHighlighted: (handleId: string, handleType: 'source' | 'target') => 
+          isHandleHighlighted(node.id, handleId, handleType),
+        connectingFrom: connectingFrom,
       }
     };
   });
@@ -875,6 +937,8 @@ export default function WorkflowsPage() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onConnectStart={onConnectStart}
+          onConnectEnd={onConnectEnd}
           onEdgesDelete={onEdgesDelete}
           isValidConnection={isValidConnection}
           nodeTypes={nodeTypes}

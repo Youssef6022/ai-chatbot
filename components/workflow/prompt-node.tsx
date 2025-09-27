@@ -16,6 +16,8 @@ interface PromptNodeData {
   connectedResults?: { [key: string]: string }; // Results from connected Generate nodes
   onTextChange: (text: string) => void;
   onDelete?: () => void;
+  isHandleHighlighted?: (handleId: string, handleType: 'source' | 'target') => boolean;
+  connectingFrom?: { nodeId: string; handleId: string; handleType: 'source' | 'target' } | null;
 }
 
 // Message Icon Component
@@ -57,6 +59,18 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
     handleTextChange(newText);
   }, [localText, handleTextChange]);
 
+  // Helper function to get handle CSS classes based on highlighting state
+  const getHandleClassName = useCallback((handleId: string, handleType: 'source' | 'target') => {
+    if (!data.connectingFrom) return '';
+    
+    const isHighlighted = data.isHandleHighlighted?.(handleId, handleType);
+    const shouldDim = data.connectingFrom && !isHighlighted;
+    
+    if (isHighlighted) return 'handle-highlighted';
+    if (shouldDim) return 'handle-dimmed';
+    return '';
+  }, [data]);
+
   const getPreviewText = () => {
     if (!localText || localText.trim() === '') return 'Click to edit prompt';
     return localText.length > 30 ? `${localText.slice(0, 30)}...` : localText;
@@ -68,6 +82,7 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         type="target"
         position={Position.Left}
         id="input"
+        className={getHandleClassName('input', 'target')}
         style={{ 
           left: '-10px',
           top: '50%',
@@ -77,7 +92,7 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
           border: '3px solid white',
           boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
           transform: 'translateY(-50%)',
-          transition: 'none',
+          transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
           zIndex: 10,
           borderRadius: '4px'
         }}
@@ -188,6 +203,7 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
         type="source"
         position={Position.Right}
         id="output"
+        className={getHandleClassName('output', 'source')}
         style={{ 
           right: '-12px',
           top: '50%',
@@ -197,7 +213,7 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
           border: '3px solid white',
           boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
           transform: 'translateY(-50%)',
-          transition: 'none',
+          transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
           zIndex: 10
         }}
       />
