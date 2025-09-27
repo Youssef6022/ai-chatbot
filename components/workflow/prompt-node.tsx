@@ -73,13 +73,15 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
       
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
-          <Card className={`relative min-w-[160px] max-w-[200px] cursor-pointer border-2 border-gray-300 transition-all duration-200 hover:scale-105 hover:shadow-lg ${selected ? 'ring-2 ring-blue-500' : ''}`}>
-            <CardContent className='flex flex-col items-center justify-center p-4 text-center'>
-              <div className='mb-2 flex items-center justify-center rounded-full bg-blue-100 p-3 dark:bg-blue-900'>
-                <MessageIcon size={20} className='text-blue-600 dark:text-blue-400' />
-              </div>
-              <h3 className='mb-1 font-medium text-sm'>Text Input</h3>
-              <p className='text-muted-foreground text-xs leading-relaxed'>{getPreviewText()}</p>
+          <Card className={`group relative min-w-[100px] min-h-[100px] max-w-[100px] cursor-pointer border-2 border-gray-300 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+            <CardContent className='flex items-center justify-center p-6 h-full'>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-300">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10,9 9,9 8,9"/>
+              </svg>
               
               {data.onDelete && (
                 <Button
@@ -89,9 +91,9 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
                     e.stopPropagation();
                     data.onDelete?.();
                   }}
-                  className='absolute top-1 right-1 h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700'
+                  className='absolute top-2 right-2 h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
                 >
-                  <TrashIcon size={10} />
+                  <TrashIcon size={12} />
                 </Button>
               )}
             </CardContent>
