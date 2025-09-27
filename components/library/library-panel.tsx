@@ -27,8 +27,8 @@ interface UserFolder {
 }
 
 export function LibraryPanel() {
-  const [files, setFiles] = useState<UserFile[]>([]);
-  const [folders, setFolders] = useState<UserFolder[]>([]);
+  const [allFiles, setAllFiles] = useState<UserFile[]>([]);
+  const [allFolders, setAllFolders] = useState<UserFolder[]>([]);
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [folderPath, setFolderPath] = useState<UserFolder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,17 +37,19 @@ export function LibraryPanel() {
   const [isCreateFolderOpen, setIsCreateFolderOpen] = useState(false);
   const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{id: string, type: 'file' | 'folder', name: string} | null>(null);
-  const [allFolders, setAllFolders] = useState<UserFolder[]>([]);
+
+  // Computed values pour les fichiers et dossiers actuels
+  const files = allFiles.filter(file => file.folder_id === currentFolderId);
+  const folders = allFolders.filter(folder => folder.parent_folder_id === currentFolderId);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Chargement automatique au démarrage
+  // Chargement automatique au démarrage seulement
   useEffect(() => {
-    loadItems();
-    loadAllFolders();
-  }, [currentFolderId]);
+    loadAllItems();
+  }, []);
 
-  // Charger les fichiers et dossiers
-  const loadItems = async () => {
+  // Charger tous les fichiers et dossiers une seule fois
+  const loadAllItems = async () => {
     setIsLoading(true);
     try {
       const { createClient } = await import('@/lib/supabase/client');
@@ -57,38 +59,24 @@ export function LibraryPanel() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         console.error('User not authenticated');
-        setFiles([]);
-        setFolders([]);
+        setAllFiles([]);
+        setAllFolders([]);
         return;
       }
 
-      // Récupérer les dossiers
-      let foldersQuery = supabase
+      // Récupérer TOUS les dossiers
+      const { data: foldersData, error: foldersError } = await supabase
         .from('user_folders')
         .select('*')
-        .eq('user_id', user.id);
-      
-      if (currentFolderId) {
-        foldersQuery = foldersQuery.eq('parent_folder_id', currentFolderId);
-      } else {
-        foldersQuery = foldersQuery.is('parent_folder_id', null);
-      }
-      
-      const { data: foldersData, error: foldersError } = await foldersQuery.order('name');
+        .eq('user_id', user.id)
+        .order('name');
 
-      // Récupérer les fichiers
-      let filesQuery = supabase
+      // Récupérer TOUS les fichiers
+      const { data: filesData, error: filesError } = await supabase
         .from('user_files')
         .select('*')
-        .eq('user_id', user.id);
-      
-      if (currentFolderId) {
-        filesQuery = filesQuery.eq('folder_id', currentFolderId);
-      } else {
-        filesQuery = filesQuery.is('folder_id', null);
-      }
-      
-      const { data: filesData, error: filesError } = await filesQuery.order('original_name');
+        .eq('user_id', user.id)
+        .order('original_name');
 
       if (foldersError) {
         console.error('Folders error:', foldersError);
@@ -100,8 +88,8 @@ export function LibraryPanel() {
         toast.error('Erreur lors du chargement des fichiers');
       }
 
-      setFolders(foldersData || []);
-      setFiles(filesData || []);
+      setAllFolders(foldersData || []);
+      setAllFiles(filesData || []);
 
     } catch (error) {
       console.error('Load items error:', error);
@@ -131,7 +119,7 @@ export function LibraryPanel() {
 
       if (response.ok) {
         const data = await response.json();
-        setFiles(prev => [data.file, ...prev]);
+        setAllFiles(prev => [data.file, ...prev]);
         toast.success('File uploaded successfully!');
       } else {
         const error = await response.json();
@@ -223,7 +211,7 @@ export function LibraryPanel() {
         return;
       }
 
-      setFolders(prev => [folder, ...prev]);
+      setAllFolders(prev => [folder, ...prev]);
       setNewFolderName('');
       setIsCreateFolderOpen(false);
       toast.success('Dossier créé avec succès !');
@@ -234,7 +222,7 @@ export function LibraryPanel() {
     }
   };
 
-  // Navigation dans les dossiers
+  // Navigation dans les dossiers (instantanée, pas de rechargement)
   const navigateToFolder = (folder: UserFolder | null) => {
     if (folder) {
       setCurrentFolderId(folder.id);
@@ -290,6 +278,13 @@ export function LibraryPanel() {
           toast.error('Erreur lors du déplacement du fichier');
           return;
         }
+
+        // Mettre à jour le state local
+        setAllFiles(prev => prev.map(file => 
+          file.id === selectedItem.id 
+            ? { ...file, folder_id: targetFolder }
+            : file
+        ));
       } else {
         // Déplacer un dossier
         const { error } = await supabase
@@ -303,11 +298,15 @@ export function LibraryPanel() {
           toast.error('Erreur lors du déplacement du dossier');
           return;
         }
+
+        // Mettre à jour le state local
+        setAllFolders(prev => prev.map(folder => 
+          folder.id === selectedItem.id 
+            ? { ...folder, parent_folder_id: targetFolder }
+            : folder
+        ));
       }
 
-      // Recharger les éléments
-      loadItems();
-      loadAllFolders();
       setIsMoveDialogOpen(false);
       setSelectedItem(null);
       toast.success(`${selectedItem.type === 'file' ? 'Fichier' : 'Dossier'} déplacé avec succès !`);
@@ -328,7 +327,7 @@ export function LibraryPanel() {
       });
 
       if (response.ok) {
-        setFiles(prev => prev.filter(f => f.id !== fileId));
+        setAllFiles(prev => prev.filter(f => f.id !== fileId));
         toast.success('File deleted');
       } else {
         toast.error('Delete failed');
@@ -457,23 +456,49 @@ export function LibraryPanel() {
               </div>
             )}
 
-            {/* Navigation */}
-            {folderPath.length > 0 && (
-              <div className="flex items-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
+            {/* Breadcrumbs Navigation */}
+            <div className="flex items-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={navigateUp}
+                disabled={folderPath.length === 0}
+                className="h-8 px-2 text-xs"
+              >
+                <ChevronLeft size={14} />
+                Retour
+              </Button>
+              <div className="flex items-center gap-1">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={navigateUp}
-                  className="h-8 px-2 text-xs"
+                  onClick={() => {
+                    setCurrentFolderId(null);
+                    setFolderPath([]);
+                  }}
+                  className="h-8 px-2 text-xs font-mono"
                 >
-                  <ChevronLeft size={14} />
-                  Retour
+                  /
                 </Button>
-                <span className="text-sm text-muted-foreground">
-                  {folderPath.map(folder => folder.name).join(' / ')}
-                </span>
+                {folderPath.map((folder, index) => (
+                  <div key={folder.id} className="flex items-center gap-1">
+                    <span className="text-sm text-muted-foreground">/</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newPath = folderPath.slice(0, index + 1);
+                        setFolderPath(newPath);
+                        setCurrentFolderId(folder.id);
+                      }}
+                      className="h-8 px-2 text-xs font-mono"
+                    >
+                      {folder.name}
+                    </Button>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
 
             {/* Empty State */}
             {files.length === 0 && folders.length === 0 && !isLoading && (
