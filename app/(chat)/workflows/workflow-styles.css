@@ -1,20 +1,35 @@
 /* Custom styles for React Flow workflows */
 
-/* Blue edges/connections */
+/* Animated dashed edges/connections */
 .react-flow__edge-path {
   stroke: #3b82f6 !important;
   stroke-width: 2px !important;
+  stroke-dasharray: 15 8 !important;
+  animation: dash-flow 2s linear infinite !important;
 }
 
 .react-flow__edge.selected .react-flow__edge-path {
   stroke: #1d4ed8 !important;
   stroke-width: 3px !important;
+  stroke-dasharray: 18 10 !important;
+  animation: dash-flow 1.5s linear infinite !important;
 }
 
-/* Blue connection line when dragging */
+/* Animated connection line when dragging */
 .react-flow__connection-line {
   stroke: #3b82f6 !important;
   stroke-width: 2px !important;
+  stroke-dasharray: 15 8 !important;
+  animation: dash-flow 2s linear infinite !important;
+}
+
+@keyframes dash-flow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 23;
+  }
 }
 
 /* Edge markers (arrows) */
