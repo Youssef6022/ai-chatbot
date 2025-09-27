@@ -42,6 +42,19 @@ export function LibraryPanel() {
   // Computed values pour les fichiers et dossiers actuels
   const files = allFiles.filter(file => file.folder_id === currentFolderId);
   const folders = allFolders.filter(folder => folder.parent_folder_id === currentFolderId);
+
+  // Fonction pour compter les éléments dans un dossier
+  const getFolderItemCount = (folderId: string): number => {
+    const filesInFolder = allFiles.filter(file => file.folder_id === folderId).length;
+    const subfoldersInFolder = allFolders.filter(folder => folder.parent_folder_id === folderId);
+    
+    // Compter récursivement les éléments dans les sous-dossiers
+    const subfolderItemsCount = subfoldersInFolder.reduce((total, subfolder) => {
+      return total + getFolderItemCount(subfolder.id);
+    }, 0);
+    
+    return filesInFolder + subfoldersInFolder.length + subfolderItemsCount;
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Chargement automatique au démarrage seulement
@@ -376,7 +389,7 @@ export function LibraryPanel() {
   };
 
   // Supprimer fichier
-  const handleDelete = async (fileId: string) => {
+  const handleDeleteFile = async (fileId: string) => {
     if (!confirm('Are you sure you want to delete this file?')) return;
 
     try {
@@ -393,6 +406,52 @@ export function LibraryPanel() {
     } catch (error) {
       console.error('Delete error:', error);
       toast.error('Delete error');
+    }
+  };
+
+  // Supprimer dossier
+  const handleDeleteFolder = async (folderId: string, folderName: string) => {
+    const itemCount = getFolderItemCount(folderId);
+    
+    let confirmMessage;
+    if (itemCount === 0) {
+      confirmMessage = `Are you sure you want to delete the empty folder "${folderName}"?`;
+    } else {
+      confirmMessage = `⚠️ ATTENTION: This will permanently delete the folder "${folderName}" and all its ${itemCount} item(s) (files and subfolders). This action cannot be undone!\n\nAre you sure you want to proceed?`;
+    }
+    
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      // Utiliser la nouvelle API endpoint pour supprimer récursivement
+      const response = await fetch(`/api/library/folders/${folderId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Fonction récursive pour supprimer du state local
+        const removeFromState = (folderId: string) => {
+          // Supprimer tous les fichiers de ce dossier
+          setAllFiles(prev => prev.filter(file => file.folder_id !== folderId));
+          
+          // Trouver et supprimer récursivement tous les sous-dossiers
+          const subfolders = allFolders.filter(folder => folder.parent_folder_id === folderId);
+          subfolders.forEach(subfolder => removeFromState(subfolder.id));
+          
+          // Supprimer le dossier lui-même
+          setAllFolders(prev => prev.filter(folder => folder.id !== folderId));
+        };
+
+        removeFromState(folderId);
+        toast.success('Folder deleted successfully');
+      } else {
+        const error = await response.json();
+        toast.error(`Failed to delete folder: ${error.error || 'Unknown error'}`);
+      }
+
+    } catch (error) {
+      console.error('Delete folder error:', error);
+      toast.error('Failed to delete folder');
     }
   };
 
@@ -622,7 +681,10 @@ export function LibraryPanel() {
                       📁 {folder.name}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Dossier
+                      {(() => {
+                        const itemCount = getFolderItemCount(folder.id);
+                        return itemCount === 0 ? 'Dossier vide' : `${itemCount} élément${itemCount > 1 ? 's' : ''}`;
+                      })()}
                     </div>
                   </div>
 
@@ -639,6 +701,18 @@ export function LibraryPanel() {
                       title="Déplacer le dossier"
                     >
                       <Move size={12} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteFolder(folder.id, folder.name);
+                      }}
+                      className="h-6 w-6 p-0 text-red-400 hover:bg-red-50 hover:text-red-600"
+                      title="Supprimer le dossier"
+                    >
+                      <TrashIcon size={12} />
                     </Button>
                   </div>
                 </div>
@@ -696,7 +770,7 @@ export function LibraryPanel() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(file.id)}
+                      onClick={() => handleDeleteFile(file.id)}
                       className="h-6 w-6 p-0 text-red-400 hover:bg-red-50 hover:text-red-600"
                       title="Delete file"
                     >
