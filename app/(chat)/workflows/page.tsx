@@ -895,15 +895,42 @@ export default function WorkflowsPage() {
     const connectedResults = {};
     
     if (node.type === 'prompt') {
-      // Find connected Generate nodes for this Prompt
-      const incomingEdges = edges.filter(edge => edge.target === node.id && edge.targetHandle === 'input');
-      incomingEdges.forEach(edge => {
-        const connectedGenerateNode = nodes.find(n => n.id === edge.source && n.type === 'generate');
-        if (connectedGenerateNode) {
-          const variableName = connectedGenerateNode.data.variableName || 'AI Agent 1';
-          // Always include the variable name, with result if available
-          (connectedResults as any)[variableName] = connectedGenerateNode.data.result || '';
-        }
+      // Function to recursively find all Generate nodes in the dependency chain
+      const findAllGenerateNodesInChain = (nodeId: string, visited = new Set()): any[] => {
+        if (visited.has(nodeId)) return []; // Avoid infinite loops
+        visited.add(nodeId);
+        
+        const generateNodes: any[] = [];
+        
+        // Find all nodes that feed into this node
+        const incomingEdges = edges.filter(edge => edge.target === nodeId);
+        incomingEdges.forEach(edge => {
+          const sourceNode = nodes.find(n => n.id === edge.source);
+          if (sourceNode) {
+            if (sourceNode.type === 'generate') {
+              // Add this Generate node
+              generateNodes.push(sourceNode);
+            }
+            // Recursively check the source node's dependencies
+            generateNodes.push(...findAllGenerateNodesInChain(sourceNode.id, visited));
+          }
+        });
+        
+        return generateNodes;
+      };
+      
+      // Find all Generate nodes in the dependency chain
+      const allGenerateNodes = findAllGenerateNodesInChain(node.id);
+      
+      // Remove duplicates based on node ID
+      const uniqueGenerateNodes = allGenerateNodes.filter((node, index, self) => 
+        index === self.findIndex(n => n.id === node.id)
+      );
+      
+      // Add all unique Generate nodes to connectedResults
+      uniqueGenerateNodes.forEach(generateNode => {
+        const variableName = generateNode.data.variableName || 'AI Agent 1';
+        (connectedResults as any)[variableName] = generateNode.data.result || '';
       });
     }
     
