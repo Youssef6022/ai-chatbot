@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   ReactFlow,
   useNodesState,
@@ -19,11 +20,22 @@ import '@xyflow/react/dist/style.css';
 import './workflow-styles.css';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { PromptNode } from '@/components/workflow/prompt-node';
 import { GenerateNode } from '@/components/workflow/generate-node';
 import { FilesNode } from '@/components/workflow/files-node';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
 import { PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
+import { toast } from 'sonner';
 
 // Settings Icon
 const SettingsIcon = ({ size = 16 }: { size?: number }) => (
@@ -98,14 +110,90 @@ export default function WorkflowsPage() {
   const [variables, setVariables] = useState<Variable[]>([]);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveTitle, setSaveTitle] = useState('');
+  const [saveDescription, setSaveDescription] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [currentWorkflowId, setCurrentWorkflowId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
   
   // Connection highlighting state
   const [connectingFrom, setConnectingFrom] = useState<{ nodeId: string; handleId: string; handleType: 'source' | 'target' } | null>(null);
 
   // Track theme for dots color
   const [dotsColor, setDotsColor] = useState('#e2e8f0');
+
+  // Load workflow from database when URL has ID parameter
+  useEffect(() => {
+    const workflowId = searchParams.get('id');
+    if (workflowId && workflowId !== currentWorkflowId) {
+      loadWorkflowFromDatabase(workflowId);
+    }
+  }, [searchParams]);
+
+  // Load workflow from database
+  const loadWorkflowFromDatabase = async (workflowId: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/workflows/${workflowId}`);
+      if (response.ok) {
+        const workflow = await response.json();
+        setCurrentWorkflowId(workflowId);
+        setSaveTitle(workflow.title);
+        setSaveDescription(workflow.description || '');
+        
+        // Load the workflow data
+        const workflowData = workflow.workflowData;
+        
+        if (workflowData && workflowData.nodes && workflowData.edges) {
+          // Restore nodes with proper callback functions
+          const importedNodes = workflowData.nodes.map((node: any) => ({
+            id: node.id,
+            type: node.type,
+            position: node.position,
+            data: {
+              ...node.data,
+              onTextChange: () => {},
+              onModelChange: () => {},
+              onVariableNameChange: () => {},
+              onFilesChange: () => {},
+              onDelete: () => {},
+            }
+          }));
+
+          // Restore edges
+          const importedEdges = workflowData.edges.map((edge: any) => ({
+            id: edge.id,
+            source: edge.source,
+            target: edge.target,
+            sourceHandle: edge.sourceHandle,
+            targetHandle: edge.targetHandle,
+          }));
+
+          // Restore variables if they exist
+          const importedVariables = workflowData.variables || [];
+
+          setNodes(importedNodes);
+          setEdges(importedEdges);
+          setVariables(importedVariables);
+
+          toast.success(`Workflow "${workflow.title}" chargé avec succès`);
+        }
+      } else {
+        toast.error('Workflow non trouvé');
+        setCurrentWorkflowId(null);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du workflow:', error);
+      toast.error('Erreur lors du chargement du workflow');
+      setCurrentWorkflowId(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -147,8 +235,8 @@ export default function WorkflowsPage() {
     return () => observer.disconnect();
   }, []);
 
-  // Export workflow to JSON
-  const exportWorkflow = useCallback(() => {
+  // Prepare workflow data (shared function for export and save)
+  const prepareWorkflowData = useCallback(() => {
     // Force une mise à jour de l'état avant l'export en collectant les valeurs depuis le DOM
     const updatedNodes = nodes.map(node => {
       if (node.type === 'prompt') {
@@ -197,6 +285,12 @@ export default function WorkflowsPage() {
       }
     };
 
+    return workflowData;
+  }, [nodes, edges, variables]);
+
+  // Export workflow to JSON
+  const exportWorkflow = useCallback(() => {
+    const workflowData = prepareWorkflowData();
     const dataStr = JSON.stringify(workflowData, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -207,7 +301,66 @@ export default function WorkflowsPage() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  }, [nodes, edges, variables]);
+  }, [prepareWorkflowData]);
+
+  // Save workflow to database (create new or update existing)
+  const saveWorkflow = useCallback(async () => {
+    if (!saveTitle.trim()) {
+      toast.error('Veuillez entrer un nom pour le workflow');
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const workflowData = prepareWorkflowData();
+      
+      // If we have a currentWorkflowId, it's an update, otherwise it's a new workflow
+      const isUpdate = !!currentWorkflowId;
+      const url = isUpdate ? `/api/workflows/${currentWorkflowId}` : '/api/workflows';
+      const method = isUpdate ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: saveTitle.trim(),
+          description: saveDescription.trim() || null,
+          workflowData: workflowData,
+          isPublic: false, // Par défaut privé
+        }),
+      });
+
+      if (response.ok) {
+        const savedWorkflow = await response.json();
+        
+        if (!isUpdate) {
+          // If it's a new workflow, set the ID and update the URL
+          setCurrentWorkflowId(savedWorkflow.id);
+          window.history.replaceState({}, '', `/workflows?id=${savedWorkflow.id}`);
+        }
+        
+        toast.success(isUpdate ? 'Workflow mis à jour avec succès !' : 'Workflow sauvegardé avec succès !');
+        setShowSaveModal(false);
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Erreur lors de la sauvegarde');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      toast.error('Erreur lors de la sauvegarde du workflow');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [saveTitle, saveDescription, prepareWorkflowData, currentWorkflowId]);
+
+  // Open save modal
+  const openSaveModal = useCallback(() => {
+    setShowSaveModal(true);
+    setShowSettingsMenu(false);
+  }, []);
 
   // Import workflow from JSON
   const importWorkflow = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -754,6 +907,16 @@ export default function WorkflowsPage() {
 
   return (
     <div className='relative flex h-screen flex-col'>
+      {/* Loading indicator */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="flex items-center gap-3 bg-background border rounded-lg px-6 py-4 shadow-lg">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <span className="text-sm font-medium">Chargement du workflow...</span>
+          </div>
+        </div>
+      )}
+
       {/* Floating Minimal Toolbar */}
       <div className='-translate-x-1/2 absolute top-6 left-1/2 z-50 transform'>
         <div className='flex items-center gap-1 rounded-full border border-white/20 bg-background/90 p-1.5 shadow-2xl backdrop-blur-xl transition-shadow duration-300 hover:shadow-3xl'>
@@ -764,7 +927,7 @@ export default function WorkflowsPage() {
             className='group h-8 w-8 rounded-full p-0 transition-all duration-300 hover:scale-110 hover:bg-white/10'
             title="Workflow Library"
             onClick={() => {
-              alert('Workflow Library - Coming Soon!');
+              window.location.href = '/workflows-library';
             }}
           >
             <LibraryIcon size={14} />
@@ -861,6 +1024,19 @@ export default function WorkflowsPage() {
             {showSettingsMenu && (
               <div className='fade-in slide-in-from-top-2 absolute top-full right-0 z-20 mt-3 min-w-[180px] animate-in overflow-hidden rounded-xl border border-white/10 bg-background/80 shadow-2xl backdrop-blur-xl duration-300'>
                 <div className="p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
+                    onClick={openSaveModal}
+                  >
+                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                      <polyline points="17,21 17,13 7,13 7,21"/>
+                      <polyline points="7,3 7,8 15,8"/>
+                    </svg>
+                    <span className="font-medium">{currentWorkflowId ? 'Mettre à jour' : 'Sauvegarder'}</span>
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -983,6 +1159,65 @@ export default function WorkflowsPage() {
           />
         </ReactFlow>
       </div>
+
+      {/* Save Workflow Modal */}
+      <Dialog open={showSaveModal} onOpenChange={setShowSaveModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{currentWorkflowId ? 'Mettre à jour le workflow' : 'Sauvegarder le workflow'}</DialogTitle>
+            <DialogDescription>
+              {currentWorkflowId 
+                ? 'Modifiez les informations de votre workflow.' 
+                : 'Donnez un nom à votre workflow pour le sauvegarder dans votre bibliothèque.'
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="workflow-title">
+                Nom du workflow <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="workflow-title"
+                placeholder="Ex: Mon workflow d'analyse"
+                value={saveTitle}
+                onChange={(e) => setSaveTitle(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="workflow-description">
+                Description (optionnel)
+              </Label>
+              <Textarea
+                id="workflow-description"
+                placeholder="Décrivez brièvement ce que fait ce workflow..."
+                value={saveDescription}
+                onChange={(e) => setSaveDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowSaveModal(false)}
+              disabled={isSaving}
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={saveWorkflow}
+              disabled={isSaving || !saveTitle.trim()}
+            >
+              {isSaving 
+                ? (currentWorkflowId ? 'Mise à jour...' : 'Sauvegarde...') 
+                : (currentWorkflowId ? 'Mettre à jour' : 'Sauvegarder')
+              }
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

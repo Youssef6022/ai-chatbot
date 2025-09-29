@@ -218,3 +218,18 @@ export const chatFileAttachments = pgTable(
 );
 
 export type ChatFileAttachment = InferSelectModel<typeof chatFileAttachments>;
+
+export const workflow = pgTable('Workflow', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  title: text('title').notNull(),
+  description: text('description'),
+  workflowData: jsonb('workflowData').notNull(),
+  isPublic: boolean('isPublic').notNull().default(false),
+  createdAt: timestamp('createdAt').notNull(),
+  updatedAt: timestamp('updatedAt').notNull(),
+});
+
+export type Workflow = InferSelectModel<typeof workflow>;

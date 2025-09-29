@@ -40,11 +40,11 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Default Provider**: Google (Gemini models) direct integration
 - **Models Configuration**: `lib/ai/providers.ts` defines model mappings
 - **Available Models**: 
-  - `chat-model-small`: `gemini-1.5-flash`
-  - `chat-model-medium`: `gemini-1.5-flash`
-  - `chat-model-large`: `gemini-1.5-pro`
-  - `title-model`: `gemini-1.5-flash`
-  - `artifact-model`: `gemini-1.5-flash`
+  - `chat-model-small`: `gemini-2.5-flash-lite`
+  - `chat-model-medium`: `gemini-2.5-flash`
+  - `chat-model-large`: `gemini-2.5-pro`
+  - `title-model`: `gemini-2.5-flash-lite`
+  - `artifact-model`: `gemini-2.5-flash`
 - **Test Environment**: Uses mock models from `lib/ai/models.mock.ts`
 
 ### Database Architecture (PostgreSQL + Drizzle ORM)
