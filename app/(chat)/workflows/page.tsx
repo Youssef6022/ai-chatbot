@@ -899,9 +899,10 @@ export default function WorkflowsPage() {
       const incomingEdges = edges.filter(edge => edge.target === node.id && edge.targetHandle === 'input');
       incomingEdges.forEach(edge => {
         const connectedGenerateNode = nodes.find(n => n.id === edge.source && n.type === 'generate');
-        if (connectedGenerateNode?.data.result) {
+        if (connectedGenerateNode) {
           const variableName = connectedGenerateNode.data.variableName || 'AI Agent 1';
-          (connectedResults as any)[variableName] = connectedGenerateNode.data.result;
+          // Always include the variable name, with result if available
+          (connectedResults as any)[variableName] = connectedGenerateNode.data.result || '';
         }
       });
     }
