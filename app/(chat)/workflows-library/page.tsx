@@ -46,15 +46,10 @@ export default async function WorkflowsLibraryPage() {
   const workflows = await getWorkflows(user.id);
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Bibliothèque de Workflows</h1>
-        <p className="text-muted-foreground">
-          Gérez et organisez tous vos workflows sauvegardés.
-        </p>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <WorkflowLibraryClient workflows={workflows} />
       </div>
-      
-      <WorkflowLibraryClient workflows={workflows} />
     </div>
   );
 }
