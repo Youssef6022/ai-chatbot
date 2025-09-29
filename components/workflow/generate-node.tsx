@@ -33,7 +33,13 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
 
   const handleVariableNameChange = useCallback((value: string) => {
     setLocalVariableName(value);
-    data.onVariableNameChange?.(value);
+  }, []);
+
+  const handleVariableNameSubmit = useCallback((value: string) => {
+    const trimmedValue = value.trim();
+    if (trimmedValue && trimmedValue !== data.variableName) {
+      data.onVariableNameChange?.(trimmedValue);
+    }
   }, [data]);
 
   // Initialize with default AI Agent name if empty or result_X format
@@ -47,17 +53,27 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
     }
   }, [data.variableName, data.onVariableNameChange]);
 
+  // Sync local state when data changes (for validation failures)
+  useEffect(() => {
+    if (!isEditingName && data.variableName !== localVariableName) {
+      setLocalVariableName(data.variableName || '');
+    }
+  }, [data.variableName, isEditingName]);
+
   const handleNameClick = () => {
     setIsEditingName(true);
   };
 
   const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    handleVariableNameSubmit(localVariableName);
     setIsEditingName(false);
   };
 
   const handleNameKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
+      handleVariableNameSubmit(localVariableName);
       setIsEditingName(false);
     }
     if (e.key === 'Escape') {
@@ -149,7 +165,10 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
                         value={localVariableName}
                         onChange={(e) => handleVariableNameChange(e.target.value)}
                         onKeyDown={handleNameKeyDown}
-                        onBlur={() => setIsEditingName(false)}
+                        onBlur={() => {
+                          handleVariableNameSubmit(localVariableName);
+                          setIsEditingName(false);
+                        }}
                         className="h-6 text-sm font-medium border-none p-0 focus-visible:ring-0 bg-transparent"
                         autoFocus
                       />

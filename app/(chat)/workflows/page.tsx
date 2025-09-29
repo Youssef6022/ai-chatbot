@@ -93,7 +93,7 @@ const initialNodes = [
       label: 'Generate Text',
       selectedModel: 'chat-model-medium',
       result: '',
-      variableName: 'result_1',
+      variableName: 'AI Agent 1',
       onModelChange: () => {},
       onVariableNameChange: () => {},
       onDelete: () => {},
@@ -591,6 +591,26 @@ export default function WorkflowsPage() {
     setEdges((eds) => eds.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
   }, [setNodes, setEdges]);
 
+  // Function to validate and ensure unique variable names
+  const validateVariableName = useCallback((newName: string, currentNodeId: string) => {
+    if (!newName.trim()) {
+      toast.error('Le nom de variable ne peut pas être vide');
+      return false;
+    }
+
+    // Check if name already exists in other Generate nodes
+    const existingNames = nodes
+      .filter(node => node.type === 'generate' && node.id !== currentNodeId)
+      .map(node => node.data.variableName);
+
+    if (existingNames.includes(newName.trim())) {
+      toast.error('Ce nom de variable existe déjà. Choisissez un nom unique.');
+      return false;
+    }
+
+    return true;
+  }, [nodes]);
+
   const addPromptNode = useCallback(() => {
     const newNode = {
       id: `prompt-${Date.now()}`,
@@ -610,7 +630,14 @@ export default function WorkflowsPage() {
   const addGenerateNode = useCallback(() => {
     // Generate a unique variable name based on existing Generate nodes
     const generateNodes = nodes.filter(node => node.type === 'generate');
-    const nextNumber = generateNodes.length + 1;
+    
+    // Find the next available number for AI Agent
+    let nextNumber = 1;
+    const existingNames = generateNodes.map(node => node.data.variableName);
+    
+    while (existingNames.includes(`AI Agent ${nextNumber}`)) {
+      nextNumber++;
+    }
     
     const newNode = {
       id: `generate-${Date.now()}`,
@@ -620,7 +647,7 @@ export default function WorkflowsPage() {
         label: 'Generate Text',
         selectedModel: 'chat-model-medium',
         result: '',
-        variableName: `result_${nextNumber}`,
+        variableName: `AI Agent ${nextNumber}`,
         onModelChange: () => {},
         onVariableNameChange: () => {},
         onDelete: () => {},
@@ -700,7 +727,7 @@ export default function WorkflowsPage() {
           connectedGenerateNode.data.result.trim() !== '' && 
           connectedGenerateNode.data.result !== 'Generating...' &&
           !(connectedGenerateNode.data as any).isLoading) {
-        const variableName = connectedGenerateNode.data.variableName || 'result_1';
+        const variableName = connectedGenerateNode.data.variableName || 'AI Agent 1';
         const placeholder = `{${variableName}}`;
         processedText = processedText.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), connectedGenerateNode.data.result);
       }
@@ -873,7 +900,7 @@ export default function WorkflowsPage() {
       incomingEdges.forEach(edge => {
         const connectedGenerateNode = nodes.find(n => n.id === edge.source && n.type === 'generate');
         if (connectedGenerateNode?.data.result) {
-          const variableName = connectedGenerateNode.data.variableName || 'result_1';
+          const variableName = connectedGenerateNode.data.variableName || 'AI Agent 1';
           (connectedResults as any)[variableName] = connectedGenerateNode.data.result;
         }
       });
@@ -892,7 +919,11 @@ export default function WorkflowsPage() {
           ? (model: string) => updateNodeData(node.id, { selectedModel: model })
           : undefined,
         onVariableNameChange: node.type === 'generate'
-          ? (name: string) => updateNodeData(node.id, { variableName: name })
+          ? (name: string) => {
+              if (validateVariableName(name, node.id)) {
+                updateNodeData(node.id, { variableName: name.trim() });
+              }
+            }
           : undefined,
         onFilesChange: node.type === 'files'
           ? (files: any[]) => updateNodeData(node.id, { selectedFiles: files })
