@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { PlusIcon, WorkflowIcon, FileIcon } from '@/components/icons';
+import { ChevronLeft } from 'lucide-react';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
 import {
@@ -38,39 +39,47 @@ export function AppSidebar() {
     }
     // Côté client, utiliser l'état réel
     const isCollapsed = state === 'collapsed';
-    return `${baseClasses} ${isCollapsed ? 'justify-center p-3' : 'gap-3 px-3 py-3'}`;
+    return `${baseClasses} ${isCollapsed ? 'justify-center p-3 w-full' : 'gap-3 px-3 py-3 w-full'}`;
   };
 
+  const { toggleSidebar } = useSidebar();
+
   return (
-    <Sidebar className="group-data-[side=left]:border-r-0" collapsible="icon">
+    <Sidebar className="group-data-[side=left]:border-r-0 transition-all duration-300 ease-in-out" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
-          <div className="flex items-center justify-between">
-            {isClient && state === 'collapsed' ? (
-              <SidebarTrigger className="ml-auto" />
-            ) : (
-              <>
-                <SidebarTrigger />
-                {(!isClient || state !== 'collapsed') && (
-                  <Link
-                    href="/"
-                    onClick={() => {
-                      setOpenMobile(false);
-                    }}
-                    className="flex-1 ml-2"
-                  >
-                    <span className="cursor-pointer rounded-md px-2 font-semibold text-lg hover:bg-muted">
-                      Magistral
-                    </span>
-                  </Link>
-                )}
-              </>
+          <div className="flex items-center min-h-[48px] px-2">
+            <button
+              onClick={toggleSidebar}
+              className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+              title={isClient && state === 'collapsed' ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {isClient && state === 'collapsed' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 12h18m-9-9l9 9-9 9"/>
+                </svg>
+              ) : (
+                <ChevronLeft size={16} />
+              )}
+            </button>
+            {(!isClient || state !== 'collapsed') && (
+              <Link
+                href="/"
+                onClick={() => {
+                  setOpenMobile(false);
+                }}
+                className="flex-1 ml-3"
+              >
+                <span className="cursor-pointer rounded-md px-2 py-1 font-semibold text-lg hover:bg-muted transition-colors">
+                  Magistral
+                </span>
+              </Link>
             )}
           </div>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <div className="flex flex-col gap-4 p-3">
+        <div className="flex flex-col gap-2 p-2">
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
@@ -80,19 +89,26 @@ export function AppSidebar() {
                     setOpenMobile(false);
                     router.refresh();
                   }}
-                  className={getItemClassName('flex items-center rounded-md text-blue-primary hover:bg-blue-primary/10')}
+                  className="flex items-center rounded-md text-blue-primary hover:bg-blue-primary/10 transition-colors min-h-[32px] px-2"
                   style={{ 
                     color: 'var(--blue-primary)'
                   }}
                   title={isClient && state === 'collapsed' ? "New Chat" : undefined}
                 >
                   <div 
-                    className='flex h-7 w-7 items-center justify-center rounded-full bg-blue-primary text-white flex-shrink-0'
-                    style={{ backgroundColor: 'var(--blue-primary)', color: 'white' }}
+                    className='flex h-5 w-5 items-center justify-center rounded-full bg-blue-primary text-white flex-shrink-0 mx-auto'
+                    style={{ 
+                      backgroundColor: 'var(--blue-primary)', 
+                      color: 'white',
+                      marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
+                      marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
+                    }}
                   >
-                    <PlusIcon size={14} />
+                    <PlusIcon size={12} />
                   </div>
-                  {(!isClient || state !== 'collapsed') && <span>New Chat</span>}
+                  {(!isClient || state !== 'collapsed') && (
+                    <span className="text-sm font-medium transition-opacity duration-200">New Chat</span>
+                  )}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -102,11 +118,21 @@ export function AppSidebar() {
                 <Link
                   href="/workflows-library"
                   onClick={() => setOpenMobile(false)}
-                  className={getItemClassName('flex items-center')}
+                  className="flex items-center rounded-md hover:bg-accent transition-colors min-h-[32px] px-2"
                   title={isClient && state === 'collapsed' ? "Workflows" : undefined}
                 >
-                  <WorkflowIcon size={16} />
-                  {(!isClient || state !== 'collapsed') && <span>Workflows</span>}
+                  <div 
+                    className="flex h-5 w-5 items-center justify-center flex-shrink-0"
+                    style={{
+                      marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
+                      marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
+                    }}
+                  >
+                    <WorkflowIcon size={14} />
+                  </div>
+                  {(!isClient || state !== 'collapsed') && (
+                    <span className="text-sm font-medium transition-opacity duration-200">Workflows</span>
+                  )}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -116,11 +142,21 @@ export function AppSidebar() {
                 <Link
                   href="/library"
                   onClick={() => setOpenMobile(false)}
-                  className={getItemClassName('flex items-center')}
+                  className="flex items-center rounded-md hover:bg-accent transition-colors min-h-[32px] px-2"
                   title={isClient && state === 'collapsed' ? "Library" : undefined}
                 >
-                  <FileIcon size={16} />
-                  {(!isClient || state !== 'collapsed') && <span>Library</span>}
+                  <div 
+                    className="flex h-5 w-5 items-center justify-center flex-shrink-0"
+                    style={{
+                      marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
+                      marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
+                    }}
+                  >
+                    <FileIcon size={14} />
+                  </div>
+                  {(!isClient || state !== 'collapsed') && (
+                    <span className="text-sm font-medium transition-opacity duration-200">Library</span>
+                  )}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
