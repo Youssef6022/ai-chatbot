@@ -84,97 +84,99 @@ export function AppSidebar() {
           </div>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <div className="flex flex-col gap-2 p-2">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link
-                  href="/"
-                  onClick={() => {
-                    setOpenMobile(false);
-                    router.refresh();
-                  }}
-                  className="flex items-center rounded-md text-blue-primary hover:bg-blue-primary/10 transition-colors min-h-[32px] px-2"
-                  style={{ 
-                    color: 'var(--blue-primary)'
-                  }}
-                  title={isClient && state === 'collapsed' ? "New Chat" : undefined}
-                >
-                  <div 
-                    className='flex h-5 w-5 items-center justify-center rounded-full bg-blue-primary text-white flex-shrink-0 mx-auto'
+      <SidebarContent className="flex flex-col">
+        {/* Section fixe - Navigation principale */}
+        <div className="flex-shrink-0 border-b border-sidebar-border">
+          <div className="flex flex-col gap-2 p-2">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    href="/"
+                    onClick={() => {
+                      setOpenMobile(false);
+                      router.refresh();
+                    }}
+                    className="flex items-center rounded-md text-blue-primary hover:bg-blue-primary/10 transition-colors min-h-[32px] px-2"
                     style={{ 
-                      backgroundColor: 'var(--blue-primary)', 
-                      color: 'white',
-                      marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
-                      marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
+                      color: 'var(--blue-primary)'
                     }}
+                    title={isClient && state === 'collapsed' ? "New Chat" : undefined}
                   >
-                    <PlusIcon size={12} />
-                  </div>
-                  {(!isClient || state !== 'collapsed') && (
-                    <span className="text-sm font-medium transition-opacity duration-200">New Chat</span>
-                  )}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link
-                  href="/workflows-library"
-                  onClick={() => setOpenMobile(false)}
-                  className="flex items-center rounded-md hover:bg-accent transition-colors min-h-[32px] px-2"
-                  title={isClient && state === 'collapsed' ? "Workflows" : undefined}
-                >
-                  <div 
-                    className="flex h-5 w-5 items-center justify-center flex-shrink-0"
-                    style={{
-                      marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
-                      marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
-                    }}
+                    <div 
+                      className='flex h-5 w-5 items-center justify-center rounded-full bg-blue-primary text-white flex-shrink-0 mx-auto'
+                      style={{ 
+                        backgroundColor: 'var(--blue-primary)', 
+                        color: 'white',
+                        marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
+                        marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
+                      }}
+                    >
+                      <PlusIcon size={12} />
+                    </div>
+                    {(!isClient || state !== 'collapsed') && (
+                      <span className="text-sm font-medium transition-opacity duration-200">New Chat</span>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    href="/workflows-library"
+                    onClick={() => setOpenMobile(false)}
+                    className="flex items-center rounded-md hover:bg-accent transition-colors min-h-[32px] px-2"
+                    title={isClient && state === 'collapsed' ? "Workflows" : undefined}
                   >
-                    <WorkflowIcon size={14} />
-                  </div>
-                  {(!isClient || state !== 'collapsed') && (
-                    <span className="text-sm font-medium transition-opacity duration-200">Workflows</span>
-                  )}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link
-                  href="/library"
-                  onClick={() => setOpenMobile(false)}
-                  className="flex items-center rounded-md hover:bg-accent transition-colors min-h-[32px] px-2"
-                  title={isClient && state === 'collapsed' ? "Library" : undefined}
-                >
-                  <div 
-                    className="flex h-5 w-5 items-center justify-center flex-shrink-0"
-                    style={{
-                      marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
-                      marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
-                    }}
+                    <div 
+                      className="flex h-5 w-5 items-center justify-center flex-shrink-0"
+                      style={{
+                        marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
+                        marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
+                      }}
+                    >
+                      <WorkflowIcon size={14} />
+                    </div>
+                    {(!isClient || state !== 'collapsed') && (
+                      <span className="text-sm font-medium transition-opacity duration-200">Workflows</span>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link
+                    href="/library"
+                    onClick={() => setOpenMobile(false)}
+                    className="flex items-center rounded-md hover:bg-accent transition-colors min-h-[32px] px-2"
+                    title={isClient && state === 'collapsed' ? "Library" : undefined}
                   >
-                    <FileIcon size={14} />
-                  </div>
-                  {(!isClient || state !== 'collapsed') && (
-                    <span className="text-sm font-medium transition-opacity duration-200">Library</span>
-                  )}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            
-          </SidebarMenu>
+                    <div 
+                      className="flex h-5 w-5 items-center justify-center flex-shrink-0"
+                      style={{
+                        marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
+                        marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
+                      }}
+                    >
+                      <FileIcon size={14} />
+                    </div>
+                    {(!isClient || state !== 'collapsed') && (
+                      <span className="text-sm font-medium transition-opacity duration-200">Library</span>
+                    )}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </div>
         </div>
         
+        {/* Section défilante - Historique */}
         {(!isClient || state !== 'collapsed') && (
-          <>
-            <div className='mx-2 border-sidebar-border border-t' />
+          <div className="flex-1 overflow-y-auto">
             <SidebarHistory user={user} isCollapsed={isClient && state === 'collapsed'} />
-          </>
+          </div>
         )}
       </SidebarContent>
       <SidebarFooter>
