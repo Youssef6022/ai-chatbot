@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { PlusIcon, WorkflowIcon, FileIcon } from '@/components/icons';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, PanelLeft } from 'lucide-react';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
 import {
@@ -26,6 +26,7 @@ export function AppSidebar() {
   const { setOpenMobile, state } = useSidebar();
   const { user } = useSupabase();
   const [isClient, setIsClient] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -51,15 +52,20 @@ export function AppSidebar() {
           <div className="flex items-center min-h-[48px] px-2">
             <button
               onClick={toggleSidebar}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
               className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
               title={isClient && state === 'collapsed' ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {isClient && state === 'collapsed' ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 12h18m-9-9l9 9-9 9"/>
-                </svg>
+                <PanelLeft size={16} />
               ) : (
-                <ChevronLeft size={16} />
+                // Sidebar ouverte : PanelLeft par défaut, ChevronLeft au hover
+                isHovered ? (
+                  <ChevronLeft size={16} />
+                ) : (
+                  <PanelLeft size={16} />
+                )
               )}
             </button>
             {(!isClient || state !== 'collapsed') && (
