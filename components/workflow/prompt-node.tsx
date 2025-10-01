@@ -88,9 +88,9 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
           top: '50%',
           width: '16px', 
           height: '32px', 
-          backgroundColor: '#d1d5db', 
+          backgroundColor: '#3b82f6', 
           border: '2px solid white',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+          boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
           transform: 'translateY(-50%)',
           transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
           zIndex: 10,
@@ -100,14 +100,11 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
       
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
-          <Card className={`group relative min-w-[150px] min-h-[150px] max-w-[150px] cursor-pointer border-2 border-gray-300 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+          <div className="relative group">
+            <Card className={`group relative min-w-[150px] min-h-[150px] max-w-[150px] cursor-pointer border-2 border-blue-200 hover:border-blue-300 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg ${selected ? 'ring-2 ring-blue-500' : ''}`}>
             <CardContent className='flex items-center justify-center h-[150px] w-[150px] relative'>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-300 absolute">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14,2 14,8 20,8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10,9 9,9 8,9"/>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-300">
+                <path d="M5 12a5 5 0 0 1 7 7m-7-7a5 5 0 0 0-2 4a5 5 0 0 0 .224 1.483c.272.88.076 1.86-.099 2.784a.468.468 0 0 0 .592.539c.848-.232 1.691-.43 2.557-.112A5 5 0 0 0 8 21a4.99 4.99 0 0 0 4-2m-7-7c0-4.685 2.875-9 8-9a8 8 0 0 1 7.532 10.7c-.476 1.326.037 3.102.337 4.568a.451.451 0 0 1-.584.526c-1.312-.41-2.852-.986-4.085-.466c-1.334.562-2.736.672-4.2.672"/>
               </svg>
               
               {data.onDelete && (
@@ -124,7 +121,9 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
                 </Button>
               )}
             </CardContent>
-          </Card>
+            </Card>
+            
+          </div>
         </DialogTrigger>
         
         <DialogContent className='max-w-2xl'>
@@ -209,9 +208,9 @@ export function PromptNode({ data, selected }: NodeProps<PromptNodeData>) {
           left: '50%',
           width: '20px', 
           height: '20px', 
-          backgroundColor: '#d1d5db', 
+          backgroundColor: '#3b82f6', 
           border: '2px solid white',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+          boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
           transform: 'translateX(-50%)',
           transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
           zIndex: 10

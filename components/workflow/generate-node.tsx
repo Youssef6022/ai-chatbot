@@ -111,7 +111,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
         return `${baseStyles} border-red-500 shadow-lg shadow-red-500/30`;
       case 'idle':
       default:
-        return `${baseStyles} border-gray-300`;
+        return `${baseStyles} border-blue-200`;
     }
   }, [data.executionState]);
 
@@ -238,9 +238,9 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             top: '-8px',
             width: '32px', 
             height: '16px', 
-            backgroundColor: '#d1d5db', 
+            backgroundColor: '#3b82f6', 
             border: '2px solid white',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+            boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
             transform: 'translateX(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
             borderRadius: '3px',
@@ -259,9 +259,9 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             top: '-8px',
             width: '32px', 
             height: '16px', 
-            backgroundColor: '#d1d5db', 
+            backgroundColor: '#3b82f6', 
             border: '2px solid white',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+            boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
             transform: 'translateX(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
             borderRadius: '3px',
@@ -280,9 +280,9 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             top: '-8px',
             width: '32px', 
             height: '16px', 
-            backgroundColor: '#d1d5db', 
+            backgroundColor: '#3b82f6', 
             border: '2px solid white',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+            boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
             transform: 'translateX(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
             borderRadius: '3px',
@@ -323,9 +323,9 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
             right: '-10px',
             width: '20px', 
             height: '20px', 
-            backgroundColor: '#d1d5db', 
+            backgroundColor: '#3b82f6', 
             border: '2px solid white',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+            boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
             transform: 'none',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
           }}

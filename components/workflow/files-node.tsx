@@ -2,10 +2,9 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { TrashIcon } from '@/components/icons';
+import { TrashIcon, FileIcon } from '@/components/icons';
 import { FileSelectionModal } from '@/components/library/file-selection-modal';
 
 interface SelectedFile {
@@ -61,27 +60,53 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
     return '';
   }, [data]);
 
+
   return (
     <>
-      <Card className={`group min-w-[350px] border-2 border-gray-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
-        <CardHeader className="pb-2">
-          <CardTitle className='flex items-center justify-between font-medium text-sm'>
-            <span className="flex items-center gap-2">
-              📁 Files
-            </span>
-            {data.onDelete && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={data.onDelete}
-                className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
-              >
-                <TrashIcon size={12} />
-              </Button>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className='space-y-3 pt-0'>
+      <div className="relative group">
+        <Card 
+          className={`group min-w-[350px] border-2 border-blue-200 hover:border-blue-300 transition-colors cursor-pointer ${selected ? 'ring-2 ring-blue-500' : ''}`}
+          onClick={() => setIsModalOpen(true)}
+        >
+        <CardContent className='p-0'>
+          {/* Main content with file icon and count */}
+          <div className="flex h-32">
+            {/* File Icon - Full height left side */}
+            <div className="w-20 border-r border-blue-200 rounded-l-lg flex items-center justify-center bg-blue-50 dark:bg-blue-900">
+              <FileIcon size={32} className="text-blue-600 dark:text-blue-300" />
+            </div>
+            
+            {/* Content area */}
+            <div className="flex-1 flex items-center justify-between px-3">
+              {/* File info */}
+              <div className="flex flex-col justify-center gap-2 flex-1">
+                <div className="text-sm font-medium text-gray-800">
+                  Files
+                </div>
+                <div className="text-xs text-gray-600">
+                  {data.selectedFiles.length} file{data.selectedFiles.length !== 1 ? 's' : ''} selected
+                </div>
+              </div>
+              
+              {/* Right side - Delete */}
+              <div className="flex items-center gap-2">
+                {data.onDelete && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      data.onDelete?.();
+                    }}
+                    className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
+                  >
+                    <TrashIcon size={12} />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Output Handle */}
           <Handle
             type="source"
@@ -92,79 +117,17 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
               right: '-10px',
               width: '20px', 
               height: '20px', 
-              backgroundColor: '#d1d5db', 
+              backgroundColor: '#3b82f6', 
               border: '2px solid white',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+              boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
               transform: 'none',
               transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
             }}
           />
-          
-          {/* File Selection Button */}
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            variant="outline"
-            className="w-full"
-          >
-            Select Files from Library
-          </Button>
-
-          {/* Selected Files Display */}
-          <div>
-            <label className='mb-1 block font-medium text-muted-foreground text-xs'>
-              Selected Files ({data.selectedFiles.length})
-            </label>
-            <Card className="border-dashed">
-              <CardContent className="p-3">
-                {data.selectedFiles.length === 0 ? (
-                  <div className='text-muted-foreground text-sm italic text-center py-4'>
-                    No files selected. Click "Select Files" to choose files from your library.
-                  </div>
-                ) : (
-                  <ScrollArea className="h-[200px] w-full">
-                    <div className="space-y-2">
-                      {data.selectedFiles.map((file, index) => (
-                        <div
-                          key={`${file.url}-${index}`}
-                          className="flex items-center justify-between p-2 bg-muted rounded-md"
-                        >
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <span className="text-lg">
-                              {getFileIcon(file.contentType)}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium truncate" title={file.name}>
-                                {file.name}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {file.contentType}
-                              </div>
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveFile(file.url)}
-                            className="h-6 w-6 p-0 text-red-400 hover:bg-red-50 hover:text-red-600 flex-shrink-0"
-                          >
-                            <TrashIcon size={10} />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Connection Info */}
-          <div className='flex items-center gap-2 text-xs'>
-            <div className='h-2 w-2 rounded-full bg-purple-500' />
-            <span className='text-muted-foreground'>Files: Can connect to Generate Text</span>
-          </div>
         </CardContent>
-      </Card>
+        </Card>
+
+      </div>
 
       {/* File Selection Modal */}
       <FileSelectionModal
