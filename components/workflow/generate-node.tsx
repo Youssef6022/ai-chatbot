@@ -8,28 +8,39 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { LoaderIcon, TrashIcon } from '@/components/icons';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { TrashIcon } from '@/components/icons';
 import { chatModels } from '@/lib/ai/models';
+import type { Variable } from './variables-panel';
 
 interface GenerateNodeData {
   label: string;
   selectedModel: string;
   result: string;
   variableName: string;
+  systemPrompt?: string;
+  userPrompt?: string;
+  variables?: Variable[];
+  connectedResults?: { [key: string]: string };
   isLoading?: boolean;
   executionState?: 'idle' | 'preparing' | 'processing' | 'completing' | 'completed' | 'error';
   onModelChange: (model: string) => void;
   onVariableNameChange: (name: string) => void;
+  onSystemPromptChange?: (text: string) => void;
+  onUserPromptChange?: (text: string) => void;
   onDelete?: () => void;
   isHandleHighlighted?: (handleId: string, handleType: 'source' | 'target') => boolean;
   connectingFrom?: { nodeId: string; handleId: string; handleType: 'source' | 'target' } | null;
 }
 
-export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
-  const [localVariableName, setLocalVariableName] = useState(data.variableName || 'AI Agent 1');
-  const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+export function GenerateNode({ data, selected }: NodeProps) {
+  const nodeData = data as GenerateNodeData;
+  const [localVariableName, setLocalVariableName] = useState(nodeData.variableName || 'AI Agent 1');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
+  const [localSystemPrompt, setLocalSystemPrompt] = useState(nodeData.systemPrompt || '');
+  const [localUserPrompt, setLocalUserPrompt] = useState(nodeData.userPrompt || '');
 
   const handleVariableNameChange = useCallback((value: string) => {
     setLocalVariableName(value);
@@ -37,28 +48,28 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
 
   const handleVariableNameSubmit = useCallback((value: string) => {
     const trimmedValue = value.trim();
-    if (trimmedValue && trimmedValue !== data.variableName) {
-      data.onVariableNameChange?.(trimmedValue);
+    if (trimmedValue && trimmedValue !== nodeData.variableName) {
+      nodeData.onVariableNameChange?.(trimmedValue);
     }
-  }, [data]);
+  }, [nodeData]);
 
   // Initialize with default AI Agent name if empty or result_X format
   useEffect(() => {
-    if (!data.variableName || data.variableName.startsWith('result_')) {
+    if (!nodeData.variableName || nodeData.variableName.startsWith('result_')) {
       const defaultName = 'AI Agent 1';
       setLocalVariableName(defaultName);
-      data.onVariableNameChange?.(defaultName);
+      nodeData.onVariableNameChange?.(defaultName);
     } else {
-      setLocalVariableName(data.variableName);
+      setLocalVariableName(nodeData.variableName);
     }
-  }, [data.variableName, data.onVariableNameChange]);
+  }, [nodeData.variableName, nodeData.onVariableNameChange]);
 
-  // Sync local state when data changes (for validation failures)
+  // Sync local state when nodeData changes (for validation failures)
   useEffect(() => {
-    if (!isEditingName && data.variableName !== localVariableName) {
-      setLocalVariableName(data.variableName || '');
+    if (!isEditingName && nodeData.variableName !== localVariableName) {
+      setLocalVariableName(nodeData.variableName || '');
     }
-  }, [data.variableName, isEditingName]);
+  }, [nodeData.variableName, isEditingName]);
 
   const handleNameClick = () => {
     setIsEditingName(true);
@@ -77,7 +88,7 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
       setIsEditingName(false);
     }
     if (e.key === 'Escape') {
-      setLocalVariableName(data.variableName || '');
+      setLocalVariableName(nodeData.variableName || '');
       setIsEditingName(false);
     }
   };
@@ -85,20 +96,50 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
   // Helper function to get handle CSS classes based on highlighting state
   const getHandleClassName = useCallback((handleId: string, handleType: 'source' | 'target') => {
     // Only apply connection highlighting when actually connecting
-    if (!data.connectingFrom) return '';
+    if (!nodeData.connectingFrom) return '';
     
-    const isHighlighted = data.isHandleHighlighted?.(handleId, handleType);
-    const shouldDim = data.connectingFrom && !isHighlighted;
+    const isHighlighted = nodeData.isHandleHighlighted?.(handleId, handleType);
+    const shouldDim = nodeData.connectingFrom && !isHighlighted;
     
     if (isHighlighted) return 'handle-highlighted';
     if (shouldDim) return 'handle-dimmed';
     return '';
-  }, [data.connectingFrom, data.isHandleHighlighted]);
+  }, [nodeData.connectingFrom, nodeData.isHandleHighlighted]);
+
+  // Sync local prompts with nodeData
+  useEffect(() => {
+    setLocalSystemPrompt(nodeData.systemPrompt || '');
+    setLocalUserPrompt(nodeData.userPrompt || '');
+  }, [nodeData.systemPrompt, nodeData.userPrompt]);
+
+  const handleSystemPromptChange = useCallback((value: string) => {
+    setLocalSystemPrompt(value);
+    nodeData.onSystemPromptChange?.(value);
+  }, [nodeData]);
+
+  const handleUserPromptChange = useCallback((value: string) => {
+    setLocalUserPrompt(value);
+    nodeData.onUserPromptChange?.(value);
+  }, [nodeData]);
+
+  const insertVariable = useCallback((varName: string, targetField: 'system' | 'user') => {
+    const textAreaId = targetField === 'system' ? 'system-prompt-editor' : 'user-prompt-editor';
+    const textArea = document.getElementById(textAreaId) as HTMLTextAreaElement;
+    const currentText = targetField === 'system' ? localSystemPrompt : localUserPrompt;
+    const cursorPosition = textArea?.selectionStart || currentText.length;
+    const newText = `${currentText.slice(0, cursorPosition)}{${varName}}${currentText.slice(cursorPosition)}`;
+    
+    if (targetField === 'system') {
+      handleSystemPromptChange(newText);
+    } else {
+      handleUserPromptChange(newText);
+    }
+  }, [localSystemPrompt, localUserPrompt, handleSystemPromptChange, handleUserPromptChange]);
 
   // Helper function to get border styles based on execution state
   const getBorderStyles = useCallback(() => {
     const baseStyles = 'border-2 transition-all duration-300';
-    const currentState = data.executionState || 'idle';
+    const currentState = nodeData.executionState || 'idle';
     
     switch (currentState) {
       case 'preparing':
@@ -113,28 +154,22 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
       default:
         return `${baseStyles} border-blue-200`;
     }
-  }, [data.executionState]);
+  }, [nodeData.executionState]);
 
   return (
     <div className="relative">
-      {/* Input Labels */}
+      {/* Files Handle Label */}
       <div className="absolute -top-8 left-0 right-0">
-        <div className="text-xs font-medium text-gray-700 dark:text-gray-300 absolute" style={{ left: '25%', transform: 'translateX(-50%)' }}>
-          System
-        </div>
         <div className="text-xs font-medium text-gray-700 dark:text-gray-300 absolute" style={{ left: '50%', transform: 'translateX(-50%)' }}>
-          User
-        </div>
-        <div className="text-xs font-medium text-gray-700 dark:text-gray-300 absolute" style={{ left: '75%', transform: 'translateX(-50%)' }}>
           Files
         </div>
       </div>
       
       <Card 
-        className={`group min-w-[350px] ${getBorderStyles()} ${selected ? 'ring-2 ring-blue-500' : ''} ${data.result ? 'cursor-pointer' : ''}`}
+        className={`group min-w-[350px] ${getBorderStyles()} ${selected ? 'ring-2 ring-blue-500' : ''} cursor-pointer`}
         onClick={(e) => {
-          if (data.result && !isEditingName) {
-            setIsResultModalOpen(true);
+          if (!isEditingName) {
+            setIsEditModalOpen(true);
           }
         }}
       >
@@ -189,8 +224,8 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
                 {/* Model Selector */}
                 <div className="w-full max-w-[200px]" onClick={(e) => e.stopPropagation()}>
                   <Select
-                    value={data.selectedModel}
-                    onValueChange={data.onModelChange}
+                    value={nodeData.selectedModel}
+                    onValueChange={nodeData.onModelChange}
                   >
                     <SelectTrigger className="w-full h-7 text-xs">
                       <SelectValue placeholder="Select a model" />
@@ -211,13 +246,13 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
               {/* Right side - Delete */}
               <div className="flex items-center gap-2">
                 {/* Delete button */}
-                {data.onDelete && (
+                {nodeData.onDelete && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      data.onDelete?.();
+                      nodeData.onDelete?.();
                     }}
                     className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
                   >
@@ -227,33 +262,33 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
               </div>
             </div>
           </div>
-        {/* System Handle */}
+        {/* Input Handle (left side, rectangular) */}
         <Handle
           type="target"
-          position={Position.Top}
-          id="system"
-          className={getHandleClassName('system', 'target')}
+          position={Position.Left}
+          id="input"
+          className={getHandleClassName('input', 'target')}
           style={{ 
-            left: '25%', 
-            top: '-8px',
-            width: '32px', 
-            height: '16px', 
+            left: '-8px',
+            top: '50%',
+            width: '16px', 
+            height: '32px', 
             backgroundColor: '#3b82f6', 
             border: '2px solid white',
             boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
-            transform: 'translateX(-50%)',
+            transform: 'translateY(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
             borderRadius: '3px',
             zIndex: 10
           }}
         />
         
-        {/* User Handle */}
+        {/* Files Handle (top, rectangular) */}
         <Handle
           type="target"
           position={Position.Top}
-          id="user"
-          className={getHandleClassName('user', 'target')}
+          id="files"
+          className={getHandleClassName('files', 'target')}
           style={{ 
             left: '50%', 
             top: '-8px',
@@ -269,48 +304,140 @@ export function GenerateNode({ data, selected }: NodeProps<GenerateNodeData>) {
           }}
         />
         
-        {/* Files Handle */}
-        <Handle
-          type="target"
-          position={Position.Top}
-          id="files"
-          className={getHandleClassName('files', 'target')}
-          style={{ 
-            left: '75%', 
-            top: '-8px',
-            width: '32px', 
-            height: '16px', 
-            backgroundColor: '#3b82f6', 
-            border: '2px solid white',
-            boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
-            transform: 'translateX(-50%)',
-            transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-            borderRadius: '3px',
-            zIndex: 10
-          }}
-        />
-        
 
-        {/* Result Modal */}
-        <Dialog open={isResultModalOpen} onOpenChange={setIsResultModalOpen}>
+        {/* Edit Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent 
-            className='max-w-4xl max-h-[80vh]'
+            className='max-w-4xl max-h-[90vh]'
             onClick={(e) => e.stopPropagation()}
           >
             <DialogHeader>
-              <DialogTitle>{localVariableName} - Result</DialogTitle>
+              <DialogTitle className='flex items-center gap-2'>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 8V4H8"/>
+                  <rect width="16" height="12" x="4" y="8" rx="2"/>
+                  <path d="M2 14h2"/>
+                  <path d="M20 14h2"/>
+                  <path d="M15 13v2"/>
+                  <path d="M9 13v2"/>
+                </svg>
+                Edit AI Generator - {localVariableName}
+              </DialogTitle>
             </DialogHeader>
-            <ScrollArea className="h-[60vh] w-full">
-              {data.result ? (
-                <div className='whitespace-pre-wrap text-sm p-4'>
-                  {data.result}
-                </div>
-              ) : (
-                <div className='text-muted-foreground text-sm italic text-center py-8'>
-                  No result available. Connect prompts and run generation.
+            
+            <div className='space-y-6'>
+              {/* System Prompt */}
+              <div>
+                <Label htmlFor="system-prompt-editor" className="text-sm font-medium mb-2 block">
+                  System Prompt
+                </Label>
+                <Textarea
+                  id="system-prompt-editor"
+                  value={localSystemPrompt}
+                  onChange={(e) => handleSystemPromptChange(e.target.value)}
+                  placeholder="Enter system instructions... Use {variable_name} to insert variables."
+                  className="min-h-[120px] resize-none"
+                />
+              </div>
+              
+              {/* User Prompt */}
+              <div>
+                <Label htmlFor="user-prompt-editor" className="text-sm font-medium mb-2 block">
+                  User Prompt
+                </Label>
+                <Textarea
+                  id="user-prompt-editor"
+                  value={localUserPrompt}
+                  onChange={(e) => handleUserPromptChange(e.target.value)}
+                  placeholder="Enter user prompt... Use {variable_name} to insert variables."
+                  className="min-h-[120px] resize-none"
+                />
+              </div>
+              
+              {/* Variables section */}
+              {((nodeData.variables && nodeData.variables.length > 0) || (nodeData.connectedResults && Object.keys(nodeData.connectedResults).length > 0)) && (
+                <div className="space-y-4">
+                  {nodeData.variables && nodeData.variables.length > 0 && (
+                    <div>
+                      <div className='mb-2 font-medium text-muted-foreground text-sm'>Global Variables:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {nodeData.variables.map((variable) => (
+                          <div key={variable.id} className="flex gap-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 px-3 text-sm"
+                              onClick={() => insertVariable(variable.name, 'system')}
+                            >
+                              → System: {variable.name}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 px-3 text-sm"
+                              onClick={() => insertVariable(variable.name, 'user')}
+                            >
+                              → User: {variable.name}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {nodeData.connectedResults && Object.keys(nodeData.connectedResults).length > 0 && (
+                    <div>
+                      <div className='mb-2 font-medium text-muted-foreground text-sm'>Connected Results:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.keys(nodeData.connectedResults).map((resultName) => (
+                          <div key={resultName} className="flex gap-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className='h-8 bg-blue-50 px-3 text-sm dark:bg-blue-950'
+                              onClick={() => insertVariable(resultName, 'system')}
+                            >
+                              → System: {resultName}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className='h-8 bg-blue-50 px-3 text-sm dark:bg-blue-950'
+                              onClick={() => insertVariable(resultName, 'user')}
+                            >
+                              → User: {resultName}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-            </ScrollArea>
+              
+              {/* Result Display */}
+              {nodeData.result && (
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">
+                    Generated Result
+                  </Label>
+                  <ScrollArea className="h-[200px] w-full border rounded-md p-4">
+                    <div className='whitespace-pre-wrap text-sm'>
+                      {nodeData.result}
+                    </div>
+                  </ScrollArea>
+                </div>
+              )}
+              
+              <div className='flex justify-end gap-2'>
+                <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => setIsEditModalOpen(false)}>
+                  Save
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
 

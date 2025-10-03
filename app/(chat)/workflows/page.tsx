@@ -30,7 +30,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { PromptNode } from '@/components/workflow/prompt-node';
 import { GenerateNode } from '@/components/workflow/generate-node';
 import { FilesNode } from '@/components/workflow/files-node';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
@@ -68,7 +67,6 @@ const SettingsIcon = ({ size = 16 }: { size?: number }) => (
 );
 
 const nodeTypes = {
-  prompt: PromptNode,
   generate: GenerateNode,
   files: FilesNode,
 };
@@ -76,26 +74,19 @@ const nodeTypes = {
 const initialNodes = [
   {
     id: '1',
-    type: 'prompt',
-    position: { x: 100, y: 100 },
-    data: { 
-      label: 'Text Input',
-      text: 'Write a short story about...',
-      onTextChange: () => {},
-      onDelete: () => {},
-    },
-  },
-  {
-    id: '2',
     type: 'generate',
-    position: { x: 400, y: 100 },
+    position: { x: 300, y: 200 },
     data: { 
       label: 'Generate Text',
       selectedModel: 'chat-model-medium',
       result: '',
       variableName: 'AI Agent 1',
+      systemPrompt: '',
+      userPrompt: '',
       onModelChange: () => {},
       onVariableNameChange: () => {},
+      onSystemPromptChange: () => {},
+      onUserPromptChange: () => {},
       onDelete: () => {},
     },
   },
@@ -442,29 +433,15 @@ export default function WorkflowsPage() {
     
     // If we're connecting from a source handle, highlight compatible target handles
     if (connectingFrom.handleType === 'source' && handleType === 'target') {
-      // Prompt output → Generate system/user
-      if (sourceNode.type === 'prompt' && targetNode.type === 'generate' && 
-          connectingFrom.handleId === 'output' && 
-          (handleId === 'system' || handleId === 'user')) {
-        return true;
-      }
-      
-      // Generate output → Generate system/user  
+      // Generate output → Generate input  
       if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
-          connectingFrom.handleId === 'output' && 
-          (handleId === 'system' || handleId === 'user')) {
+          connectingFrom.handleId === 'output' && handleId === 'input') {
         return true;
       }
       
       // Files → Generate files
       if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
           connectingFrom.handleId === 'files' && handleId === 'files') {
-        return true;
-      }
-      
-      // Generate → Prompt (backward compatibility)
-      if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && 
-          connectingFrom.handleId === 'output' && handleId === 'input') {
         return true;
       }
     }
@@ -484,21 +461,9 @@ export default function WorkflowsPage() {
         
         if (!sourceNode || !targetNode) return eds;
         
-        // Cas 1: Prompt → Generate (via system ou user handles)
-        if (sourceNode.type === 'prompt' && targetNode.type === 'generate' && 
-            params.sourceHandle === 'output' && 
-            (params.targetHandle === 'system' || params.targetHandle === 'user')) {
-          // Supprimer toute connexion existante vers le même handle du même nœud Generate
-          const edgesWithoutTargetConnection = eds.filter(edge => 
-            !(edge.target === params.target && edge.targetHandle === params.targetHandle)
-          );
-          return addEdge(params, edgesWithoutTargetConnection);
-        }
-        
-        // Cas 2: Generate → Generate (sortie vers system ou user)
+        // Cas 1: Generate → Generate (chaînage via input)
         if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
-            params.sourceHandle === 'output' && 
-            (params.targetHandle === 'system' || params.targetHandle === 'user')) {
+            params.sourceHandle === 'output' && params.targetHandle === 'input') {
           // Supprimer toute connexion existante vers le même handle du même nœud Generate
           const edgesWithoutTargetConnection = eds.filter(edge => 
             !(edge.target === params.target && edge.targetHandle === params.targetHandle)
@@ -506,21 +471,12 @@ export default function WorkflowsPage() {
           return addEdge(params, edgesWithoutTargetConnection);
         }
         
-        // Cas 3: Files → Generate (connexions de fichiers)
+        // Cas 2: Files → Generate (connexions de fichiers)
         if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
             params.sourceHandle === 'files' && params.targetHandle === 'files') {
           // Permettre plusieurs connexions de Files vers le même handle Generate
           // Ne pas supprimer les connexions existantes, juste ajouter la nouvelle
           return addEdge(params, eds);
-        }
-        
-        // Cas 4: Generate → Prompt (rétrocompatibilité pour les anciens workflows)
-        if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && 
-            params.sourceHandle === 'output' && params.targetHandle === 'input') {
-          const edgesWithoutTargetConnection = eds.filter(edge => 
-            !(edge.target === params.target && edge.targetHandle === params.targetHandle)
-          );
-          return addEdge(params, edgesWithoutTargetConnection);
         }
         
         // Rejeter les connexions non valides
@@ -537,29 +493,15 @@ export default function WorkflowsPage() {
     
     if (!sourceNode || !targetNode) return false;
     
-    // Prompt → Generate (system ou user)
-    if (sourceNode.type === 'prompt' && targetNode.type === 'generate' && 
-        connection.sourceHandle === 'output' && 
-        (connection.targetHandle === 'system' || connection.targetHandle === 'user')) {
-      return true;
-    }
-    
-    // Generate → Generate (system ou user)
+    // Generate → Generate (chaînage via input)
     if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
-        connection.sourceHandle === 'output' && 
-        (connection.targetHandle === 'system' || connection.targetHandle === 'user')) {
+        connection.sourceHandle === 'output' && connection.targetHandle === 'input') {
       return true;
     }
     
-    // Files → Generate (files seulement)
+    // Files → Generate (files)
     if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
         connection.sourceHandle === 'files' && connection.targetHandle === 'files') {
-      return true;
-    }
-    
-    // Generate → Prompt (rétrocompatibilité)
-    if (sourceNode.type === 'generate' && targetNode.type === 'prompt' && 
-        connection.sourceHandle === 'output' && connection.targetHandle === 'input') {
       return true;
     }
     
@@ -611,21 +553,6 @@ export default function WorkflowsPage() {
     return true;
   }, [nodes]);
 
-  const addPromptNode = useCallback(() => {
-    const newNode = {
-      id: `prompt-${Date.now()}`,
-      type: 'prompt',
-      position: { x: Math.random() * 300, y: Math.random() * 300 },
-      data: {
-        label: 'Text Input',
-        text: '',
-        variables,
-        onTextChange: () => {},
-        onDelete: () => {},
-      },
-    };
-    setNodes((nds) => [...nds, newNode]);
-  }, [setNodes, variables]);
 
   const addGenerateNode = useCallback(() => {
     // Generate a unique variable name based on existing Generate nodes
@@ -648,8 +575,12 @@ export default function WorkflowsPage() {
         selectedModel: 'chat-model-medium',
         result: '',
         variableName: `AI Agent ${nextNumber}`,
+        systemPrompt: '',
+        userPrompt: '',
         onModelChange: () => {},
         onVariableNameChange: () => {},
+        onSystemPromptChange: () => {},
+        onUserPromptChange: () => {},
         onDelete: () => {},
       },
     };
@@ -774,15 +705,14 @@ export default function WorkflowsPage() {
           return currentNodes;
         }
         
-        // Find connected system, user, and files nodes
-        const systemEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'system');
-        const userEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'user');
+        // Find connected input and files nodes
+        const inputEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'input');
         const filesEdges = edges.filter(edge => edge.target === generateNodeId && edge.targetHandle === 'files');
         
         // Process in background
         (async () => {
           try {
-            await processGenerateNode(generateNode, currentNodes, systemEdge, userEdge, filesEdges);
+            await processGenerateNode(generateNode, currentNodes, inputEdge, filesEdges);
             resolve();
           } catch (error) {
             reject(error);
@@ -794,7 +724,7 @@ export default function WorkflowsPage() {
     });
   };
   
-  const processGenerateNode = async (generateNode: any, currentNodes: any[], systemEdge?: any, userEdge?: any, filesEdges?: any[]) => {
+  const processGenerateNode = async (generateNode: any, currentNodes: any[], inputEdge?: any, filesEdges?: any[]) => {
     try {
       // Set processing state (orange)
       updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true, executionState: 'processing' });
@@ -807,35 +737,28 @@ export default function WorkflowsPage() {
         });
       });
       
-      let systemPrompt = '';
-      let userPrompt = '';
+      // Get the current node data
+      const currentGenerateNode = latestNodes.find(node => node.id === generateNode.id);
+      let systemPrompt = currentGenerateNode?.data?.systemPrompt || '';
+      let userPrompt = currentGenerateNode?.data?.userPrompt || '';
       
-      // Process system input (from connected node)
-      if (systemEdge) {
-        const systemNode = latestNodes.find(node => node.id === systemEdge.source);
-        if (systemNode) {
-          if (systemNode.type === 'prompt' && systemNode.data.text) {
-            systemPrompt = processPromptText(systemNode.data.text, latestNodes);
-          } else if (systemNode.type === 'generate' && systemNode.data.result && 
-                     systemNode.data.result.trim() !== '' && 
-                     systemNode.data.result !== 'Generating...' &&
-                     !(systemNode.data as any).isLoading) {
-            systemPrompt = systemNode.data.result;
-          }
-        }
-      }
+      // Process variables in the prompts
+      systemPrompt = processPromptText(systemPrompt, latestNodes);
+      userPrompt = processPromptText(userPrompt, latestNodes);
       
-      // Process user input (from connected node)
-      if (userEdge) {
-        const userNode = latestNodes.find(node => node.id === userEdge.source);
-        if (userNode) {
-          if (userNode.type === 'prompt' && userNode.data.text) {
-            userPrompt = processPromptText(userNode.data.text, latestNodes);
-          } else if (userNode.type === 'generate' && userNode.data.result && 
-                     userNode.data.result.trim() !== '' && 
-                     userNode.data.result !== 'Generating...' &&
-                     !(userNode.data as any).isLoading) {
-            userPrompt = userNode.data.result;
+      // If there's an input connection from another Generate node, use its result as user prompt
+      if (inputEdge) {
+        const inputNode = latestNodes.find(node => node.id === inputEdge.source);
+        if (inputNode && inputNode.type === 'generate' && inputNode.data.result && 
+            inputNode.data.result.trim() !== '' && 
+            inputNode.data.result !== 'Generating...' &&
+            !(inputNode.data as any).isLoading) {
+          // If user prompt is empty, use the connected result as user prompt
+          // If user prompt exists, append the connected result
+          if (!userPrompt.trim()) {
+            userPrompt = inputNode.data.result;
+          } else {
+            userPrompt += '\n\n' + inputNode.data.result;
           }
         }
       }
@@ -894,7 +817,7 @@ export default function WorkflowsPage() {
   const nodesWithCallbacks = nodes.map(node => {
     const connectedResults = {};
     
-    if (node.type === 'prompt') {
+    if (node.type === 'generate') {
       // Function to recursively find all Generate nodes in the dependency chain
       const findAllGenerateNodesInChain = (nodeId: string, visited = new Set()): any[] => {
         if (visited.has(nodeId)) return []; // Avoid infinite loops
@@ -938,11 +861,8 @@ export default function WorkflowsPage() {
       ...node,
       data: {
         ...node.data,
-        variables: node.type === 'prompt' ? variables : undefined,
-        connectedResults: node.type === 'prompt' ? connectedResults : undefined,
-        onTextChange: node.type === 'prompt' 
-          ? (text: string) => updateNodeData(node.id, { text })
-          : undefined,
+        variables: node.type === 'generate' ? variables : undefined,
+        connectedResults: node.type === 'generate' ? connectedResults : undefined,
         onModelChange: node.type === 'generate'
           ? (model: string) => updateNodeData(node.id, { selectedModel: model })
           : undefined,
@@ -952,6 +872,12 @@ export default function WorkflowsPage() {
                 updateNodeData(node.id, { variableName: name.trim() });
               }
             }
+          : undefined,
+        onSystemPromptChange: node.type === 'generate'
+          ? (text: string) => updateNodeData(node.id, { systemPrompt: text })
+          : undefined,
+        onUserPromptChange: node.type === 'generate'
+          ? (text: string) => updateNodeData(node.id, { userPrompt: text })
           : undefined,
         onFilesChange: node.type === 'files'
           ? (files: any[]) => updateNodeData(node.id, { selectedFiles: files })
@@ -1012,18 +938,6 @@ export default function WorkflowsPage() {
             {showAddMenu && (
               <div className='fade-in slide-in-from-top-2 absolute top-full left-0 z-20 mt-3 min-w-[180px] animate-in overflow-hidden rounded-xl border border-white/10 bg-background/80 shadow-2xl backdrop-blur-xl duration-300'>
                 <div className="p-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
-                    onClick={() => {
-                      addPromptNode();
-                      setShowAddMenu(false);
-                    }}
-                  >
-                    <span className='text-lg transition-transform duration-200 group-hover:scale-110'>📝</span>
-                    <span className="font-medium">Prompt</span>
-                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
