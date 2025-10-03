@@ -1,6 +1,6 @@
 /* Custom styles for React Flow workflows */
 
-/* Simple solid edges/connections without animation */
+/* Default solid edges/connections without animation */
 .react-flow__edge-path {
   stroke: #3b82f6 !important;
   stroke-width: 2px !important;
@@ -8,11 +8,24 @@
   animation: none !important;
 }
 
+/* Animated edges for AI Generator to AI Generator connections */
+.react-flow__edge.generate-to-generate .react-flow__edge-path {
+  stroke: #3b82f6 !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: 15 8 !important;
+  animation: dash-flow 2s linear infinite !important;
+}
+
 .react-flow__edge.selected .react-flow__edge-path {
   stroke: #1d4ed8 !important;
   stroke-width: 3px !important;
-  stroke-dasharray: none !important;
-  animation: none !important;
+}
+
+.react-flow__edge.selected.generate-to-generate .react-flow__edge-path {
+  stroke: #1d4ed8 !important;
+  stroke-width: 3px !important;
+  stroke-dasharray: 18 10 !important;
+  animation: dash-flow 1.5s linear infinite !important;
 }
 
 /* Simple connection line when dragging */
@@ -21,6 +34,15 @@
   stroke-width: 2px !important;
   stroke-dasharray: none !important;
   animation: none !important;
+}
+
+@keyframes dash-flow {
+  0% {
+    stroke-dashoffset: 23;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
 
 /* Edge markers (arrows) */

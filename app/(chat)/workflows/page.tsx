@@ -468,7 +468,15 @@ export default function WorkflowsPage() {
           const edgesWithoutTargetConnection = eds.filter(edge => 
             !(edge.target === params.target && edge.targetHandle === params.targetHandle)
           );
-          return addEdge(params, edgesWithoutTargetConnection);
+          const newEdge = {
+            ...params,
+            className: 'generate-to-generate',
+            data: {
+              sourceType: sourceNode.type,
+              targetType: targetNode.type
+            }
+          };
+          return addEdge(newEdge, edgesWithoutTargetConnection);
         }
         
         // Cas 2: Files → Generate (connexions de fichiers)
@@ -476,7 +484,14 @@ export default function WorkflowsPage() {
             params.sourceHandle === 'files' && params.targetHandle === 'files') {
           // Permettre plusieurs connexions de Files vers le même handle Generate
           // Ne pas supprimer les connexions existantes, juste ajouter la nouvelle
-          return addEdge(params, eds);
+          const newEdge = {
+            ...params,
+            data: {
+              sourceType: sourceNode.type,
+              targetType: targetNode.type
+            }
+          };
+          return addEdge(newEdge, eds);
         }
         
         // Rejeter les connexions non valides
