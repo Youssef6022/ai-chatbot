@@ -426,6 +426,9 @@ export default function WorkflowsPage() {
   const isHandleHighlighted = useCallback((nodeId: string, handleId: string, handleType: 'source' | 'target') => {
     if (!connectingFrom) return false;
     
+    // Empêcher les connexions d'un nœud vers lui-même
+    if (connectingFrom.nodeId === nodeId) return false;
+    
     const sourceNode = nodes.find(n => n.id === connectingFrom.nodeId);
     const targetNode = nodes.find(n => n.id === nodeId);
     
@@ -507,6 +510,11 @@ export default function WorkflowsPage() {
     const targetNode = nodes.find(n => n.id === connection.target);
     
     if (!sourceNode || !targetNode) return false;
+    
+    // Empêcher les connexions d'un nœud vers lui-même
+    if (connection.source === connection.target) {
+      return false;
+    }
     
     // Generate → Generate (chaînage via input)
     if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
