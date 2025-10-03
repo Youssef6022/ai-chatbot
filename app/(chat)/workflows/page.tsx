@@ -644,9 +644,9 @@ export default function WorkflowsPage() {
   const processPromptText = (text: string, latestNodes: any[]) => {
     let processedText = text;
     
-    // Replace global variables
+    // Replace global variables (double braces)
     variables.forEach(variable => {
-      const placeholder = `{${variable.name}}`;
+      const placeholder = `{{${variable.name}}}`;
       processedText = processedText.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), variable.value);
     });
     
@@ -659,7 +659,7 @@ export default function WorkflowsPage() {
           connectedGenerateNode.data.result !== 'Generating...' &&
           !(connectedGenerateNode.data as any).isLoading) {
         const variableName = connectedGenerateNode.data.variableName || 'AI Agent 1';
-        const placeholder = `{${variableName}}`;
+        const placeholder = `{{${variableName}}}`;
         processedText = processedText.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), connectedGenerateNode.data.result);
       }
     });

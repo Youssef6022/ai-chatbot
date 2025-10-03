@@ -11,6 +11,28 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { TrashIcon } from '@/components/icons';
+
+// Settings Icon Component
+const SettingsIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M12 1v6m0 6v6"/>
+    <path d="m15.5 3.5-3 3-3-3"/>
+    <path d="m15.5 20.5-3-3-3 3"/>
+    <path d="M1 12h6m6 0h6"/>
+    <path d="m3.5 15.5 3-3 3 3"/>
+    <path d="m20.5 15.5-3-3-3 3"/>
+  </svg>
+);
 import { chatModels } from '@/lib/ai/models';
 import type { Variable } from './variables-panel';
 
@@ -132,7 +154,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
     const currentText = targetField === 'system' ? localSystemPrompt : localUserPrompt;
     
     const cursorPosition = textArea?.selectionStart || currentText.length;
-    const newText = `${currentText.slice(0, cursorPosition)}{${varName}}${currentText.slice(cursorPosition)}`;
+    const newText = `${currentText.slice(0, cursorPosition)}{{${varName}}}${currentText.slice(cursorPosition)}`;
     
     if (targetField === 'system') {
       handleSystemPromptChange(newText);
@@ -140,7 +162,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
       setTimeout(() => {
         if (systemTextArea) {
           systemTextArea.focus();
-          const newPosition = cursorPosition + varName.length + 2; // +2 for the braces
+          const newPosition = cursorPosition + varName.length + 4; // +4 for the double braces
           systemTextArea.setSelectionRange(newPosition, newPosition);
         }
       }, 0);
@@ -150,7 +172,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
       setTimeout(() => {
         if (userTextArea) {
           userTextArea.focus();
-          const newPosition = cursorPosition + varName.length + 2; // +2 for the braces
+          const newPosition = cursorPosition + varName.length + 4; // +4 for the double braces
           userTextArea.setSelectionRange(newPosition, newPosition);
         }
       }, 0);
@@ -187,8 +209,8 @@ export function GenerateNode({ data, selected }: NodeProps) {
       </div>
       
       <Card 
-        className={`group min-w-[350px] ${getBorderStyles()} ${selected ? 'ring-2 ring-blue-500' : ''} cursor-pointer`}
-        onClick={(e) => {
+        className={`group min-w-[250px] ${getBorderStyles()} ${selected ? 'ring-2 ring-blue-500' : ''}`}
+        onDoubleClick={() => {
           if (!isEditingName) {
             setIsEditModalOpen(true);
           }
@@ -196,10 +218,10 @@ export function GenerateNode({ data, selected }: NodeProps) {
       >
         <CardContent className='p-0'>
           {/* Main content with robot icon and name */}
-          <div className="flex h-32">
+          <div className="flex h-20">
             {/* Robot Icon - Full height left side */}
-            <div className="w-20 rounded-l-lg flex items-center justify-center">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-300">
+            <div className="w-16 rounded-l-lg flex items-center justify-center">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-300">
                 <path d="M12 8V4H8"/>
                 <rect width="16" height="12" x="4" y="8" rx="2"/>
                 <path d="M2 14h2"/>
@@ -209,77 +231,12 @@ export function GenerateNode({ data, selected }: NodeProps) {
               </svg>
             </div>
             
-            {/* Content area */}
-            <div className="flex-1 flex items-center justify-between px-3">
-              {/* Agent Name and Model Selector */}
-              <div className="flex flex-col justify-center gap-2 flex-1">
-                {/* Agent Name */}
-                <div>
-                  {isEditingName ? (
-                    <form onSubmit={handleNameSubmit} onClick={(e) => e.stopPropagation()}>
-                      <Input
-                        value={localVariableName}
-                        onChange={(e) => handleVariableNameChange(e.target.value)}
-                        onKeyDown={handleNameKeyDown}
-                        onBlur={() => {
-                          handleVariableNameSubmit(localVariableName);
-                          setIsEditingName(false);
-                        }}
-                        className="h-6 text-sm font-medium border-none p-0 focus-visible:ring-0 bg-transparent"
-                        autoFocus
-                      />
-                    </form>
-                  ) : (
-                    <div 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleNameClick();
-                      }}
-                      className="text-sm font-medium cursor-pointer hover:bg-gray-50 px-1 py-0.5 rounded"
-                    >
-                      {localVariableName}
-                    </div>
-                  )}
+            {/* Content area - Just name centered */}
+            <div className="flex-1 flex items-center justify-center px-2">
+              <div className="text-center">
+                <div className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                  {localVariableName}
                 </div>
-                
-                {/* Model Selector */}
-                <div className="w-full max-w-[200px]" onClick={(e) => e.stopPropagation()}>
-                  <Select
-                    value={nodeData.selectedModel}
-                    onValueChange={nodeData.onModelChange}
-                  >
-                    <SelectTrigger className="w-full h-7 text-xs">
-                      <SelectValue placeholder="Select a model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {chatModels.map((model) => (
-                        <SelectItem key={model.id} value={model.id}>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium text-xs">{model.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              {/* Right side - Delete */}
-              <div className="flex items-center gap-2">
-                {/* Delete button */}
-                {nodeData.onDelete && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      nodeData.onDelete?.();
-                    }}
-                    className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
-                  >
-                    <TrashIcon size={12} />
-                  </Button>
-                )}
               </div>
             </div>
           </div>
@@ -347,6 +304,45 @@ export function GenerateNode({ data, selected }: NodeProps) {
             </DialogHeader>
             
             <div className='space-y-6'>
+              {/* Agent Name and Model */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="agent-name-input" className="text-sm font-medium mb-2 block">
+                    Agent Name
+                  </Label>
+                  <Input
+                    id="agent-name-input"
+                    value={localVariableName}
+                    onChange={(e) => handleVariableNameChange(e.target.value)}
+                    onBlur={() => handleVariableNameSubmit(localVariableName)}
+                    placeholder="Enter agent name"
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">
+                    AI Model
+                  </Label>
+                  <Select
+                    value={nodeData.selectedModel}
+                    onValueChange={nodeData.onModelChange}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {chatModels.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">{model.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
               {/* System Prompt */}
               <div>
                 <Label htmlFor="system-prompt-editor" className="text-sm font-medium mb-2 block">
@@ -357,7 +353,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
                   value={localSystemPrompt}
                   onChange={(e) => handleSystemPromptChange(e.target.value)}
                   onFocus={() => setActiveField('system')}
-                  placeholder="Enter system instructions... Use {variable_name} to insert variables."
+                  placeholder="Enter system instructions... Use {{variable_name}} to insert variables."
                   className="min-h-[120px] resize-none"
                 />
               </div>
@@ -372,7 +368,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
                   value={localUserPrompt}
                   onChange={(e) => handleUserPromptChange(e.target.value)}
                   onFocus={() => setActiveField('user')}
-                  placeholder="Enter user prompt... Use {variable_name} to insert variables."
+                  placeholder="Enter user prompt... Use {{variable_name}} to insert variables."
                   className="min-h-[120px] resize-none"
                 />
               </div>
