@@ -64,68 +64,32 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
   return (
     <>
       <div className="relative group">
-        <Card 
-          className={`group min-w-[350px] border-2 border-blue-200 hover:border-blue-300 transition-colors cursor-pointer ${selected ? 'ring-2 ring-blue-500' : ''}`}
-          onClick={() => setIsModalOpen(true)}
+        {/* Circular Files Node */}
+        <div 
+          className={`w-16 h-16 rounded-full border-2 border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer transition-colors flex items-center justify-center ${selected ? 'ring-2 ring-blue-500' : ''}`}
+          onDoubleClick={() => setIsModalOpen(true)}
         >
-        <CardContent className='p-0'>
-          {/* Main content with file icon and count */}
-          <div className="flex h-32">
-            {/* File Icon - Full height left side */}
-            <div className="w-20 border-r border-blue-200 rounded-l-lg flex items-center justify-center bg-blue-50 dark:bg-blue-900">
-              <FileIcon size={32} className="text-blue-600 dark:text-blue-300" />
-            </div>
-            
-            {/* Content area */}
-            <div className="flex-1 flex items-center justify-between px-3">
-              {/* File info */}
-              <div className="flex flex-col justify-center gap-2 flex-1">
-                <div className="text-sm font-medium text-gray-800">
-                  Files
-                </div>
-                <div className="text-xs text-gray-600">
-                  {data.selectedFiles.length} file{data.selectedFiles.length !== 1 ? 's' : ''} selected
-                </div>
-              </div>
-              
-              {/* Right side - Delete */}
-              <div className="flex items-center gap-2">
-                {data.onDelete && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      data.onDelete?.();
-                    }}
-                    className='h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity'
-                  >
-                    <TrashIcon size={12} />
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-
+          <FileIcon size={24} className="text-gray-600 dark:text-gray-300" />
+          
           {/* Output Handle */}
           <Handle
             type="source"
-            position={Position.Right}
+            position={Position.Bottom}
             id="files"
             className={getHandleClassName('files', 'source')}
             style={{ 
-              right: '-10px',
+              bottom: '-10px',
+              left: '50%',
               width: '20px', 
               height: '20px', 
               backgroundColor: '#3b82f6', 
               border: '2px solid white',
               boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
-              transform: 'none',
+              transform: 'translateX(-50%)',
               transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
             }}
           />
-        </CardContent>
-        </Card>
+        </div>
 
       </div>
 
