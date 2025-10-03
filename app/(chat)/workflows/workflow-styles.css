@@ -192,3 +192,30 @@
     stroke-dashoffset: 0;
   }
 }
+
+/* Delete button for edges */
+.edge-delete-button {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: #ef4444;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+
+.edge-delete-button:hover {
+  background: #dc2626;
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}

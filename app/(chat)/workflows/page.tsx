@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/dialog';
 import { GenerateNode } from '@/components/workflow/generate-node';
 import { FilesNode } from '@/components/workflow/files-node';
+import { CustomEdge } from '@/components/workflow/custom-edge';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
 import { PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
 import { toast } from 'sonner';
@@ -69,6 +70,10 @@ const SettingsIcon = ({ size = 16 }: { size?: number }) => (
 const nodeTypes = {
   generate: GenerateNode,
   files: FilesNode,
+};
+
+const edgeTypes = {
+  custom: CustomEdge,
 };
 
 const initialNodes = [
@@ -113,6 +118,9 @@ export default function WorkflowsPage() {
   
   // Connection highlighting state
   const [connectingFrom, setConnectingFrom] = useState<{ nodeId: string; handleId: string; handleType: 'source' | 'target' } | null>(null);
+  
+  // Edge selection state for delete button
+  const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
 
   // Track theme for dots color
   const [dotsColor, setDotsColor] = useState('#e2e8f0');
@@ -536,9 +544,28 @@ export default function WorkflowsPage() {
       setEdges((eds) => eds.filter(edge => 
         !edgesToDelete.find(deletedEdge => deletedEdge.id === edge.id)
       ));
+      setSelectedEdge(null);
     },
     [setEdges]
   );
+
+  // Delete specific edge by ID
+  const deleteEdge = useCallback((edgeId: string) => {
+    setEdges((eds) => eds.filter(edge => edge.id !== edgeId));
+    setSelectedEdge(null);
+  }, [setEdges]);
+
+  // Handle edge click for selection
+  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+    setSelectedEdge(edge.id);
+  }, []);
+
+  // Handle background click to deselect edge
+  const onPaneClick = useCallback(() => {
+    setSelectedEdge(null);
+  }, []);
+
 
   const updateNodeData = useCallback((nodeId: string, data: any) => {
     setNodes((nds) =>
@@ -869,15 +896,19 @@ export default function WorkflowsPage() {
       
       return {
         ...edge,
+        type: 'custom',
         className: className.trim(),
+        selected: edge.id === selectedEdge,
         data: {
           ...edge.data,
           sourceType: sourceNode?.type,
-          targetType: targetNode?.type
+          targetType: targetNode?.type,
+          onDelete: deleteEdge,
+          isSelected: edge.id === selectedEdge
         }
       };
     });
-  }, [nodes, isRunning]);
+  }, [nodes, isRunning, selectedEdge, deleteEdge]);
 
   // Update edges with proper classes whenever nodes or edges change
   useEffect(() => {
@@ -1163,8 +1194,11 @@ export default function WorkflowsPage() {
           onConnectStart={onConnectStart}
           onConnectEnd={onConnectEnd}
           onEdgesDelete={onEdgesDelete}
+          onEdgeClick={onEdgeClick}
+          onPaneClick={onPaneClick}
           isValidConnection={isValidConnection}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           fitView
           className="react-flow-custom"
           style={{
