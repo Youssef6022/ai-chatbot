@@ -1,19 +1,19 @@
 /* Custom styles for React Flow workflows */
 
-/* Default solid edges/connections without animation */
+/* Default grayed out edges/connections without animation */
 .react-flow__edge-path {
-  stroke: #f97316 !important;
+  stroke: #9ca3af !important;
   stroke-width: 2px !important;
   stroke-dasharray: none !important;
   animation: none !important;
 }
 
-/* Animated edges for AI Generator to AI Generator connections */
+/* Static edges for AI Generator to AI Generator connections (dashed gray by default) */
 .react-flow__edge.generate-to-generate .react-flow__edge-path {
-  stroke: #f97316 !important;
+  stroke: #9ca3af !important;
   stroke-width: 2px !important;
   stroke-dasharray: 15 8 !important;
-  animation: dash-flow 2s linear infinite !important;
+  animation: none !important;
 }
 
 .react-flow__edge.selected .react-flow__edge-path {
@@ -30,7 +30,7 @@
 
 /* Simple connection line when dragging */
 .react-flow__connection-line {
-  stroke: #f97316 !important;
+  stroke: #9ca3af !important;
   stroke-width: 2px !important;
   stroke-dasharray: none !important;
   animation: none !important;
@@ -45,9 +45,9 @@
   }
 }
 
-/* Edge markers (arrows) */
+/* Edge markers (arrows) - grayed out by default */
 .react-flow__arrowhead {
-  fill: #f97316 !important;
+  fill: #9ca3af !important;
 }
 
 .react-flow__edge.selected .react-flow__arrowhead {
@@ -147,5 +147,48 @@
   }
   50% {
     box-shadow: 0 0 30px rgba(34, 197, 94, 1);
+  }
+}
+
+/* Execution state styles for connections */
+.react-flow__edge.execution-active .react-flow__edge-path {
+  stroke: #f97316 !important;
+  stroke-width: 3px !important;
+  stroke-dasharray: 15 8 !important;
+  animation: dash-flow-execution 2s linear infinite !important;
+}
+
+.react-flow__edge.execution-active .react-flow__arrowhead {
+  fill: #f97316 !important;
+}
+
+.react-flow__edge.execution-completed .react-flow__edge-path {
+  stroke: #22c55e !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: none !important;
+  animation: none !important;
+}
+
+.react-flow__edge.execution-completed .react-flow__arrowhead {
+  fill: #22c55e !important;
+}
+
+.react-flow__edge.execution-error .react-flow__edge-path {
+  stroke: #ef4444 !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: none !important;
+  animation: none !important;
+}
+
+.react-flow__edge.execution-error .react-flow__arrowhead {
+  fill: #ef4444 !important;
+}
+
+@keyframes dash-flow-execution {
+  0% {
+    stroke-dashoffset: 23;
+  }
+  100% {
+    stroke-dashoffset: 0;
   }
 }

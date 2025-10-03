@@ -836,29 +836,40 @@ export default function WorkflowsPage() {
     }
   };
 
-  // Function to add appropriate CSS classes to edges based on node types
+  // Function to add appropriate CSS classes to edges based on node types and execution state
   const processEdgesWithClasses = useCallback((edgesToProcess: any[]) => {
     return edgesToProcess.map(edge => {
       const sourceNode = nodes.find(n => n.id === edge.source);
       const targetNode = nodes.find(n => n.id === edge.target);
       
+      let className = '';
+      
       // Add animation class for Generate to Generate connections
       if (sourceNode?.type === 'generate' && targetNode?.type === 'generate' && 
           edge.sourceHandle === 'output' && edge.targetHandle === 'input') {
-        return {
-          ...edge,
-          className: 'generate-to-generate',
-          data: {
-            ...edge.data,
-            sourceType: sourceNode.type,
-            targetType: targetNode.type
-          }
-        };
+        className = 'generate-to-generate';
       }
       
-      // Keep other edges as-is but ensure data is set
+      // Add execution state classes
+      if (isRunning && sourceNode?.data?.executionState) {
+        switch (sourceNode.data.executionState) {
+          case 'processing':
+          case 'preparing':
+          case 'completing':
+            className += ' execution-active';
+            break;
+          case 'completed':
+            className += ' execution-completed';
+            break;
+          case 'error':
+            className += ' execution-error';
+            break;
+        }
+      }
+      
       return {
         ...edge,
+        className: className.trim(),
         data: {
           ...edge.data,
           sourceType: sourceNode?.type,
@@ -866,7 +877,7 @@ export default function WorkflowsPage() {
         }
       };
     });
-  }, [nodes]);
+  }, [nodes, isRunning]);
 
   // Update edges with proper classes whenever nodes or edges change
   useEffect(() => {
