@@ -41,6 +41,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [localSystemPrompt, setLocalSystemPrompt] = useState(nodeData.systemPrompt || '');
   const [localUserPrompt, setLocalUserPrompt] = useState(nodeData.userPrompt || '');
+  const [activeField, setActiveField] = useState<'system' | 'user'>('user');
 
   const handleVariableNameChange = useCallback((value: string) => {
     setLocalVariableName(value);
@@ -122,19 +123,39 @@ export function GenerateNode({ data, selected }: NodeProps) {
     nodeData.onUserPromptChange?.(value);
   }, [nodeData]);
 
-  const insertVariable = useCallback((varName: string, targetField: 'system' | 'user') => {
-    const textAreaId = targetField === 'system' ? 'system-prompt-editor' : 'user-prompt-editor';
-    const textArea = document.getElementById(textAreaId) as HTMLTextAreaElement;
+  const insertVariable = useCallback((varName: string) => {
+    const systemTextArea = document.getElementById('system-prompt-editor') as HTMLTextAreaElement;
+    const userTextArea = document.getElementById('user-prompt-editor') as HTMLTextAreaElement;
+    
+    const targetField = activeField;
+    const textArea = targetField === 'system' ? systemTextArea : userTextArea;
     const currentText = targetField === 'system' ? localSystemPrompt : localUserPrompt;
+    
     const cursorPosition = textArea?.selectionStart || currentText.length;
     const newText = `${currentText.slice(0, cursorPosition)}{${varName}}${currentText.slice(cursorPosition)}`;
     
     if (targetField === 'system') {
       handleSystemPromptChange(newText);
+      // Refocus and position cursor after the inserted variable
+      setTimeout(() => {
+        if (systemTextArea) {
+          systemTextArea.focus();
+          const newPosition = cursorPosition + varName.length + 2; // +2 for the braces
+          systemTextArea.setSelectionRange(newPosition, newPosition);
+        }
+      }, 0);
     } else {
       handleUserPromptChange(newText);
+      // Refocus and position cursor after the inserted variable
+      setTimeout(() => {
+        if (userTextArea) {
+          userTextArea.focus();
+          const newPosition = cursorPosition + varName.length + 2; // +2 for the braces
+          userTextArea.setSelectionRange(newPosition, newPosition);
+        }
+      }, 0);
     }
-  }, [localSystemPrompt, localUserPrompt, handleSystemPromptChange, handleUserPromptChange]);
+  }, [activeField, localSystemPrompt, localUserPrompt, handleSystemPromptChange, handleUserPromptChange]);
 
   // Helper function to get border styles based on execution state
   const getBorderStyles = useCallback(() => {
@@ -335,6 +356,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
                   id="system-prompt-editor"
                   value={localSystemPrompt}
                   onChange={(e) => handleSystemPromptChange(e.target.value)}
+                  onFocus={() => setActiveField('system')}
                   placeholder="Enter system instructions... Use {variable_name} to insert variables."
                   className="min-h-[120px] resize-none"
                 />
@@ -349,6 +371,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
                   id="user-prompt-editor"
                   value={localUserPrompt}
                   onChange={(e) => handleUserPromptChange(e.target.value)}
+                  onFocus={() => setActiveField('user')}
                   placeholder="Enter user prompt... Use {variable_name} to insert variables."
                   className="min-h-[120px] resize-none"
                 />
@@ -362,24 +385,15 @@ export function GenerateNode({ data, selected }: NodeProps) {
                       <div className='mb-2 font-medium text-muted-foreground text-sm'>Global Variables:</div>
                       <div className="flex flex-wrap gap-2">
                         {nodeData.variables.map((variable) => (
-                          <div key={variable.id} className="flex gap-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-8 px-3 text-sm"
-                              onClick={() => insertVariable(variable.name, 'system')}
-                            >
-                              → System: {variable.name}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-8 px-3 text-sm"
-                              onClick={() => insertVariable(variable.name, 'user')}
-                            >
-                              → User: {variable.name}
-                            </Button>
-                          </div>
+                          <Button
+                            key={variable.id}
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-3 text-sm"
+                            onClick={() => insertVariable(variable.name)}
+                          >
+                            {variable.name}
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -390,24 +404,15 @@ export function GenerateNode({ data, selected }: NodeProps) {
                       <div className='mb-2 font-medium text-muted-foreground text-sm'>Connected Results:</div>
                       <div className="flex flex-wrap gap-2">
                         {Object.keys(nodeData.connectedResults).map((resultName) => (
-                          <div key={resultName} className="flex gap-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className='h-8 bg-blue-50 px-3 text-sm dark:bg-blue-950'
-                              onClick={() => insertVariable(resultName, 'system')}
-                            >
-                              → System: {resultName}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className='h-8 bg-blue-50 px-3 text-sm dark:bg-blue-950'
-                              onClick={() => insertVariable(resultName, 'user')}
-                            >
-                              → User: {resultName}
-                            </Button>
-                          </div>
+                          <Button
+                            key={resultName}
+                            variant="outline"
+                            size="sm"
+                            className='h-8 bg-blue-50 px-3 text-sm dark:bg-blue-950'
+                            onClick={() => insertVariable(resultName)}
+                          >
+                            {resultName}
+                          </Button>
                         ))}
                       </div>
                     </div>
