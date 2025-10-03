@@ -2,7 +2,7 @@
 
 /* Default solid edges/connections without animation */
 .react-flow__edge-path {
-  stroke: #3b82f6 !important;
+  stroke: #f97316 !important;
   stroke-width: 2px !important;
   stroke-dasharray: none !important;
   animation: none !important;
@@ -10,19 +10,19 @@
 
 /* Animated edges for AI Generator to AI Generator connections */
 .react-flow__edge.generate-to-generate .react-flow__edge-path {
-  stroke: #3b82f6 !important;
+  stroke: #f97316 !important;
   stroke-width: 2px !important;
   stroke-dasharray: 15 8 !important;
   animation: dash-flow 2s linear infinite !important;
 }
 
 .react-flow__edge.selected .react-flow__edge-path {
-  stroke: #1d4ed8 !important;
+  stroke: #ea580c !important;
   stroke-width: 3px !important;
 }
 
 .react-flow__edge.selected.generate-to-generate .react-flow__edge-path {
-  stroke: #1d4ed8 !important;
+  stroke: #ea580c !important;
   stroke-width: 3px !important;
   stroke-dasharray: 18 10 !important;
   animation: dash-flow 1.5s linear infinite !important;
@@ -30,7 +30,7 @@
 
 /* Simple connection line when dragging */
 .react-flow__connection-line {
-  stroke: #3b82f6 !important;
+  stroke: #f97316 !important;
   stroke-width: 2px !important;
   stroke-dasharray: none !important;
   animation: none !important;
@@ -47,16 +47,16 @@
 
 /* Edge markers (arrows) */
 .react-flow__arrowhead {
-  fill: #3b82f6 !important;
+  fill: #f97316 !important;
 }
 
 .react-flow__edge.selected .react-flow__arrowhead {
-  fill: #1d4ed8 !important;
+  fill: #ea580c !important;
 }
 
 /* Handles (connection points) hover effects */
 .react-flow__handle:hover {
-  background: #1d4ed8 !important;
+  background: #ea580c !important;
   transform: scale(1.1);
   transition: all 0.2s ease;
 }

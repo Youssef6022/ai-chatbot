@@ -64,6 +64,13 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
   return (
     <>
       <div className="relative group">
+        {/* File Count Badge */}
+        {data.selectedFiles.length > 0 && (
+          <div className="absolute -top-2 -right-2 z-20 w-6 h-6 bg-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-lg">
+            {data.selectedFiles.length}
+          </div>
+        )}
+        
         {/* Circular Files Node */}
         <div 
           className={`w-16 h-16 rounded-full border-2 border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer transition-colors flex items-center justify-center ${selected ? 'ring-2 ring-blue-500' : ''}`}
