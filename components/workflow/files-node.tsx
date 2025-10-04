@@ -73,7 +73,7 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
         
         {/* Circular Files Node */}
         <div 
-          className={`w-16 h-16 rounded-full border border-border hover:border-border/80 bg-background/50 backdrop-blur-sm shadow-sm cursor-pointer transition-colors flex items-center justify-center ${selected ? 'ring-2 ring-orange-500' : ''}`}
+          className={`w-16 h-16 rounded-full border-2 border-border/60 hover:border-border bg-background/50 backdrop-blur-sm shadow-sm cursor-pointer transition-colors flex items-center justify-center ${selected ? 'ring-2 ring-orange-500' : ''}`}
           onDoubleClick={() => setIsModalOpen(true)}
         >
           <FileIcon size={24} className="text-gray-600 dark:text-gray-300" />

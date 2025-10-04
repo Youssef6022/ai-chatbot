@@ -190,7 +190,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
       </div>
       
       <div 
-        className={`group min-w-[250px] border border-border hover:border-border/80 bg-background/50 backdrop-blur-sm shadow-sm cursor-pointer transition-colors rounded-lg ${selected ? 'ring-2 ring-orange-500' : ''}`}
+        className={`group min-w-[250px] border-2 border-border/60 hover:border-border bg-background/50 backdrop-blur-sm shadow-sm cursor-pointer transition-colors rounded-lg ${selected ? 'ring-2 ring-orange-500' : ''}`}
         onDoubleClick={() => {
           if (!isEditingName) {
             setIsEditModalOpen(true);
