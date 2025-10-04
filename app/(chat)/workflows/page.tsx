@@ -34,6 +34,7 @@ import { GenerateNode } from '@/components/workflow/generate-node';
 import { FilesNode } from '@/components/workflow/files-node';
 import { CustomEdge } from '@/components/workflow/custom-edge';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
+import { WorkflowConsole } from '@/components/workflow/workflow-console';
 import { PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
 import { toast } from 'sonner';
 
@@ -121,6 +122,19 @@ export default function WorkflowsPage() {
   
   // Edge selection state for delete button
   const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
+  
+  // Console state
+  const [isConsoleOpen, setIsConsoleOpen] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [consoleTab, setConsoleTab] = useState<'edit' | 'results'>('edit');
+  const [executionLogs, setExecutionLogs] = useState<Array<{
+    id: string;
+    timestamp: Date;
+    type: 'info' | 'success' | 'error' | 'warning';
+    nodeId?: string;
+    nodeName?: string;
+    message: string;
+  }>>([]);
 
   // Track theme for dots color
   const [dotsColor, setDotsColor] = useState('#e2e8f0');
@@ -568,6 +582,30 @@ export default function WorkflowsPage() {
     setSelectedEdge(null);
   }, []);
 
+  // Handle node selection for console
+  const onNodeClick = useCallback((event: React.MouseEvent, node: any) => {
+    event.stopPropagation();
+    setSelectedNodeId(node.id);
+    setIsConsoleOpen(true);
+    setConsoleTab('edit');
+  }, []);
+
+  // Add execution log
+  const addExecutionLog = useCallback((type: 'info' | 'success' | 'error' | 'warning', message: string, nodeId?: string, nodeName?: string) => {
+    const log = {
+      id: `log-${Date.now()}-${Math.random()}`,
+      timestamp: new Date(),
+      type,
+      nodeId,
+      nodeName,
+      message
+    };
+    setExecutionLogs(prev => [...prev, log]);
+  }, []);
+
+  // Get selected node
+  const selectedNode = selectedNodeId ? nodes.find(n => n.id === selectedNodeId) : null;
+
 
   const updateNodeData = useCallback((nodeId: string, data: any) => {
     setNodes((nds) =>
@@ -656,6 +694,16 @@ export default function WorkflowsPage() {
 
   const handleRun = useCallback(async () => {
     setIsRunning(true);
+    
+    // Switch to results tab and open console
+    setConsoleTab('results');
+    setIsConsoleOpen(true);
+    
+    // Clear previous logs
+    setExecutionLogs([]);
+    
+    // Add initial log
+    addExecutionLog('info', 'Workflow execution started...');
     
     try {
       // First, clear all previous results from Generate nodes before starting
@@ -778,6 +826,11 @@ export default function WorkflowsPage() {
   
   const processGenerateNode = async (generateNode: any, currentNodes: any[], inputEdge?: any, filesEdges?: any[]) => {
     try {
+      const nodeName = generateNode.data.variableName || generateNode.data.label || 'AI Agent';
+      
+      // Log start of processing
+      addExecutionLog('info', `Starting generation...`, generateNode.id, nodeName);
+      
       // Set processing state (orange)
       updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true, executionState: 'processing' });
       
@@ -848,20 +901,31 @@ export default function WorkflowsPage() {
         const result = await response.text();
         // Set completed state (green) and keep it
         updateNodeData(generateNode.id, { result, isLoading: false, executionState: 'completed' });
+        
+        // Log success
+        addExecutionLog('success', `Generation completed successfully`, generateNode.id, nodeName);
       } else {
+        const errorMsg = 'Error: Failed to generate content';
         updateNodeData(generateNode.id, { 
-          result: 'Error: Failed to generate content', 
+          result: errorMsg, 
           isLoading: false,
           executionState: 'error'
         });
+        
+        // Log error
+        addExecutionLog('error', `Generation failed: ${response.status} ${response.statusText}`, generateNode.id, nodeName);
       }
     } catch (error) {
       console.error('Error processing generate node:', error);
+      const errorMsg = 'Error: Failed to generate content';
       updateNodeData(generateNode.id, { 
-        result: 'Error: Failed to generate content', 
+        result: errorMsg, 
         isLoading: false,
         executionState: 'error'
       });
+      
+      // Log error
+      addExecutionLog('error', `Generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`, generateNode.id, nodeName);
     }
   };
 
@@ -1234,6 +1298,7 @@ export default function WorkflowsPage() {
           onEdgesDelete={onEdgesDelete}
           onEdgeClick={onEdgeClick}
           onPaneClick={onPaneClick}
+          onNodeClick={onNodeClick}
           isValidConnection={isValidConnection}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
@@ -1275,6 +1340,18 @@ export default function WorkflowsPage() {
           />
         </ReactFlow>
       </div>
+
+      {/* Workflow Console */}
+      <WorkflowConsole
+        isOpen={isConsoleOpen}
+        onToggle={() => setIsConsoleOpen(!isConsoleOpen)}
+        selectedNode={selectedNode}
+        activeTab={consoleTab}
+        onTabChange={setConsoleTab}
+        executionLogs={executionLogs}
+        variables={variables}
+        onNodeUpdate={updateNodeData}
+      />
 
       {/* Save Workflow Modal */}
       <Dialog open={showSaveModal} onOpenChange={setShowSaveModal}>
