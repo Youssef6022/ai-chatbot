@@ -89,9 +89,9 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
               left: '50%',
               width: '16px', 
               height: '16px', 
-              backgroundColor: '#3b82f6', 
-              border: '2px solid white',
-              boxShadow: '0 2px 6px rgba(59, 130, 246, 0.3)',
+              backgroundColor: '#6b7280', 
+              border: '2px solid #ffffff',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
               transform: 'translateX(-50%)',
               transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
             }}
