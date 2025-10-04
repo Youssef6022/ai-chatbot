@@ -878,19 +878,42 @@ export default function WorkflowsPage() {
       }
       
       // Add execution state classes
-      if (isRunning && sourceNode?.data?.executionState) {
-        switch (sourceNode.data.executionState) {
-          case 'processing':
-          case 'preparing':
-          case 'completing':
-            className += ' execution-active';
-            break;
-          case 'completed':
-            className += ' execution-completed';
-            break;
-          case 'error':
-            className += ' execution-error';
-            break;
+      if (isRunning) {
+        // For AI Generator to AI Generator connections - only activate when source is completed
+        if (sourceNode?.type === 'generate' && targetNode?.type === 'generate' && sourceNode?.data?.executionState) {
+          switch (sourceNode.data.executionState) {
+            case 'completed':
+              // Only activate the connection and target when source is completed
+              if (targetNode.data?.executionState === 'processing' || 
+                  targetNode.data?.executionState === 'preparing' || 
+                  targetNode.data?.executionState === 'completing') {
+                className += ' execution-active';
+              } else if (targetNode.data?.executionState === 'completed') {
+                className += ' execution-completed';
+              } else if (targetNode.data?.executionState === 'error') {
+                className += ' execution-error';
+              }
+              break;
+            case 'error':
+              className += ' execution-error';
+              break;
+          }
+        }
+        // For Files to AI Generator connections - activate when target AI Generator is executing (solid, no animation)
+        else if (sourceNode?.type === 'files' && targetNode?.data?.executionState) {
+          switch (targetNode.data.executionState) {
+            case 'processing':
+            case 'preparing':
+            case 'completing':
+              className += ' execution-active-files';
+              break;
+            case 'completed':
+              className += ' execution-completed-files';
+              break;
+            case 'error':
+              className += ' execution-error-files';
+              break;
+          }
         }
       }
       
@@ -958,6 +981,18 @@ export default function WorkflowsPage() {
         (connectedResults as any)[variableName] = generateNode.data.result || '';
       });
     }
+
+    // Check if this Files node is connected to an executing AI Generator
+    let isConnectedToExecuting = false;
+    if (node.type === 'files') {
+      const outgoingEdges = edges.filter(edge => edge.source === node.id);
+      isConnectedToExecuting = outgoingEdges.some(edge => {
+        const targetNode = nodes.find(n => n.id === edge.target);
+        return targetNode?.type === 'generate' && 
+               targetNode.data?.executionState && 
+               ['preparing', 'processing', 'completing'].includes(targetNode.data.executionState);
+      });
+    }
     
     return {
       ...node,
@@ -965,6 +1000,7 @@ export default function WorkflowsPage() {
         ...node.data,
         variables: node.type === 'generate' ? variables : undefined,
         connectedResults: node.type === 'generate' ? connectedResults : undefined,
+        isConnectedToExecuting: node.type === 'files' ? isConnectedToExecuting : undefined,
         onModelChange: node.type === 'generate'
           ? (model: string) => updateNodeData(node.id, { selectedModel: model })
           : undefined,

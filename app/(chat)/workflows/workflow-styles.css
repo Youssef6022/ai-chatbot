@@ -193,6 +193,40 @@
   }
 }
 
+/* Files to AI Generator connections - solid orange without animation */
+.react-flow__edge.execution-active-files .react-flow__edge-path {
+  stroke: #f97316 !important;
+  stroke-width: 3px !important;
+  stroke-dasharray: none !important;
+  animation: none !important;
+}
+
+.react-flow__edge.execution-active-files .react-flow__arrowhead {
+  fill: #f97316 !important;
+}
+
+.react-flow__edge.execution-completed-files .react-flow__edge-path {
+  stroke: #22c55e !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: none !important;
+  animation: none !important;
+}
+
+.react-flow__edge.execution-completed-files .react-flow__arrowhead {
+  fill: #22c55e !important;
+}
+
+.react-flow__edge.execution-error-files .react-flow__edge-path {
+  stroke: #ef4444 !important;
+  stroke-width: 2px !important;
+  stroke-dasharray: none !important;
+  animation: none !important;
+}
+
+.react-flow__edge.execution-error-files .react-flow__arrowhead {
+  fill: #ef4444 !important;
+}
+
 /* Delete button for edges */
 .edge-delete-button {
   position: absolute;

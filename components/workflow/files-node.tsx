@@ -20,6 +20,7 @@ interface FilesNodeData {
   onDelete?: () => void;
   isHandleHighlighted?: (handleId: string, handleType: 'source' | 'target') => boolean;
   connectingFrom?: { nodeId: string; handleId: string; handleType: 'source' | 'target' } | null;
+  isConnectedToExecuting?: boolean;
 }
 
 export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
@@ -60,6 +61,13 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
     return '';
   }, [data]);
 
+  // Helper function to get execution styles for Files node
+  const getExecutionStyles = useCallback(() => {
+    if (data.isConnectedToExecuting) {
+      return 'border-2 border-orange-500 bg-background/50 backdrop-blur-sm shadow-lg shadow-orange-500/30';
+    }
+    return 'border-2 border-border/60 hover:border-border bg-background/50 backdrop-blur-sm shadow-sm';
+  }, [data.isConnectedToExecuting]);
 
   return (
     <>
@@ -73,7 +81,7 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
         
         {/* Circular Files Node */}
         <div 
-          className={`w-16 h-16 rounded-full border-2 border-border/60 hover:border-border bg-background/50 backdrop-blur-sm shadow-sm cursor-pointer transition-colors flex items-center justify-center ${selected ? 'ring-2 ring-orange-500' : ''}`}
+          className={`w-16 h-16 rounded-full cursor-pointer transition-all duration-300 flex items-center justify-center ${getExecutionStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
           onDoubleClick={() => setIsModalOpen(true)}
         >
           <FileIcon size={24} className="text-gray-600 dark:text-gray-300" />

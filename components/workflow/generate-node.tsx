@@ -179,6 +179,24 @@ export function GenerateNode({ data, selected }: NodeProps) {
     }
   }, [activeField, localSystemPrompt, localUserPrompt, handleSystemPromptChange, handleUserPromptChange]);
 
+  // Helper function to get border styles based on execution state
+  const getExecutionBorderStyles = useCallback(() => {
+    const currentState = nodeData.executionState || 'idle';
+    
+    switch (currentState) {
+      case 'preparing':
+      case 'processing':
+      case 'completing':
+        return 'border-2 border-orange-500 bg-background/50 backdrop-blur-sm shadow-lg shadow-orange-500/30 animate-pulse';
+      case 'completed':
+        return 'border-2 border-green-500 bg-background/50 backdrop-blur-sm shadow-md shadow-green-500/20';
+      case 'error':
+        return 'border-2 border-red-500 bg-background/50 backdrop-blur-sm shadow-lg shadow-red-500/30';
+      case 'idle':
+      default:
+        return 'border-2 border-border/60 hover:border-border bg-background/50 backdrop-blur-sm shadow-sm';
+    }
+  }, [nodeData.executionState]);
 
   return (
     <div className="relative">
@@ -190,7 +208,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
       </div>
       
       <div 
-        className={`group min-w-[250px] border-2 border-border/60 hover:border-border bg-background/50 backdrop-blur-sm shadow-sm cursor-pointer transition-colors rounded-lg ${selected ? 'ring-2 ring-orange-500' : ''}`}
+        className={`group min-w-[250px] cursor-pointer rounded-lg transition-all duration-300 ${getExecutionBorderStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
         onDoubleClick={() => {
           if (!isEditingName) {
             setIsEditModalOpen(true);
