@@ -242,16 +242,16 @@ export function GenerateNode({ data, selected }: NodeProps) {
           id="input"
           className={getHandleClassName('input', 'target')}
           style={{ 
-            left: '-8px',
+            left: '-6px',
             top: '50%',
-            width: '16px', 
-            height: '32px', 
+            width: '12px', 
+            height: '24px', 
             backgroundColor: '#f97316', 
             border: '2px solid white',
             boxShadow: '0 2px 6px rgba(249, 115, 22, 0.3)',
             transform: 'translateY(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-            borderRadius: '3px',
+            borderRadius: '2px',
             zIndex: 10
           }}
         />
@@ -264,15 +264,15 @@ export function GenerateNode({ data, selected }: NodeProps) {
           className={getHandleClassName('files', 'target')}
           style={{ 
             left: '50%', 
-            top: '-8px',
-            width: '32px', 
-            height: '16px', 
+            top: '-6px',
+            width: '24px', 
+            height: '12px', 
             backgroundColor: '#f97316', 
             border: '2px solid white',
             boxShadow: '0 2px 6px rgba(249, 115, 22, 0.3)',
             transform: 'translateX(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-            borderRadius: '3px',
+            borderRadius: '2px',
             zIndex: 10
           }}
         />
@@ -438,9 +438,9 @@ export function GenerateNode({ data, selected }: NodeProps) {
           id="output"
           className={getHandleClassName('output', 'source')}
           style={{ 
-            right: '-10px',
-            width: '20px', 
-            height: '20px', 
+            right: '-8px',
+            width: '16px', 
+            height: '16px', 
             backgroundColor: '#f97316', 
             border: '2px solid white',
             boxShadow: '0 2px 6px rgba(249, 115, 22, 0.3)',
