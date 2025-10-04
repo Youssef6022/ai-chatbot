@@ -227,6 +227,26 @@
   fill: #ef4444 !important;
 }
 
+/* Refined breathing animation for AI Generator execution */
+@keyframes breathing {
+  0% {
+    box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);
+    border-color: rgba(249, 115, 22, 0.8);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.6);
+    border-color: rgba(249, 115, 22, 1);
+  }
+  100% {
+    box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);
+    border-color: rgba(249, 115, 22, 0.8);
+  }
+}
+
+.animate-breathing {
+  animation: breathing 3s ease-in-out infinite;
+}
+
 /* Delete button for edges */
 .edge-delete-button {
   position: absolute;

@@ -187,7 +187,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
       case 'preparing':
       case 'processing':
       case 'completing':
-        return 'border-2 border-orange-500 bg-background/50 backdrop-blur-sm shadow-lg shadow-orange-500/30 animate-pulse';
+        return 'border-2 border-orange-500 bg-background/50 backdrop-blur-sm shadow-lg shadow-orange-500/30 animate-breathing';
       case 'completed':
         return 'border-2 border-green-500 bg-background/50 backdrop-blur-sm shadow-md shadow-green-500/20';
       case 'error':
