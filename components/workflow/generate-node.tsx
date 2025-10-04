@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -179,25 +179,6 @@ export function GenerateNode({ data, selected }: NodeProps) {
     }
   }, [activeField, localSystemPrompt, localUserPrompt, handleSystemPromptChange, handleUserPromptChange]);
 
-  // Helper function to get border styles based on execution state
-  const getBorderStyles = useCallback(() => {
-    const baseStyles = 'border-2 transition-all duration-300';
-    const currentState = nodeData.executionState || 'idle';
-    
-    switch (currentState) {
-      case 'preparing':
-      case 'processing':
-      case 'completing':
-        return `${baseStyles} border-orange-400 shadow-lg shadow-orange-400/30`;
-      case 'completed':
-        return `${baseStyles} border-green-500 shadow-md shadow-green-500/20`;
-      case 'error':
-        return `${baseStyles} border-red-500 shadow-lg shadow-red-500/30`;
-      case 'idle':
-      default:
-        return `${baseStyles} border-blue-200`;
-    }
-  }, [nodeData.executionState]);
 
   return (
     <div className="relative">
@@ -208,15 +189,15 @@ export function GenerateNode({ data, selected }: NodeProps) {
         </div>
       </div>
       
-      <Card 
-        className={`group min-w-[250px] ${getBorderStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
+      <div 
+        className={`group min-w-[250px] border border-border hover:border-border/80 bg-background/50 backdrop-blur-sm shadow-sm cursor-pointer transition-colors rounded-lg ${selected ? 'ring-2 ring-orange-500' : ''}`}
         onDoubleClick={() => {
           if (!isEditingName) {
             setIsEditModalOpen(true);
           }
         }}
       >
-        <CardContent className='p-0'>
+        <div className='p-0'>
           {/* Main content with robot icon and name */}
           <div className="flex h-20">
             {/* AI Icon - Full height left side */}
@@ -448,8 +429,8 @@ export function GenerateNode({ data, selected }: NodeProps) {
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
           }}
         />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
     </div>
   );
 }
