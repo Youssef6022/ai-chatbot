@@ -207,11 +207,14 @@ export function GenerateNode({ data, selected }: NodeProps) {
               </svg>
             </div>
             
-            {/* Content area - Just name centered */}
-            <div className="flex-1 flex items-center justify-center px-2">
-              <div className="text-center">
-                <div className="text-xs font-medium text-gray-800 dark:text-gray-200">
+            {/* Content area - Name and model info */}
+            <div className="flex-1 flex items-center px-3">
+              <div className="text-left">
+                <div className="text-xs font-medium text-gray-800 dark:text-gray-200 mb-1">
                   {localVariableName}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Model: {chatModels.find(m => m.id === nodeData.selectedModel)?.name || nodeData.selectedModel}
                 </div>
               </div>
             </div>
