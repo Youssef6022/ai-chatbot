@@ -420,12 +420,13 @@ export function GenerateNode({ data, selected }: NodeProps) {
           className={getHandleClassName('output', 'source')}
           style={{ 
             right: '-8px',
+            top: '50%',
             width: '16px', 
             height: '16px', 
             backgroundColor: '#6b7280', 
             border: '2px solid #ffffff',
             boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-            transform: 'none',
+            transform: 'translateY(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
           }}
         />
