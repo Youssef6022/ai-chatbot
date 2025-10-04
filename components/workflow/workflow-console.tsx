@@ -63,6 +63,16 @@ export function WorkflowConsole({
     updateLocalData(targetField, newText);
   }, [currentData, updateLocalData]);
 
+  // Filter out duplicate logs based on timestamp and message
+  const uniqueLogs = executionLogs.filter((log, index, array) => {
+    const isDuplicate = array.slice(0, index).some(prevLog => 
+      prevLog.timestamp.getTime() === log.timestamp.getTime() && 
+      prevLog.message === log.message &&
+      prevLog.nodeName === log.nodeName
+    );
+    return !isDuplicate;
+  });
+
   const formatLogTime = (timestamp: Date) => {
     return timestamp.toLocaleTimeString('fr-FR', { 
       hour: '2-digit', 
@@ -132,9 +142,9 @@ export function WorkflowConsole({
 
         {/* Console Content */}
         {isOpen && (
-          <div className="h-[calc(100%-3rem)] overflow-hidden">
-            <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as 'edit' | 'results')}>
-              <TabsContent value="edit" className="h-full m-0 p-4">
+          <div className="h-[calc(100%-3rem)]">
+            <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as 'edit' | 'results')} className="h-full">
+              <TabsContent value="edit" className="h-full m-0 p-4 overflow-auto">
               {selectedNode ? (
                 <div className="h-full">
                   {selectedNode.type === 'generate' ? (
@@ -247,17 +257,17 @@ export function WorkflowConsole({
               )}
             </TabsContent>
             
-            <TabsContent value="results" className="h-full m-0 p-0 flex flex-col">
-              <div className="flex-1 overflow-auto p-4">
-                {executionLogs.length === 0 ? (
+            <TabsContent value="results" className="h-full m-0 p-0">
+              <div className="h-full overflow-y-auto p-4">
+                {uniqueLogs.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="text-sm text-muted-foreground mb-2">No execution logs</div>
                     <div className="text-xs text-muted-foreground/60">Run your workflow to see results</div>
                   </div>
                 ) : (
-                  <div className="space-y-1">
-                    {executionLogs.map((log) => (
-                      <div key={log.id} className="flex items-center gap-3 py-2 px-3 rounded-md hover:bg-muted/30 transition-colors">
+                  <div className="space-y-1 min-h-[400px]">
+                    {uniqueLogs.map((log, index) => (
+                      <div key={`${log.id}-${index}`} className="flex items-center gap-3 py-2 px-3 rounded-md hover:bg-muted/30 transition-colors">
                         <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getLogColor(log.type)}`}></div>
                         <div className="text-xs text-muted-foreground font-mono min-w-[60px]">
                           {formatLogTime(log.timestamp)}
