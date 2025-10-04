@@ -209,7 +209,7 @@ export function GenerateNode({ data, selected }: NodeProps) {
       </div>
       
       <Card 
-        className={`group min-w-[250px] ${getBorderStyles()} ${selected ? 'ring-2 ring-blue-500' : ''}`}
+        className={`group min-w-[250px] ${getBorderStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
         onDoubleClick={() => {
           if (!isEditingName) {
             setIsEditModalOpen(true);
