@@ -265,6 +265,8 @@ export default function WorkflowsPage() {
           text: node.data.text,
           selectedModel: node.data.selectedModel,
           variableName: node.data.variableName,
+          systemPrompt: node.data.systemPrompt || '',
+          userPrompt: node.data.userPrompt || '',
           result: node.data.result || '',
           selectedFiles: node.data.selectedFiles || [],
         }
