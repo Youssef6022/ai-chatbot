@@ -63,13 +63,14 @@ export function WorkflowConsole({
     updateLocalData(targetField, newText);
   }, [currentData, updateLocalData]);
 
-  // Filter out duplicate logs based on timestamp and message
+  // Filter out duplicate logs based on message, nodeName and close timestamps (within 1 second)
   const uniqueLogs = executionLogs.filter((log, index, array) => {
-    const isDuplicate = array.slice(0, index).some(prevLog => 
-      prevLog.timestamp.getTime() === log.timestamp.getTime() && 
-      prevLog.message === log.message &&
-      prevLog.nodeName === log.nodeName
-    );
+    const isDuplicate = array.slice(0, index).some(prevLog => {
+      const timeDiff = Math.abs(prevLog.timestamp.getTime() - log.timestamp.getTime());
+      return prevLog.message === log.message &&
+             prevLog.nodeName === log.nodeName &&
+             timeDiff < 1000; // Within 1 second
+    });
     return !isDuplicate;
   });
 
