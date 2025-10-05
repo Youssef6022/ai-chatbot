@@ -178,51 +178,57 @@ export function WorkflowConsole({
 
   return (
     <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 transition-all duration-500 ease-out z-50 ${
-      isOpen ? 'h-80 w-[750px]' : 'h-12 w-72'
+      isOpen ? 'h-80 w-[700px]' : 'h-12 w-44'
     }`}>
       <div className={`w-full h-full bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-lg shadow-sm transition-all duration-500 ease-out ${
         isOpen ? 'hover:border-border' : ''
       }`}>
         {/* Console Header */}
-        <div className={`flex items-center justify-between px-4 h-12 ${isOpen ? 'border-b border-border/60' : ''}`}>
-          <div className="flex items-center gap-3 flex-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onToggle}
-              className="h-8 w-8 p-0 hover:bg-background/20 rounded-lg transition-all duration-300 group"
-            >
-              <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-                <ArrowUpIcon size={16} className="text-gray-700 dark:text-gray-300 group-hover:text-foreground" />
+        <div className={`flex items-center px-3 h-12 ${isOpen ? 'border-b border-border/60 justify-between' : 'justify-center cursor-pointer hover:bg-background/20 transition-colors'}`}
+             onClick={!isOpen ? onToggle : undefined}>
+          {isOpen ? (
+            <>
+              <div className="flex items-center gap-3 flex-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onToggle}
+                  className="h-8 w-8 p-0 hover:bg-background/20 rounded-lg transition-all duration-300 group"
+                >
+                  <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+                    <ArrowUpIcon size={16} className="text-gray-700 dark:text-gray-300 group-hover:text-foreground" />
+                  </div>
+                </Button>
+                
+                <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as 'edit' | 'results')}>
+                  <TabsList className="h-8 bg-background/40 border border-border/60">
+                    <TabsTrigger value="edit" className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground px-3">
+                      Edit {selectedNode ? `- ${selectedNode.data.variableName || selectedNode.data.label}` : ''}
+                    </TabsTrigger>
+                    <TabsTrigger value="results" className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground px-3">
+                      Results
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
-            </Button>
-            
-            {isOpen ? (
-              <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as 'edit' | 'results')}>
-                <TabsList className="h-8 bg-background/40 border border-border/60">
-                  <TabsTrigger value="edit" className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground px-3">
-                    Edit {selectedNode ? `- ${selectedNode.data.variableName || selectedNode.data.label}` : ''}
-                  </TabsTrigger>
-                  <TabsTrigger value="results" className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground px-3">
-                    Results
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            ) : (
+              
+              {/* Close button when open */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onToggle}
+                className="h-8 w-8 p-0 hover:bg-background/20 rounded-lg transition-all duration-300"
+              >
+                <span className="text-gray-700 dark:text-gray-300 text-sm">✕</span>
+              </Button>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 pointer-events-none">
+              <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+                <ArrowUpIcon size={16} className="text-gray-700 dark:text-gray-300" />
+              </div>
               <span className="text-sm text-gray-700 dark:text-gray-300">Console</span>
-            )}
-          </div>
-          
-          {/* Close button when open */}
-          {isOpen && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onToggle}
-              className="h-8 w-8 p-0 hover:bg-background/20 rounded-lg transition-all duration-300"
-            >
-              <span className="text-gray-700 dark:text-gray-300 text-sm">✕</span>
-            </Button>
+            </div>
           )}
         </div>
 
