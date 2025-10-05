@@ -83,6 +83,27 @@ export function WorkflowConsole({
     });
   }, [executionLogs]);
 
+  // Helper function to replace variables in text with actual values
+  const replaceVariables = useCallback((text: string, generateNodes: any[], currentNodeId: string) => {
+    let replacedText = text;
+    
+    // Replace variables from other AI generators
+    generateNodes.forEach(node => {
+      if (node.id !== currentNodeId && node.data.variableName && node.data.result) {
+        const variablePattern = new RegExp(`\\{\\{${node.data.variableName}\\}\\}`, 'g');
+        replacedText = replacedText.replace(variablePattern, node.data.result);
+      }
+    });
+    
+    // Replace global variables if any
+    variables.forEach(variable => {
+      const variablePattern = new RegExp(`\\{\\{${variable.name}\\}\\}`, 'g');
+      replacedText = replacedText.replace(variablePattern, variable.value);
+    });
+    
+    return replacedText;
+  }, [variables]);
+
   // Function to download results as separate markdown files in a ZIP
   const downloadResults = useCallback(async () => {
     // Get all generate nodes with results
@@ -106,11 +127,13 @@ export function WorkflowConsole({
       markdownContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
       
       if (node.data.systemPrompt) {
-        markdownContent += `## System Prompt\n\n${node.data.systemPrompt}\n\n`;
+        const resolvedSystemPrompt = replaceVariables(node.data.systemPrompt, generateNodes, node.id);
+        markdownContent += `## System Prompt\n\n${resolvedSystemPrompt}\n\n`;
       }
       
       if (node.data.userPrompt) {
-        markdownContent += `## User Prompt\n\n${node.data.userPrompt}\n\n`;
+        const resolvedUserPrompt = replaceVariables(node.data.userPrompt, generateNodes, node.id);
+        markdownContent += `## User Prompt\n\n${resolvedUserPrompt}\n\n`;
       }
       
       markdownContent += `## Result\n\n${node.data.result}\n`;
@@ -134,7 +157,7 @@ export function WorkflowConsole({
       console.error('Error creating ZIP file:', error);
       alert('Error creating download file');
     }
-  }, [nodes]);
+  }, [nodes, replaceVariables]);
 
   const formatLogTime = (timestamp: Date) => {
     return timestamp.toLocaleTimeString('fr-FR', { 
