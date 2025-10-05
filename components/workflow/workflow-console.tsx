@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ChevronDownIcon, ArrowUpIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { chatModels } from '@/lib/ai/models';
 import type { Variable } from './variables-panel';
+import JSZip from 'jszip';
 
 interface WorkflowConsoleProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ interface WorkflowConsoleProps {
   }>;
   variables?: Variable[];
   onNodeUpdate?: (nodeId: string, data: any) => void;
+  nodes?: any[];
 }
 
 export function WorkflowConsole({
@@ -39,7 +41,8 @@ export function WorkflowConsole({
   onTabChange,
   executionLogs,
   variables = [],
-  onNodeUpdate
+  onNodeUpdate,
+  nodes = []
 }: WorkflowConsoleProps) {
   const [localData, setLocalData] = useState<any>({});
 
@@ -63,16 +66,75 @@ export function WorkflowConsole({
     updateLocalData(targetField, newText);
   }, [currentData, updateLocalData]);
 
-  // Filter out duplicate logs based on message, nodeName and close timestamps (within 1 second)
-  const uniqueLogs = executionLogs.filter((log, index, array) => {
-    const isDuplicate = array.slice(0, index).some(prevLog => {
-      const timeDiff = Math.abs(prevLog.timestamp.getTime() - log.timestamp.getTime());
-      return prevLog.message === log.message &&
-             prevLog.nodeName === log.nodeName &&
-             timeDiff < 1000; // Within 1 second
+  // Filter out duplicate logs using a Map to track unique combinations
+  const uniqueLogs = useMemo(() => {
+    const seen = new Map<string, boolean>();
+    return executionLogs.filter(log => {
+      // Create a unique key based on message, nodeName, and rounded timestamp (to nearest second)
+      const roundedTime = Math.floor(log.timestamp.getTime() / 1000) * 1000;
+      const uniqueKey = `${log.message}-${log.nodeName || 'no-node'}-${roundedTime}`;
+      
+      if (seen.has(uniqueKey)) {
+        return false; // Duplicate found
+      }
+      
+      seen.set(uniqueKey, true);
+      return true;
     });
-    return !isDuplicate;
-  });
+  }, [executionLogs]);
+
+  // Function to download results as separate markdown files in a ZIP
+  const downloadResults = useCallback(async () => {
+    // Get all generate nodes with results
+    const generateNodes = nodes.filter(node => node.type === 'generate' && node.data.result);
+    
+    if (generateNodes.length === 0) {
+      alert('No AI generator results to download');
+      return;
+    }
+
+    // Create ZIP file
+    const zip = new JSZip();
+    
+    generateNodes.forEach((node, index) => {
+      const nodeName = node.data.variableName || node.data.label || `AIGenerator${index + 1}`;
+      // Clean filename (remove special characters)
+      const cleanFileName = nodeName.replace(/[^a-zA-Z0-9]/g, '');
+      
+      // Create markdown content for this specific AI generator
+      let markdownContent = `# ${nodeName}\n\n`;
+      markdownContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
+      
+      if (node.data.systemPrompt) {
+        markdownContent += `## System Prompt\n\n${node.data.systemPrompt}\n\n`;
+      }
+      
+      if (node.data.userPrompt) {
+        markdownContent += `## User Prompt\n\n${node.data.userPrompt}\n\n`;
+      }
+      
+      markdownContent += `## Result\n\n${node.data.result}\n`;
+      
+      // Add file to ZIP
+      zip.file(`${cleanFileName}.md`, markdownContent);
+    });
+
+    try {
+      // Generate ZIP and download
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `workflow-results-${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error creating ZIP file:', error);
+      alert('Error creating download file');
+    }
+  }, [nodes]);
 
   const formatLogTime = (timestamp: Date) => {
     return timestamp.toLocaleTimeString('fr-FR', { 
@@ -258,8 +320,22 @@ export function WorkflowConsole({
               )}
             </TabsContent>
             
-            <TabsContent value="results" className="h-full m-0 p-0">
-              <div className="h-full overflow-y-auto p-4">
+            <TabsContent value="results" className="h-full m-0 p-0 flex flex-col">
+              {/* Download Button */}
+              {uniqueLogs.some(log => log.type === 'success' && log.message.includes('Generation completed')) && (
+                <div className="border-b border-border/60 p-3">
+                  <Button
+                    onClick={downloadResults}
+                    size="sm"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    📦 Download Results (ZIP)
+                  </Button>
+                </div>
+              )}
+              
+              {/* Logs Content */}
+              <div className="flex-1 overflow-y-auto p-4">
                 {uniqueLogs.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="text-sm text-muted-foreground mb-2">No execution logs</div>

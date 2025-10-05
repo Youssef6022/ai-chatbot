@@ -1351,6 +1351,7 @@ export default function WorkflowsPage() {
         executionLogs={executionLogs}
         variables={variables}
         onNodeUpdate={updateNodeData}
+        nodes={nodes}
       />
 
       {/* Save Workflow Modal */}
