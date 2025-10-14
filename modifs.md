@@ -25,7 +25,7 @@
 ## 3. INTERFACE CHAT
 
 ### 3.1 Modifications de l'Interface
-- **Supprimer** : Les 4 boutons de suggestions au-dessus de la barre de message
+- **Supprimer** : Les 4 boutons de suggestions au-dessus de la barre de message ✅ 
 - **Quotas d'affichage** : 
   - Exprimer en nombre de messages (pas en tokens)
   - Format : "Small xx/50, Medium xx/10, Large PRO"
