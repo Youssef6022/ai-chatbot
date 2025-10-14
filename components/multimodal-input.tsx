@@ -46,6 +46,7 @@ import { startTransition } from 'react';
 import { Context } from './elements/context';
 import { myProvider } from '@/lib/ai/providers';
 import { FileSelectionModal } from './library/file-selection-modal';
+import { useQuota } from '@/lib/hooks/use-quota';
 
 function PureMultimodalInput({
   chatId,
@@ -82,6 +83,7 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+  const { quota, updateQuota } = useQuota();
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -130,8 +132,25 @@ function PureMultimodalInput({
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
 
-  const submitForm = useCallback(() => {
+  const submitForm = useCallback(async () => {
     window.history.replaceState({}, '', `/chat/${chatId}`);
+
+    // Déterminer la taille du modèle à partir de l'ID
+    let modelSize: 'small' | 'medium' | 'large' = 'small';
+    if (selectedModelId.includes('medium')) {
+      modelSize = 'medium';
+    } else if (selectedModelId.includes('large')) {
+      modelSize = 'large';
+    }
+
+    try {
+      // Mettre à jour le quota avant d'envoyer le message
+      await updateQuota(modelSize);
+    } catch (error) {
+      console.error('Quota update failed:', error);
+      toast.error('Quota exceeded. Please upgrade your plan.');
+      return;
+    }
 
     sendMessage({
       role: 'user',
@@ -166,6 +185,8 @@ function PureMultimodalInput({
     setLocalStorageInput,
     width,
     chatId,
+    selectedModelId,
+    updateQuota,
   ]);
 
   const uploadFile = async (file: File) => {
@@ -202,8 +223,10 @@ function PureMultimodalInput({
   const contextProps = useMemo(
     () => ({
       usage,
+      userQuota: quota,
+      selectedModelId,
     }),
-    [usage],
+    [usage, quota, selectedModelId],
   );
 
   const handleFileChange = useCallback(

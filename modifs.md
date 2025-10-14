@@ -27,8 +27,8 @@
 ### 3.1 Modifications de l'Interface
 - **Supprimer** : Les 4 boutons de suggestions au-dessus de la barre de message ✅ 
 - **Quotas d'affichage** : 
-  - Exprimer en nombre de messages (pas en tokens)
-  - Format : "Small xx/50, Medium xx/10, Large PRO"
+  - Exprimer en nombre de messages (pas en tokens) ✅
+  - Format : "Small xx/50, Medium xx/10, Large PRO" ✅
 - **Sélection de modèle** : 
   - Proposer "Magistral Small", "Magistral Medium", "Magistral Large (Pro)" ✅
 - **Fonction Grounding** : 

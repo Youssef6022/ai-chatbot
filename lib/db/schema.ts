@@ -22,6 +22,22 @@ export const user = pgTable('User', {
 
 export type User = InferSelectModel<typeof user>;
 
+export const userQuota = pgTable('UserQuota', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  smallUsed: integer('smallUsed').notNull().default(0),
+  smallLimit: integer('smallLimit').notNull().default(5000),
+  mediumUsed: integer('mediumUsed').notNull().default(0),
+  mediumLimit: integer('mediumLimit').notNull().default(2000),
+  largeUsed: integer('largeUsed').notNull().default(0),
+  largeLimit: integer('largeLimit').notNull().default(500),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+});
+
+export type UserQuota = InferSelectModel<typeof userQuota>;
+
 export const chat = pgTable('Chat', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   createdAt: timestamp('createdAt').notNull(),

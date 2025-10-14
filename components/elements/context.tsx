@@ -10,10 +10,15 @@ import type { ComponentProps } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import type { AppUsage } from '@/lib/usage';
+import type { UserQuota } from '@/lib/db/schema';
 
 export type ContextProps = ComponentProps<'button'> & {
   /** Optional full usage payload to enable breakdown view */
   usage?: AppUsage;
+  /** User quota information for message-based display */
+  userQuota?: UserQuota;
+  /** Currently selected model ID to show relevant quota */
+  selectedModelId?: string;
 };
 
 const THOUSAND = 1000;
@@ -98,7 +103,34 @@ function InfoRow({
   );
 }
 
-export const Context = ({ className, usage, ...props }: ContextProps) => {
+export const Context = ({ className, usage, userQuota, selectedModelId, ...props }: ContextProps) => {
+  // Use quota data when available, fallback to usage tokens
+  const quotaText = userQuota 
+    ? `Small ${userQuota.smallUsed}/${userQuota.smallLimit}, Medium ${userQuota.mediumUsed}/${userQuota.mediumLimit}, Large PRO ${userQuota.largeUsed}/${userQuota.largeLimit}`
+    : undefined;
+
+  // Calculate percentage based on selected model's quota
+  let quotaPercent = 0;
+  if (userQuota && selectedModelId) {
+    let used = 0;
+    let limit = 0;
+    
+    if (selectedModelId.includes('small')) {
+      used = userQuota.smallUsed;
+      limit = userQuota.smallLimit;
+    } else if (selectedModelId.includes('medium')) {
+      used = userQuota.mediumUsed;
+      limit = userQuota.mediumLimit;
+    } else if (selectedModelId.includes('large')) {
+      used = userQuota.largeUsed;
+      limit = userQuota.largeLimit;
+    }
+    
+    if (limit > 0) {
+      quotaPercent = Math.min(100, (used / limit) * 100);
+    }
+  }
+
   const used = usage?.totalTokens ?? 0;
   const max =
     usage?.context?.totalMax ??
@@ -106,6 +138,9 @@ export const Context = ({ className, usage, ...props }: ContextProps) => {
     usage?.context?.inputMax;
   const hasMax = typeof max === 'number' && Number.isFinite(max) && max > 0;
   const usedPercent = hasMax ? Math.min(100, (used / max) * 100) : 0;
+
+  // Use quota percentage if available, otherwise fallback to token percentage
+  const displayPercent = userQuota ? quotaPercent : usedPercent;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -119,67 +154,91 @@ export const Context = ({ className, usage, ...props }: ContextProps) => {
           {...props}
         >
           <span className="hidden font-medium text-muted-foreground">
-            {usedPercent.toFixed(1)}%
+            {quotaText ? 'Quotas' : `${usedPercent.toFixed(1)}%`}
           </span>
-          <ContextIcon percent={usedPercent} />
+          <ContextIcon percent={displayPercent} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" side="top" className="w-fit p-3">
         <div className="min-w-[240px] space-y-2">
-          <div className="flex items-start justify-between text-sm">
-            <span>{usedPercent.toFixed(1)}%</span>
-            <span className="text-muted-foreground">
-              {hasMax ? `${used} / ${max} tokens` : `${used} tokens`}
-            </span>
-          </div>
-          <div className="space-y-2">
-            <Progress className="h-2 bg-muted" value={usedPercent} />
-          </div>
-          <div className="mt-1 space-y-1">
-            {usage?.cachedInputTokens && usage.cachedInputTokens > 0 && (
-              <InfoRow
-                label="Cache Hits"
-                tokens={usage?.cachedInputTokens}
-                costText={usage?.costUSD?.cacheReadUSD?.toString()}
-              />
-            )}
-            <InfoRow
-              label="Input"
-              tokens={usage?.inputTokens}
-              costText={usage?.costUSD?.inputUSD?.toString()}
-            />
-            <InfoRow
-              label="Output"
-              tokens={usage?.outputTokens}
-              costText={usage?.costUSD?.outputUSD?.toString()}
-            />
-            <InfoRow
-              label="Reasoning"
-              tokens={
-                usage?.reasoningTokens && usage.reasoningTokens > 0
-                  ? usage.reasoningTokens
-                  : undefined
-              }
-              costText={usage?.costUSD?.reasoningUSD?.toString()}
-            />
-            {usage?.costUSD?.totalUSD !== undefined && (
-              <>
-                <Separator className="mt-1" />
-                <div className='flex items-center justify-between pt-1 text-xs'>
-                  <span className="text-muted-foreground">Total cost</span>
-                  <div className="flex items-center gap-2 font-mono">
-                    <span className='min-w-[4ch] text-right' />
-                    <span>
-                      {!Number.isNaN(Number.parseFloat(usage.costUSD.totalUSD.toString())) 
-                        ? `$${Number.parseFloat(usage.costUSD.totalUSD.toString()).toFixed(6)}`
-                        : '—'
-                      }
-                    </span>
-                  </div>
+          {quotaText ? (
+            // Display quota information
+            <div className="space-y-3">
+              <div className="text-sm font-medium">Message Quotas</div>
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Small</span>
+                  <span className="font-mono">{userQuota?.smallUsed || 0}/{userQuota?.smallLimit || 5000}</span>
                 </div>
-              </>
-            )}
-          </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Medium</span>
+                  <span className="font-mono">{userQuota?.mediumUsed || 0}/{userQuota?.mediumLimit || 2000}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Large PRO</span>
+                  <span className="font-mono">{userQuota?.largeUsed || 0}/{userQuota?.largeLimit || 500}</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Display token information (fallback)
+            <>
+              <div className="flex items-start justify-between text-sm">
+                <span>{usedPercent.toFixed(1)}%</span>
+                <span className="text-muted-foreground">
+                  {hasMax ? `${used} / ${max} tokens` : `${used} tokens`}
+                </span>
+              </div>
+              <div className="space-y-2">
+                <Progress className="h-2 bg-muted" value={usedPercent} />
+              </div>
+              <div className="mt-1 space-y-1">
+                {usage?.cachedInputTokens && usage.cachedInputTokens > 0 && (
+                  <InfoRow
+                    label="Cache Hits"
+                    tokens={usage?.cachedInputTokens}
+                    costText={usage?.costUSD?.cacheReadUSD?.toString()}
+                  />
+                )}
+                <InfoRow
+                  label="Input"
+                  tokens={usage?.inputTokens}
+                  costText={usage?.costUSD?.inputUSD?.toString()}
+                />
+                <InfoRow
+                  label="Output"
+                  tokens={usage?.outputTokens}
+                  costText={usage?.costUSD?.outputUSD?.toString()}
+                />
+                <InfoRow
+                  label="Reasoning"
+                  tokens={
+                    usage?.reasoningTokens && usage.reasoningTokens > 0
+                      ? usage.reasoningTokens
+                      : undefined
+                  }
+                  costText={usage?.costUSD?.reasoningUSD?.toString()}
+                />
+                {usage?.costUSD?.totalUSD !== undefined && (
+                  <>
+                    <Separator className="mt-1" />
+                    <div className='flex items-center justify-between pt-1 text-xs'>
+                      <span className="text-muted-foreground">Total cost</span>
+                      <div className="flex items-center gap-2 font-mono">
+                        <span className='min-w-[4ch] text-right' />
+                        <span>
+                          {!Number.isNaN(Number.parseFloat(usage.costUSD.totalUSD.toString())) 
+                            ? `$${Number.parseFloat(usage.costUSD.totalUSD.toString()).toFixed(6)}`
+                            : '—'
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
