@@ -30,7 +30,7 @@
   - Exprimer en nombre de messages (pas en tokens)
   - Format : "Small xx/50, Medium xx/10, Large PRO"
 - **Sélection de modèle** : 
-  - Proposer "Magistral Small", "Magistral Medium", "Magistral Large (Pro)"
+  - Proposer "Magistral Small", "Magistral Medium", "Magistral Large (Pro)" ✅
 - **Fonction Grounding** : 
   - Ajouter l'option useSearchGrounding
   - Icône planète avec "Recherche web"

@@ -19,17 +19,17 @@ export interface ChatModel {
 export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model-small',
-    name: 'Gemini Flash Lite',
+    name: 'Magistral Small',
     description: 'Lightweight and fast model for simple conversations',
   },
   {
     id: 'chat-model-medium',
-    name: 'Gemini Flash',
+    name: 'Magistral Medium',
     description: 'Balanced model for everyday conversations',
   },
   {
     id: 'chat-model-large',
-    name: 'Gemini Pro',
+    name: 'Magistral Large (Pro)',
     description: 'Most advanced model for complex tasks and reasoning',
   },
 ];
