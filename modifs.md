@@ -11,7 +11,7 @@
 ### 1.2 Corrections Mineures Immédiates
 - **Titre de l'application** : Remplacer "Next.js Chatbot Template" par "Magistral AI" dans les onglets navigateur ✅
 - **Logo** : Ajouter le vrai logo Magistral en haut de l'interface ✅
-- **Bug Artefact** : L'artefact se rouvre automatiquement lors du démarrage d'un nouveau chat après fermeture
+- **Bug Artefact** : L'artefact se rouvre automatiquement lors du démarrage d'un nouveau chat après fermeture ✅
 
 ## 2. SYSTÈME D'AUTHENTIFICATION
 

@@ -417,7 +417,14 @@ function PureArtifact({
                 <ArtifactCloseButton />
 
                 <div className="flex flex-col">
-                  <div className="font-medium">{artifact.title}</div>
+                  <div className="flex items-center gap-2">
+                    <div className="font-medium">{artifact.title}</div>
+                    {documents && documents.length > 1 && (
+                      <div className='rounded-md bg-muted px-2 py-0.5 text-muted-foreground text-xs'>
+                        v{currentVersionIndex + 1}
+                      </div>
+                    )}
+                  </div>
 
                   {isContentDirty ? (
                     <div className="text-muted-foreground text-sm">

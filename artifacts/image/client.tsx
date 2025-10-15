@@ -1,5 +1,5 @@
 import { Artifact } from '@/components/create-artifact';
-import { CopyIcon, RedoIcon, UndoIcon } from '@/components/icons';
+import { CopyIcon, RedoIcon, UndoIcon, MessageIcon } from '@/components/icons';
 import { ImageEditor } from '@/components/image-editor';
 import { toast } from 'sonner';
 
@@ -18,6 +18,25 @@ export const imageArtifact = new Artifact({
   },
   content: ImageEditor,
   actions: [
+    {
+      icon: <MessageIcon size={18} />,
+      description: 'Ask AI to modify',
+      onClick: async ({ content }) => {
+        toast.success('You can now ask the AI to modify this image or generate a new version.');
+        
+        // Focus on the chat input to encourage the user to type their modification request
+        const chatInput = document.querySelector('textarea[placeholder*="Message"]') as HTMLTextAreaElement;
+        if (chatInput) {
+          chatInput.focus();
+          chatInput.placeholder = 'Describe how you want to modify this image...';
+          
+          // Reset placeholder after a delay
+          setTimeout(() => {
+            chatInput.placeholder = 'Message Claude...';
+          }, 5000);
+        }
+      },
+    },
     {
       icon: <UndoIcon size={18} />,
       description: 'View Previous version',

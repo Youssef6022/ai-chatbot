@@ -5,10 +5,10 @@ import { Editor } from '@/components/text-editor';
 import {
   ClockRewind,
   CopyIcon,
-  MessageIcon,
   PenIcon,
   RedoIcon,
   UndoIcon,
+  SparklesIcon,
 } from '@/components/icons';
 import type { Suggestion } from '@/lib/db/schema';
 import { toast } from 'sonner';
@@ -77,6 +77,12 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
 
     return (
       <>
+        {isCurrentVersion && (
+          <div className='sticky top-0 z-10 flex items-center gap-2 border-b bg-background/80 px-4 py-2 text-muted-foreground text-xs backdrop-blur-sm'>
+            <PenIcon size={12} />
+            Édition directe activée - Cliquez dans le texte pour modifier
+          </div>
+        )}
         <div className="flex flex-row px-4 py-8 md:p-20">
           <Editor
             content={content}
@@ -95,6 +101,27 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
     );
   },
   actions: [
+    {
+      icon: <SparklesIcon size={18} />,
+      description: 'Ask AI to modify',
+      onClick: async ({ content }) => {
+        // Copy the current content to clipboard for easy reference
+        await navigator.clipboard.writeText(content);
+        toast.success('Content copied to clipboard. You can now ask the AI to modify it.');
+        
+        // Focus on the chat input to encourage the user to type their modification request
+        const chatInput = document.querySelector('textarea[placeholder*="Message"]') as HTMLTextAreaElement;
+        if (chatInput) {
+          chatInput.focus();
+          chatInput.placeholder = 'Describe how you want to modify this artifact...';
+          
+          // Reset placeholder after a delay
+          setTimeout(() => {
+            chatInput.placeholder = 'Message Claude...';
+          }, 5000);
+        }
+      },
+    },
     {
       icon: <ClockRewind size={18} />,
       description: 'View changes',
@@ -146,36 +173,5 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
       },
     },
   ],
-  toolbar: [
-    {
-      icon: <PenIcon />,
-      description: 'Add final polish',
-      onClick: ({ sendMessage }) => {
-        sendMessage({
-          role: 'user',
-          parts: [
-            {
-              type: 'text',
-              text: 'Please add final polish and check for grammar, add section titles for better structure, and ensure everything reads smoothly.',
-            },
-          ],
-        });
-      },
-    },
-    {
-      icon: <MessageIcon />,
-      description: 'Request suggestions',
-      onClick: ({ sendMessage }) => {
-        sendMessage({
-          role: 'user',
-          parts: [
-            {
-              type: 'text',
-              text: 'Please add suggestions you have that could improve the writing.',
-            },
-          ],
-        });
-      },
-    },
-  ],
+  toolbar: [],
 });

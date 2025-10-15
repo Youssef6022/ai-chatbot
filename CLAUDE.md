@@ -37,15 +37,15 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ### AI Integration
 - **Primary Framework**: Vercel AI SDK with multiple provider support
-- **Default Provider**: Google (Gemini models) direct integration
-- **Models Configuration**: `lib/ai/providers.ts` defines model mappings
+- **Default Provider**: Google (Gemini models) direct integration via `@ai-sdk/google`
+- **Models Configuration**: `lib/ai/providers.ts` defines model mappings with environment-based switching
 - **Available Models**: 
   - `chat-model-small`: `gemini-2.5-flash-lite`
   - `chat-model-medium`: `gemini-2.5-flash`
-  - `chat-model-large`: `gemini-2.5-pro`
+  - `chat-model-large`: `gemini-2.5-pro` (reasoning model in tests)
   - `title-model`: `gemini-2.5-flash-lite`
   - `artifact-model`: `gemini-2.5-flash`
-- **Test Environment**: Uses mock models from `lib/ai/models.mock.ts`
+- **Test Environment**: Uses mock models from `lib/ai/models.mock.ts` with `isTestEnvironment` flag
 
 ### Database Architecture (PostgreSQL + Drizzle ORM)
 - **Schema Location**: `lib/db/schema.ts`
@@ -91,9 +91,10 @@ Required environment variables (see `.env.example`):
 ```env
 AUTH_SECRET=**** # Generate with: openssl rand -base64 32
 BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token
-POSTGRES_URL=**** # PostgreSQL database connection string
+POSTGRES_URL=**** # PostgreSQL database connection string (supports Neon/Vercel Postgres)
 REDIS_URL=**** # Optional Redis for caching/performance
 GOOGLE_GENERATIVE_AI_API_KEY=**** # Google AI API key for Gemini models
+PLAYWRIGHT=True # Set to enable test environment with mock AI models
 ```
 
 ## Key Features
@@ -180,3 +181,5 @@ GOOGLE_GENERATIVE_AI_API_KEY=**** # Google AI API key for Gemini models
 - Message format migration: Legacy `Message` table is deprecated, use `Message_v2` for new code
 - React 19 RC is used (`react@19.0.0-rc-45804af1-20241021`)
 - File uploads support: JSZip for archive handling, PapaParse for CSV processing
+- Advanced dependencies: Data grids (`react-data-grid`), OpenTelemetry monitoring, token analytics (`tokenlens`)
+- Development port: All servers run on port 9627 to avoid conflicts with other local services

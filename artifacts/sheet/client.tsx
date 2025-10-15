@@ -1,10 +1,9 @@
 import { Artifact } from '@/components/create-artifact';
 import {
   CopyIcon,
-  LineChartIcon,
   RedoIcon,
-  SparklesIcon,
   UndoIcon,
+  MessageIcon,
 } from '@/components/icons';
 import { SpreadsheetEditor } from '@/components/sheet-editor';
 import { parse, unparse } from 'papaparse';
@@ -44,6 +43,27 @@ export const sheetArtifact = new Artifact<'sheet', Metadata>({
     );
   },
   actions: [
+    {
+      icon: <MessageIcon size={18} />,
+      description: 'Ask AI to modify',
+      onClick: async ({ content }) => {
+        // Copy the current content to clipboard for easy reference
+        await navigator.clipboard.writeText(content);
+        toast.success('Spreadsheet data copied to clipboard. You can now ask the AI to modify it.');
+        
+        // Focus on the chat input to encourage the user to type their modification request
+        const chatInput = document.querySelector('textarea[placeholder*="Message"]') as HTMLTextAreaElement;
+        if (chatInput) {
+          chatInput.focus();
+          chatInput.placeholder = 'Describe how you want to modify this spreadsheet...';
+          
+          // Reset placeholder after a delay
+          setTimeout(() => {
+            chatInput.placeholder = 'Message Claude...';
+          }, 5000);
+        }
+      },
+    },
     {
       icon: <UndoIcon size={18} />,
       description: 'View Previous version',
@@ -89,33 +109,5 @@ export const sheetArtifact = new Artifact<'sheet', Metadata>({
       },
     },
   ],
-  toolbar: [
-    {
-      description: 'Format and clean data',
-      icon: <SparklesIcon />,
-      onClick: ({ sendMessage }) => {
-        sendMessage({
-          role: 'user',
-          parts: [
-            { type: 'text', text: 'Can you please format and clean the data?' },
-          ],
-        });
-      },
-    },
-    {
-      description: 'Analyze and visualize data',
-      icon: <LineChartIcon />,
-      onClick: ({ sendMessage }) => {
-        sendMessage({
-          role: 'user',
-          parts: [
-            {
-              type: 'text',
-              text: 'Can you please analyze and visualize the data by creating a new code artifact in python?',
-            },
-          ],
-        });
-      },
-    },
-  ],
+  toolbar: [],
 });
