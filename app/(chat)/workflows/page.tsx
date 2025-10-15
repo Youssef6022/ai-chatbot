@@ -1329,12 +1329,39 @@ export default function WorkflowsPage() {
         <div className="fixed top-20 right-4 z-50 bg-background/95 backdrop-blur-sm border border-border/60 rounded-xl shadow-xl p-4 w-80 max-h-[80vh] overflow-y-auto">
             {/* Header */}
             <div className="mb-4">
-              <h3 className="font-semibold text-base">
-                {editingNode.type === 'generate' ? editingNode.data.variableName || 'AI Agent' : 
-                 editingNode.type === 'note' ? 'Note' : 
-                 editingNode.type === 'files' ? 'Files' : 'Node'}
-              </h3>
-              <p className="text-xs text-muted-foreground">
+              {editingNode.type === 'generate' ? (
+                <div className="group relative">
+                  <input
+                    value={editingNode.data.variableName || ''}
+                    onChange={(e) => {
+                      updateNodeData(editingNode.id, { variableName: e.target.value });
+                      setEditingNode({
+                        ...editingNode,
+                        data: { ...editingNode.data, variableName: e.target.value }
+                      });
+                    }}
+                    placeholder="AI Agent"
+                    className="font-semibold text-base bg-transparent border-none outline-none w-full group-hover:bg-muted/30 focus:bg-muted/30 rounded px-1 py-0.5 pr-6 transition-colors"
+                  />
+                  <svg 
+                    width="12" 
+                    height="12" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors pointer-events-none"
+                  >
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                  </svg>
+                </div>
+              ) : (
+                <h3 className="font-semibold text-base">
+                  {editingNode.type === 'note' ? 'Note' : 
+                   editingNode.type === 'files' ? 'Files' : 'Node'}
+                </h3>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">
                 {editingNode.type === 'generate' ? 'Call the model with your instructions and tools' :
                  editingNode.type === 'note' ? 'Add notes and documentation' :
                  editingNode.type === 'files' ? 'Select and manage files' : 'Configure this node'}
@@ -1345,24 +1372,6 @@ export default function WorkflowsPage() {
             <div className="space-y-4">
               {editingNode.type === 'generate' && (
                 <>
-                  {/* Name Field - Label and input on same line */}
-                  <div className="flex items-center gap-3">
-                    <Label htmlFor="node-name" className="text-xs font-medium text-muted-foreground w-12 shrink-0">Name</Label>
-                    <Input
-                      id="node-name"
-                      value={editingNode.data.variableName || ''}
-                      onChange={(e) => {
-                        updateNodeData(editingNode.id, { variableName: e.target.value });
-                        setEditingNode({
-                          ...editingNode,
-                          data: { ...editingNode.data, variableName: e.target.value }
-                        });
-                      }}
-                      placeholder="My agent"
-                      className="text-sm flex-1"
-                    />
-                  </div>
-
                   {/* User Prompt */}
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-muted-foreground">User Prompt</Label>
