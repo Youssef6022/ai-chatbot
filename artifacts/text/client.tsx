@@ -8,7 +8,6 @@ import {
   PenIcon,
   RedoIcon,
   UndoIcon,
-  FileIcon,
   ChevronDownIcon,
 } from '@/components/icons';
 import type { Suggestion } from '@/lib/db/schema';

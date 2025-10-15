@@ -113,6 +113,7 @@ export default function WorkflowsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [currentWorkflowId, setCurrentWorkflowId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [workflowTitle, setWorkflowTitle] = useState<string>('');
   const addMenuRef = useRef<HTMLDivElement>(null);
   const settingsMenuRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
@@ -157,6 +158,7 @@ export default function WorkflowsPage() {
         setCurrentWorkflowId(workflowId);
         setSaveTitle(workflow.title);
         setSaveDescription(workflow.description || '');
+        setWorkflowTitle(workflow.title);
         
         // Load the workflow data
         const workflowData = workflow.workflowData;
@@ -350,6 +352,7 @@ export default function WorkflowsPage() {
 
       if (response.ok) {
         const savedWorkflow = await response.json();
+        setWorkflowTitle(saveTitle.trim());
         
         if (!isUpdate) {
           // If it's a new workflow, set the ID and update the URL
@@ -1095,7 +1098,25 @@ export default function WorkflowsPage() {
   });
 
   return (
-    <div className='relative flex h-screen flex-col'>
+    <div className='fixed inset-0 z-50 bg-background'>
+      {/* Header with back arrow and title */}
+      <div className='flex items-center gap-3 border-b px-4 py-3'>
+        <Button
+          variant="ghost"
+          size="sm"
+          className='h-8 w-8 p-0'
+          onClick={() => window.history.back()}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </Button>
+        <h1 className='font-semibold text-lg'>
+          {workflowTitle || 'New Workflow'}
+        </h1>
+      </div>
+      
+      <div className='relative flex h-[calc(100vh-60px)] flex-col'>
       {/* Loading indicator */}
       {isLoading && (
         <div className='absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm'>
@@ -1412,6 +1433,7 @@ export default function WorkflowsPage() {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }
