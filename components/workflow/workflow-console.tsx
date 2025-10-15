@@ -210,19 +210,19 @@ export function WorkflowConsole({
                     <div className='text-muted-foreground/60 text-xs'>Run your workflow to see results</div>
                   </div>
                 ) : (
-                  <div className='min-h-[400px] space-y-1'>
+                  <div className='space-y-0.5'>
                     {uniqueLogs.map((log, index) => (
-                      <div key={`${log.id}-${index}`} className='flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-muted/30'>
-                        <div className={`h-2 w-2 flex-shrink-0 rounded-full ${getLogColor(log.type)}`} />
-                        <div className='min-w-[60px] font-mono text-muted-foreground text-xs'>
+                      <div key={`${log.id}-${index}`} className='flex items-center gap-2 rounded px-2 py-1 text-xs transition-colors hover:bg-muted/20'>
+                        <div className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${getLogColor(log.type)}`} />
+                        <div className='min-w-[50px] font-mono text-muted-foreground text-[10px]'>
                           {formatLogTime(log.timestamp)}
                         </div>
                         {log.nodeName && (
-                          <div className='rounded-sm bg-orange-50 px-2 py-0.5 font-medium text-orange-600 text-xs dark:bg-orange-900/20'>
+                          <span className='text-muted-foreground text-[10px] opacity-60'>
                             {log.nodeName}
-                          </div>
+                          </span>
                         )}
-                        <div className='flex-1 truncate text-foreground text-sm'>
+                        <div className='flex-1 truncate text-foreground text-xs'>
                           {log.message}
                         </div>
                       </div>
