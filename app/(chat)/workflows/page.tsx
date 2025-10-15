@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   ReactFlow,
@@ -103,8 +103,8 @@ const initialNodes = [
 const initialEdges: Edge[] = [];
 
 export default function WorkflowsPage() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChangeInternal] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChangeInternal] = useEdgesState(initialEdges);
   const [isRunning, setIsRunning] = useState(false);
   const [variables, setVariables] = useState<Variable[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -133,8 +133,114 @@ export default function WorkflowsPage() {
   
   // Toolbar state
   const [selectedTool, setSelectedTool] = useState<'select' | 'move'>('select');
-  const [undoHistory, setUndoHistory] = useState<any[]>([]);
-  const [redoHistory, setRedoHistory] = useState<any[]>([]);
+  
+  // Undo/Redo system with refs to avoid circular dependencies
+  const [history, setHistory] = useState<Array<{nodes: any[], edges: any[], timestamp: number}>>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const historyRef = useRef(history);
+  const historyIndexRef = useRef(historyIndex);
+  
+  // Keep refs in sync (with debouncing to avoid loops)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      historyRef.current = history;
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [history]);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      historyIndexRef.current = historyIndex;
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [historyIndex]);
+  
+  // Save state to history
+  const saveToHistory = useCallback((newNodes: any[], newEdges: any[]) => {
+    const newState = {
+      nodes: JSON.parse(JSON.stringify(newNodes)),
+      edges: JSON.parse(JSON.stringify(newEdges)),
+      timestamp: Date.now()
+    };
+    
+    const currentHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+    currentHistory.push(newState);
+    const finalHistory = currentHistory.slice(-50);
+    
+    setHistory(finalHistory);
+    setHistoryIndex(finalHistory.length - 1);
+  }, []);
+  
+  // Undo function
+  const undo = useCallback(() => {
+    if (historyIndexRef.current > 0) {
+      const prevState = historyRef.current[historyIndexRef.current - 1];
+      setNodes(prevState.nodes.map(node => ({
+        ...node,
+        data: {
+          ...node.data,
+          onModelChange: () => {},
+          onVariableNameChange: () => {},
+          onSystemPromptChange: () => {},
+          onUserPromptChange: () => {},
+          onFilesChange: () => {},
+          onContentChange: () => {},
+          onDelete: () => {},
+        }
+      })));
+      setEdges(prevState.edges);
+      setHistoryIndex(historyIndexRef.current - 1);
+    }
+  }, [setNodes, setEdges]);
+  
+  // Redo function
+  const redo = useCallback(() => {
+    if (historyIndexRef.current < historyRef.current.length - 1) {
+      const nextState = historyRef.current[historyIndexRef.current + 1];
+      setNodes(nextState.nodes.map(node => ({
+        ...node,
+        data: {
+          ...node.data,
+          onModelChange: () => {},
+          onVariableNameChange: () => {},
+          onSystemPromptChange: () => {},
+          onUserPromptChange: () => {},
+          onFilesChange: () => {},
+          onContentChange: () => {},
+          onDelete: () => {},
+        }
+      })));
+      setEdges(nextState.edges);
+      setHistoryIndex(historyIndexRef.current + 1);
+    }
+  }, [setNodes, setEdges]);
+  
+  // Check if undo/redo are available
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+  
+  // Custom onNodesChange that saves to history for position changes
+  const onNodesChange = useCallback((changes: any[]) => {
+    onNodesChangeInternal(changes);
+    
+    // Check if this is a position change (drag end)
+    const positionChanges = changes.filter(change => 
+      change.type === 'position' && change.dragging === false
+    );
+    
+    if (positionChanges.length > 0) {
+      // Save to history after position change
+      setTimeout(() => {
+        setNodes(currentNodes => {
+          saveToHistory(currentNodes, edges);
+          return currentNodes;
+        });
+      }, 50);
+    }
+  }, [onNodesChangeInternal, edges, saveToHistory]);
+  
+  // Use the internal onEdgesChange directly
+  const onEdgesChange = onEdgesChangeInternal;
   const [executionLogs, setExecutionLogs] = useState<Array<{
     id: string;
     timestamp: Date;
@@ -147,6 +253,22 @@ export default function WorkflowsPage() {
 
   // Track theme for dots color
   const [dotsColor, setDotsColor] = useState('#e2e8f0');
+  
+  // Initialize history with current workflow state
+  const isInitialized = useRef(false);
+  useEffect(() => {
+    if (!isInitialized.current) {
+      // Always initialize with current state, even if empty
+      const initialState = {
+        nodes: JSON.parse(JSON.stringify(nodes)),
+        edges: JSON.parse(JSON.stringify(edges)),
+        timestamp: Date.now()
+      };
+      setHistory([initialState]);
+      setHistoryIndex(0);
+      isInitialized.current = true;
+    }
+  }, [nodes, edges]); // Depend on nodes and edges to capture loaded workflow
 
   // Load workflow from database when URL has ID parameter
   useEffect(() => {
@@ -202,6 +324,15 @@ export default function WorkflowsPage() {
           setNodes(importedNodes);
           setEdges(importedEdges);
           setVariables(importedVariables);
+
+          // Reset history with loaded workflow
+          const loadedState = {
+            nodes: JSON.parse(JSON.stringify(importedNodes)),
+            edges: JSON.parse(JSON.stringify(importedEdges)),
+            timestamp: Date.now()
+          };
+          setHistory([loadedState]);
+          setHistoryIndex(0);
 
           toast.success(`Workflow "${workflow.title}" chargé avec succès`);
         }
@@ -414,6 +545,15 @@ export default function WorkflowsPage() {
         setEdges(importedEdges);
         setVariables(importedVariables);
 
+        // Reset history with imported workflow
+        const importedState = {
+          nodes: JSON.parse(JSON.stringify(importedNodes)),
+          edges: JSON.parse(JSON.stringify(importedEdges)),
+          timestamp: Date.now()
+        };
+        setHistory([importedState]);
+        setHistoryIndex(0);
+
         console.log('Workflow importé avec succès:', workflowData.metadata);
       } catch (error) {
         console.error('Erreur lors de l\'import:', error);
@@ -468,51 +608,52 @@ export default function WorkflowsPage() {
       // Clear highlighting
       setConnectingFrom(null);
       
-      setEdges((eds) => {
-        // Identifier les types de connexions
-        const sourceNode = nodes.find(n => n.id === params.source);
-        const targetNode = nodes.find(n => n.id === params.target);
-        
-        if (!sourceNode || !targetNode) return eds;
-        
-        // Cas 1: Generate → Generate (chaînage via input)
-        if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
-            params.sourceHandle === 'output' && params.targetHandle === 'input') {
-          // Supprimer toute connexion existante vers le même handle du même nœud Generate
-          const edgesWithoutTargetConnection = eds.filter(edge => 
-            !(edge.target === params.target && edge.targetHandle === params.targetHandle)
-          );
-          const newEdge = {
-            ...params,
-            className: 'generate-to-generate',
-            data: {
-              sourceType: sourceNode.type,
-              targetType: targetNode.type
-            }
-          };
-          return addEdge(newEdge, edgesWithoutTargetConnection);
-        }
-        
-        // Cas 2: Files → Generate (connexions de fichiers)
-        if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
-            params.sourceHandle === 'files' && params.targetHandle === 'files') {
-          // Permettre plusieurs connexions de Files vers le même handle Generate
-          // Ne pas supprimer les connexions existantes, juste ajouter la nouvelle
-          const newEdge = {
-            ...params,
-            data: {
-              sourceType: sourceNode.type,
-              targetType: targetNode.type
-            }
-          };
-          return addEdge(newEdge, eds);
-        }
-        
-        // Rejeter les connexions non valides
-        return eds;
-      });
+      let newEdges = edges;
+      
+      // Identifier les types de connexions
+      const sourceNode = nodes.find(n => n.id === params.source);
+      const targetNode = nodes.find(n => n.id === params.target);
+      
+      if (!sourceNode || !targetNode) return;
+      
+      // Cas 1: Generate → Generate (chaînage via input)
+      if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
+          params.sourceHandle === 'output' && params.targetHandle === 'input') {
+        // Supprimer toute connexion existante vers le même handle du même nœud Generate
+        const edgesWithoutTargetConnection = edges.filter(edge => 
+          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+        );
+        const newEdge = {
+          ...params,
+          className: 'generate-to-generate',
+          data: {
+            sourceType: sourceNode.type,
+            targetType: targetNode.type
+          }
+        };
+        newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
+      }
+      // Cas 2: Files → Generate (connexions de fichiers)
+      else if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
+               params.sourceHandle === 'files' && params.targetHandle === 'files') {
+        // Permettre plusieurs connexions de Files vers le même handle Generate
+        // Ne pas supprimer les connexions existantes, juste ajouter la nouvelle
+        const newEdge = {
+          ...params,
+          data: {
+            sourceType: sourceNode.type,
+            targetType: targetNode.type
+          }
+        };
+        newEdges = addEdge(newEdge, edges);
+      }
+      
+      if (newEdges !== edges) {
+        setEdges(newEdges);
+        saveToHistory(nodes, newEdges);
+      }
     },
-    [setEdges, nodes]
+    [setEdges, nodes, edges, saveToHistory]
   );
 
   // Fonction pour valider les connexions
@@ -554,9 +695,11 @@ export default function WorkflowsPage() {
 
   // Delete specific edge by ID
   const deleteEdge = useCallback((edgeId: string) => {
-    setEdges((eds) => eds.filter(edge => edge.id !== edgeId));
+    const newEdges = edges.filter(edge => edge.id !== edgeId);
+    setEdges(newEdges);
     setSelectedEdge(null);
-  }, [setEdges]);
+    saveToHistory(nodes, newEdges);
+  }, [setEdges, edges, nodes, saveToHistory]);
 
   // Handle edge click for selection
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
@@ -608,9 +751,12 @@ export default function WorkflowsPage() {
   }, [setNodes]);
 
   const deleteNode = useCallback((nodeId: string) => {
-    setNodes((nds) => nds.filter(node => node.id !== nodeId));
-    setEdges((eds) => eds.filter(edge => edge.source !== nodeId && edge.target !== nodeId));
-  }, [setNodes, setEdges]);
+    const newNodes = nodes.filter(node => node.id !== nodeId);
+    const newEdges = edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId);
+    setNodes(newNodes);
+    setEdges(newEdges);
+    saveToHistory(newNodes, newEdges);
+  }, [setNodes, setEdges, nodes, edges, saveToHistory]);
 
   // Function to validate and ensure unique variable names
   const validateVariableName = useCallback((newName: string, currentNodeId: string) => {
@@ -663,8 +809,10 @@ export default function WorkflowsPage() {
         onDelete: () => {},
       },
     };
-    setNodes((nds) => [...nds, newNode]);
-  }, [setNodes, nodes]);
+    const newNodes = [...nodes, newNode];
+    setNodes(newNodes);
+    saveToHistory(newNodes, edges);
+  }, [setNodes, nodes, edges, saveToHistory]);
 
   const addFilesNode = useCallback(() => {
     const newNode = {
@@ -678,8 +826,10 @@ export default function WorkflowsPage() {
         onDelete: () => {},
       },
     };
-    setNodes((nds) => [...nds, newNode]);
-  }, [setNodes]);
+    const newNodes = [...nodes, newNode];
+    setNodes(newNodes);
+    saveToHistory(newNodes, edges);
+  }, [setNodes, nodes, edges, saveToHistory]);
 
   const addNoteNode = useCallback(() => {
     const newNode = {
@@ -693,8 +843,10 @@ export default function WorkflowsPage() {
         onDelete: () => {},
       },
     };
-    setNodes((nds) => [...nds, newNode]);
-  }, [setNodes]);
+    const newNodes = [...nodes, newNode];
+    setNodes(newNodes);
+    saveToHistory(newNodes, edges);
+  }, [setNodes, nodes, edges, saveToHistory]);
 
   const handleRun = useCallback(async () => {
     setIsRunning(true);
@@ -1003,13 +1155,13 @@ export default function WorkflowsPage() {
     });
   }, [nodes, isRunning, selectedEdge, deleteEdge]);
 
-  // Update edges with proper classes whenever nodes or edges change
+  // Update edges with proper classes whenever nodes change (but not processEdgesWithClasses to avoid loops)
   useEffect(() => {
     setEdges(currentEdges => processEdgesWithClasses(currentEdges));
-  }, [nodes, processEdgesWithClasses]);
+  }, [nodes, isRunning, selectedEdge]); // Only depend on the actual data, not the function
 
   // Update nodes with callback functions and variables
-  const nodesWithCallbacks = nodes.map(node => {
+  const nodesWithCallbacks = useMemo(() => nodes.map(node => {
     const connectedResults = {};
     
     if (node.type === 'generate') {
@@ -1099,7 +1251,7 @@ export default function WorkflowsPage() {
         connectingFrom: connectingFrom,
       }
     };
-  });
+  }), [nodes, edges, variables, connectingFrom, isHandleHighlighted, updateNodeData, deleteNode, validateVariableName]);
 
   return (
     <div className='fixed inset-0 z-50 bg-background'>
@@ -1556,11 +1708,13 @@ export default function WorkflowsPage() {
 
         {/* Undo Tool */}
         <button
-          onClick={() => {
-            // TODO: Implement undo functionality
-            console.log('Undo clicked');
-          }}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/20 transition-all duration-200"
+          onClick={undo}
+          disabled={!canUndo}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+            canUndo 
+              ? 'text-muted-foreground hover:text-foreground hover:bg-background/20' 
+              : 'text-muted-foreground/30 cursor-not-allowed'
+          }`}
           title="Undo"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1571,11 +1725,13 @@ export default function WorkflowsPage() {
 
         {/* Redo Tool */}
         <button
-          onClick={() => {
-            // TODO: Implement redo functionality
-            console.log('Redo clicked');
-          }}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/20 transition-all duration-200"
+          onClick={redo}
+          disabled={!canRedo}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+            canRedo 
+              ? 'text-muted-foreground hover:text-foreground hover:bg-background/20' 
+              : 'text-muted-foreground/30 cursor-not-allowed'
+          }`}
           title="Redo"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
