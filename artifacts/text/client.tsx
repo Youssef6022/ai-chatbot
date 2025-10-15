@@ -173,14 +173,24 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
         
         // Create dropdown menu
         const dropdown = document.createElement('div');
+        // Detect dark mode
+        const isDarkMode = document.documentElement.classList.contains('dark') || 
+                          window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        const bgColor = isDarkMode ? '#1f2937' : 'white';
+        const borderColor = isDarkMode ? '#374151' : '#e5e7eb';
+        const textColor = isDarkMode ? 'white' : 'black';
+        const hoverColor = isDarkMode ? '#374151' : '#f9fafb';
+        const separatorColor = isDarkMode ? '#4b5563' : '#f3f4f6';
+
         dropdown.style.cssText = `
           position: fixed;
           top: ${top}px;
           left: ${left}px;
-          background: white;
-          border: 1px solid #e5e7eb;
+          background: ${bgColor};
+          border: 1px solid ${borderColor};
           border-radius: 6px;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
           z-index: 10000;
           min-width: ${dropdownWidth}px;
           overflow: hidden;
@@ -191,25 +201,27 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
             display: block;
             width: 100%;
             padding: 8px 12px;
-            background: white;
+            background: ${bgColor};
             border: none;
             text-align: left;
             cursor: pointer;
             font-size: 14px;
-            border-bottom: 1px solid #f3f4f6;
-          " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+            color: ${textColor};
+            border-bottom: 1px solid ${separatorColor};
+          " onmouseover="this.style.background='${hoverColor}'" onmouseout="this.style.background='${bgColor}'">
             Copy to clipboard
           </button>
           <button id="copy-googledocs" style="
             display: block;
             width: 100%;
             padding: 8px 12px;
-            background: white;
+            background: ${bgColor};
             border: none;
             text-align: left;
             cursor: pointer;
             font-size: 14px;
-          " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+            color: ${textColor};
+          " onmouseover="this.style.background='${hoverColor}'" onmouseout="this.style.background='${bgColor}'">
             Copy for Google Docs
           </button>
         `;

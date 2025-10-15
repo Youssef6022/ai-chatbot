@@ -47,10 +47,10 @@
   - OU permettre de sélectionner un passage et modifier via prompt spécifique ✅
 
 ### 4.2 Fonctionnalités d'Export
-- **Export Google Docs** : Permettre la copie directe vers Google Docs
+- **Export Google Docs** : Permettre la copie directe vers Google Docs ✅
 - **Formatage** : 
-  - Option pour changer le format de copie (actuellement conserve le Markdown)
-  - Permettre un formatage standard pour Word/Google Docs
+  - Option pour changer le format de copie (actuellement conserve le Markdown) ✅
+  - Permettre un formatage standard pour Word/Google Docs ✅
 - **Export CSV** : 
   - Remplacer "copy as .csv" par un vrai téléchargement "download as .csv"
   - Option d'export vers Google Sheets
