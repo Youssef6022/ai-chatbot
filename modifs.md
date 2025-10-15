@@ -41,10 +41,10 @@
 
 ### 4.1 Améliorations Interface
 - **Clarification de l'interactivité** :
-  - Ajouter un indicateur visuel informant que l'édition directe est possible
+  - Ajouter un indicateur visuel informant que l'édition directe est possible ✅
 - **Outils de sélection** :
-  - Supprimer les fonctions inutiles en bas à droite
-  - OU permettre de sélectionner un passage et modifier via prompt spécifique
+  - Supprimer les fonctions inutiles en bas à droite ✅
+  - OU permettre de sélectionner un passage et modifier via prompt spécifique ✅
 
 ### 4.2 Fonctionnalités d'Export
 - **Export Google Docs** : Permettre la copie directe vers Google Docs

@@ -8,7 +8,6 @@ import {
   PenIcon,
   RedoIcon,
   UndoIcon,
-  SparklesIcon,
 } from '@/components/icons';
 import type { Suggestion } from '@/lib/db/schema';
 import { toast } from 'sonner';
@@ -101,27 +100,6 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
     );
   },
   actions: [
-    {
-      icon: <SparklesIcon size={18} />,
-      description: 'Ask AI to modify',
-      onClick: async ({ content }) => {
-        // Copy the current content to clipboard for easy reference
-        await navigator.clipboard.writeText(content);
-        toast.success('Content copied to clipboard. You can now ask the AI to modify it.');
-        
-        // Focus on the chat input to encourage the user to type their modification request
-        const chatInput = document.querySelector('textarea[placeholder*="Message"]') as HTMLTextAreaElement;
-        if (chatInput) {
-          chatInput.focus();
-          chatInput.placeholder = 'Describe how you want to modify this artifact...';
-          
-          // Reset placeholder after a delay
-          setTimeout(() => {
-            chatInput.placeholder = 'Message Claude...';
-          }, 5000);
-        }
-      },
-    },
     {
       icon: <ClockRewind size={18} />,
       description: 'View changes',

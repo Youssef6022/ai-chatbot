@@ -5,7 +5,6 @@ import {
   PlayIcon,
   RedoIcon,
   UndoIcon,
-  SparklesIcon,
 } from '@/components/icons';
 import { toast } from 'sonner';
 import { generateUUID } from '@/lib/utils';
@@ -111,27 +110,6 @@ export const codeArtifact = new Artifact<'code', Metadata>({
     );
   },
   actions: [
-    {
-      icon: <SparklesIcon size={18} />,
-      description: 'Ask AI to modify',
-      onClick: async ({ content }) => {
-        // Copy the current content to clipboard for easy reference
-        await navigator.clipboard.writeText(content);
-        toast.success('Code copied to clipboard. You can now ask the AI to modify it.');
-        
-        // Focus on the chat input to encourage the user to type their modification request
-        const chatInput = document.querySelector('textarea[placeholder*="Message"]') as HTMLTextAreaElement;
-        if (chatInput) {
-          chatInput.focus();
-          chatInput.placeholder = 'Describe how you want to modify this code...';
-          
-          // Reset placeholder after a delay
-          setTimeout(() => {
-            chatInput.placeholder = 'Message Claude...';
-          }, 5000);
-        }
-      },
-    },
     {
       icon: <PlayIcon size={18} />,
       label: 'Run',
