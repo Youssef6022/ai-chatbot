@@ -9,6 +9,7 @@ import {
   RedoIcon,
   UndoIcon,
   FileIcon,
+  ChevronDownIcon,
 } from '@/components/icons';
 import type { Suggestion } from '@/lib/db/schema';
 import { toast } from 'sonner';
@@ -144,75 +145,132 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
       },
     },
     {
-      icon: <CopyIcon size={18} />,
-      description: 'Copy to clipboard',
-      onClick: ({ content }) => {
-        navigator.clipboard.writeText(content);
-        toast.success('Copied to clipboard!');
-      },
-    },
-    {
-      icon: <FileIcon size={18} />,
-      description: 'Export to Google Docs',
+      icon: <div className="flex items-center gap-1"><CopyIcon size={16} /><ChevronDownIcon size={12} /></div>,
+      description: 'Copy options',
       onClick: async ({ content }) => {
-        try {
-          // Convert markdown to HTML for rich formatting
-          const htmlContent = content
-            // Convert headers with proper Google Docs heading styles
-            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-            // Convert bold and italic
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/_(.*?)_/g, '<em>$1</em>')
-            // Convert code to monospace
-            .replace(/`(.*?)`/g, '<code>$1</code>')
-            // Convert line breaks to paragraphs
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/\n/g, '<br>');
-
-          // Wrap in paragraph tags
-          const finalHtml = `<p>${htmlContent}</p>`;
-
-          // Create both HTML and plain text for clipboard
-          const plainText = content
-            .replace(/^#{1,6}\s+/gm, '')
-            .replace(/\*\*(.*?)\*\*/g, '$1')
-            .replace(/\*(.*?)\*/g, '$1')
-            .replace(/`(.*?)`/g, '$1')
-            .trim();
-
-          // Use the new clipboard API with both HTML and text
-          await navigator.clipboard.write([
-            new ClipboardItem({
-              'text/html': new Blob([finalHtml], { type: 'text/html' }),
-              'text/plain': new Blob([plainText], { type: 'text/plain' })
-            })
-          ]);
-
-          // Open Google Docs blank document
-          window.open('https://docs.google.com/document/create', '_blank');
-
-          toast.success('Contenu avec formatage copié ! Collez-le dans Google Docs (Ctrl+V)');
-        } catch (error) {
-          // Fallback to plain text if HTML clipboard fails
-          try {
-            const plainText = content
-              .replace(/^#{1,6}\s+/gm, '')
-              .replace(/\*\*(.*?)\*\*/g, '$1')
-              .replace(/\*(.*?)\*/g, '$1')
-              .replace(/`(.*?)`/g, '$1')
-              .trim();
-
-            await navigator.clipboard.writeText(plainText);
-            window.open('https://docs.google.com/document/create', '_blank');
-            toast.success('Contenu copié ! Collez-le dans Google Docs (Ctrl+V)');
-          } catch {
-            window.open('https://docs.google.com/document/create', '_blank');
-            toast.info('Google Docs ouvert. Copiez manuellement le contenu depuis l\'artefact.');
-          }
+        // Find the button element to position the dropdown
+        const buttonElement = document.activeElement as HTMLElement;
+        const rect = buttonElement?.getBoundingClientRect();
+        
+        // Calculate position to avoid going off screen
+        const dropdownWidth = 160;
+        const dropdownHeight = 80; // Approximate height
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        let left = rect?.left || 0;
+        let top = (rect?.bottom || 0) + 5;
+        
+        // Adjust if dropdown would go off right edge
+        if (left + dropdownWidth > viewportWidth) {
+          left = viewportWidth - dropdownWidth - 10;
         }
+        
+        // Adjust if dropdown would go off bottom edge
+        if (top + dropdownHeight > viewportHeight) {
+          top = (rect?.top || 0) - dropdownHeight - 5;
+        }
+        
+        // Create dropdown menu
+        const dropdown = document.createElement('div');
+        dropdown.style.cssText = `
+          position: fixed;
+          top: ${top}px;
+          left: ${left}px;
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 6px;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          z-index: 10000;
+          min-width: ${dropdownWidth}px;
+          overflow: hidden;
+        `;
+        
+        dropdown.innerHTML = `
+          <button id="copy-clipboard" style="
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            background: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+          " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+            Copy to clipboard
+          </button>
+          <button id="copy-googledocs" style="
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            background: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+          " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+            Copy for Google Docs
+          </button>
+        `;
+
+        document.body.appendChild(dropdown);
+
+        // Handle clicks outside to close
+        const handleOutsideClick = (e: MouseEvent) => {
+          if (!dropdown.contains(e.target as Node)) {
+            document.body.removeChild(dropdown);
+            document.removeEventListener('click', handleOutsideClick);
+          }
+        };
+
+        setTimeout(() => {
+          document.addEventListener('click', handleOutsideClick);
+        }, 100);
+
+        // Handle button clicks
+        dropdown.querySelector('#copy-clipboard')?.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(content);
+            toast.success('Copied to clipboard!');
+          } catch {
+            toast.error('Failed to copy');
+          }
+          document.body.removeChild(dropdown);
+          document.removeEventListener('click', handleOutsideClick);
+        });
+
+        dropdown.querySelector('#copy-googledocs')?.addEventListener('click', async () => {
+          try {
+            // Convert markdown to HTML for rich formatting
+            const htmlContent = content
+              .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+              .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+              .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(/\*(.*?)\*/g, '<em>$1</em>')
+              .replace(/_(.*?)_/g, '<em>$1</em>')
+              .replace(/`(.*?)`/g, '<code>$1</code>')
+              .replace(/\n\n/g, '</p><p>')
+              .replace(/\n/g, '<br>');
+
+            const finalHtml = `<p>${htmlContent}</p>`;
+
+            // Copy with HTML formatting
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                'text/html': new Blob([finalHtml], { type: 'text/html' }),
+                'text/plain': new Blob([content], { type: 'text/plain' })
+              })
+            ]);
+
+            toast.success('Ready to paste in Google Docs');
+          } catch {
+            toast.error('Failed to copy formatted content');
+          }
+          document.body.removeChild(dropdown);
+          document.removeEventListener('click', handleOutsideClick);
+        });
       },
     },
   ],
