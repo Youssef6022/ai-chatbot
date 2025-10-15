@@ -1515,14 +1515,14 @@ export default function WorkflowsPage() {
       )}
 
       {/* Floating Toolbar */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-1 bg-gray-800 backdrop-blur-sm border border-gray-700 rounded-full p-2 shadow-xl">
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-1 bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-full p-2 shadow-sm">
         {/* Select Tool */}
         <button
           onClick={() => setSelectedTool('select')}
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
             selectedTool === 'select' 
-              ? 'bg-gray-600 text-white' 
-              : 'text-gray-400 hover:text-white hover:bg-gray-700'
+              ? 'bg-background text-foreground border border-border' 
+              : 'text-muted-foreground hover:text-foreground hover:bg-background/20'
           }`}
           title="Select"
         >
@@ -1537,8 +1537,8 @@ export default function WorkflowsPage() {
           onClick={() => setSelectedTool('move')}
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
             selectedTool === 'move' 
-              ? 'bg-gray-600 text-white' 
-              : 'text-gray-400 hover:text-white hover:bg-gray-700'
+              ? 'bg-background text-foreground border border-border' 
+              : 'text-muted-foreground hover:text-foreground hover:bg-background/20'
           }`}
           title="Move"
         >
@@ -1553,7 +1553,7 @@ export default function WorkflowsPage() {
             // TODO: Implement undo functionality
             console.log('Undo clicked');
           }}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/20 transition-all duration-200"
           title="Undo"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1568,7 +1568,7 @@ export default function WorkflowsPage() {
             // TODO: Implement redo functionality
             console.log('Redo clicked');
           }}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background/20 transition-all duration-200"
           title="Redo"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
