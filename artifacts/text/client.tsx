@@ -8,6 +8,7 @@ import {
   PenIcon,
   RedoIcon,
   UndoIcon,
+  FileIcon,
 } from '@/components/icons';
 import type { Suggestion } from '@/lib/db/schema';
 import { toast } from 'sonner';
@@ -148,6 +149,70 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
       onClick: ({ content }) => {
         navigator.clipboard.writeText(content);
         toast.success('Copied to clipboard!');
+      },
+    },
+    {
+      icon: <FileIcon size={18} />,
+      description: 'Export to Google Docs',
+      onClick: async ({ content }) => {
+        try {
+          // Convert markdown to HTML for rich formatting
+          const htmlContent = content
+            // Convert headers with proper Google Docs heading styles
+            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+            // Convert bold and italic
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/_(.*?)_/g, '<em>$1</em>')
+            // Convert code to monospace
+            .replace(/`(.*?)`/g, '<code>$1</code>')
+            // Convert line breaks to paragraphs
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>');
+
+          // Wrap in paragraph tags
+          const finalHtml = `<p>${htmlContent}</p>`;
+
+          // Create both HTML and plain text for clipboard
+          const plainText = content
+            .replace(/^#{1,6}\s+/gm, '')
+            .replace(/\*\*(.*?)\*\*/g, '$1')
+            .replace(/\*(.*?)\*/g, '$1')
+            .replace(/`(.*?)`/g, '$1')
+            .trim();
+
+          // Use the new clipboard API with both HTML and text
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/html': new Blob([finalHtml], { type: 'text/html' }),
+              'text/plain': new Blob([plainText], { type: 'text/plain' })
+            })
+          ]);
+
+          // Open Google Docs blank document
+          window.open('https://docs.google.com/document/create', '_blank');
+
+          toast.success('Contenu avec formatage copié ! Collez-le dans Google Docs (Ctrl+V)');
+        } catch (error) {
+          // Fallback to plain text if HTML clipboard fails
+          try {
+            const plainText = content
+              .replace(/^#{1,6}\s+/gm, '')
+              .replace(/\*\*(.*?)\*\*/g, '$1')
+              .replace(/\*(.*?)\*/g, '$1')
+              .replace(/`(.*?)`/g, '$1')
+              .trim();
+
+            await navigator.clipboard.writeText(plainText);
+            window.open('https://docs.google.com/document/create', '_blank');
+            toast.success('Contenu copié ! Collez-le dans Google Docs (Ctrl+V)');
+          } catch {
+            window.open('https://docs.google.com/document/create', '_blank');
+            toast.info('Google Docs ouvert. Copiez manuellement le contenu depuis l\'artefact.');
+          }
+        }
       },
     },
   ],
