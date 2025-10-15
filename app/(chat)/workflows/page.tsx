@@ -1296,6 +1296,13 @@ export default function WorkflowsPage() {
             backgroundColor: '#fafbfd'
           }}
           deleteKeyCode={['Delete', 'Backspace']}
+          panOnDrag={selectedTool === 'move'}
+          nodesDraggable={true}
+          nodesConnectable={true}
+          elementsSelectable={true}
+          selectionOnDrag={selectedTool === 'select'}
+          panOnScroll={true}
+          selectionMode={selectedTool === 'select' ? 'partial' : undefined}
         >
           <Background 
             variant={BackgroundVariant.Dots} 
