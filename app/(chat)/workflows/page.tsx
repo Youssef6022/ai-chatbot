@@ -132,7 +132,7 @@ export default function WorkflowsPage() {
   const [editingNode, setEditingNode] = useState<any | null>(null);
   
   // Toolbar state
-  const [selectedTool, setSelectedTool] = useState<'select' | 'move'>('select');
+  const [selectedTool, setSelectedTool] = useState<'select' | 'move'>('move');
   
   // Undo/Redo system with refs to avoid circular dependencies
   const [history, setHistory] = useState<Array<{nodes: any[], edges: any[], timestamp: number}>>([]);
