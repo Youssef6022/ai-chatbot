@@ -6,7 +6,7 @@ export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, systemPrompt, userPrompt, model, files } = await request.json();
+    const { prompt, systemPrompt, userPrompt, model, files, isSearchGroundingEnabled, isReasoningEnabled } = await request.json();
 
     if (!model || typeof model !== 'string') {
       return new Response('Invalid model', { status: 400 });
@@ -80,6 +80,12 @@ export async function POST(request: NextRequest) {
       messages: messages,
       temperature: 0.7,
       maxTokens: 1000,
+      experimental_search: isSearchGroundingEnabled ? {
+        enabled: true,
+      } : undefined,
+      experimental_reasoning: isReasoningEnabled ? {
+        enabled: true,
+      } : undefined,
     });
 
     // Get the full text from the stream

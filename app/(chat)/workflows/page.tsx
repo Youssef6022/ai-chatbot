@@ -36,7 +36,8 @@ import { NoteNode } from '@/components/workflow/note-node';
 import { CustomEdge } from '@/components/workflow/custom-edge';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
 import { WorkflowConsole } from '@/components/workflow/workflow-console';
-import { PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon } from '@/components/icons';
+import { PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon, GlobeIcon } from '@/components/icons';
+import { BrainIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Settings Icon
@@ -91,6 +92,8 @@ const initialNodes = [
       variableName: 'AI Agent 1',
       systemPrompt: '',
       userPrompt: '',
+      isSearchGroundingEnabled: false,
+      isReasoningEnabled: false,
       onModelChange: () => {},
       onVariableNameChange: () => {},
       onSystemPromptChange: () => {},
@@ -802,6 +805,8 @@ export default function WorkflowsPage() {
         variableName: `AI Agent ${nextNumber}`,
         systemPrompt: '',
         userPrompt: '',
+        isSearchGroundingEnabled: false,
+        isReasoningEnabled: false,
         onModelChange: () => {},
         onVariableNameChange: () => {},
         onSystemPromptChange: () => {},
@@ -1050,6 +1055,8 @@ export default function WorkflowsPage() {
           userPrompt: userPrompt,
           model: generateNode.data.selectedModel,
           files: allFiles.length > 0 ? allFiles : undefined,
+          isSearchGroundingEnabled: generateNode.data.isSearchGroundingEnabled || false,
+          isReasoningEnabled: generateNode.data.isReasoningEnabled || false,
         }),
       });
       
@@ -1238,6 +1245,12 @@ export default function WorkflowsPage() {
           : undefined,
         onUserPromptChange: node.type === 'generate'
           ? (text: string) => updateNodeData(node.id, { userPrompt: text })
+          : undefined,
+        onSearchGroundingChange: node.type === 'generate'
+          ? (enabled: boolean) => updateNodeData(node.id, { isSearchGroundingEnabled: enabled })
+          : undefined,
+        onReasoningChange: node.type === 'generate'
+          ? (enabled: boolean) => updateNodeData(node.id, { isReasoningEnabled: enabled })
           : undefined,
         onFilesChange: node.type === 'files'
           ? (files: any[]) => updateNodeData(node.id, { selectedFiles: files })
@@ -1615,6 +1628,60 @@ export default function WorkflowsPage() {
                       </svg>
                     </div>
                   </div>
+
+                  {/* Search Grounding Toggle */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <GlobeIcon size={14} />
+                      <span className="text-xs font-medium text-muted-foreground">Search Grounding</span>
+                    </div>
+                    <button
+                        onClick={() => {
+                          const newValue = !editingNode.data.isSearchGroundingEnabled;
+                          updateNodeData(editingNode.id, { isSearchGroundingEnabled: newValue });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, isSearchGroundingEnabled: newValue }
+                          });
+                        }}
+                        className={`w-10 h-5 rounded-full border transition-colors relative ${
+                          editingNode.data.isSearchGroundingEnabled 
+                            ? 'bg-blue-500 border-blue-500' 
+                            : 'bg-muted border-border'
+                        }`}
+                      >
+                        <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${
+                          editingNode.data.isSearchGroundingEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </button>
+                    </div>
+
+                    {/* Reasoning Toggle */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <BrainIcon size={14} />
+                        <span className="text-xs font-medium text-muted-foreground">Thinking Mode</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newValue = !editingNode.data.isReasoningEnabled;
+                          updateNodeData(editingNode.id, { isReasoningEnabled: newValue });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, isReasoningEnabled: newValue }
+                          });
+                        }}
+                        className={`w-10 h-5 rounded-full border transition-colors relative ${
+                          editingNode.data.isReasoningEnabled 
+                            ? 'bg-purple-500 border-purple-500' 
+                            : 'bg-muted border-border'
+                        }`}
+                      >
+                        <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${
+                          editingNode.data.isReasoningEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </button>
+                    </div>
                 </>
               )}
 
