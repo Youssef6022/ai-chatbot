@@ -1292,7 +1292,6 @@ export default function WorkflowsPage() {
           }}
           deleteKeyCode={['Delete', 'Backspace']}
         >
-          <Controls />
           <Background 
             variant={BackgroundVariant.Dots} 
             gap={20} 
