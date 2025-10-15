@@ -1208,7 +1208,7 @@ export default function WorkflowsPage() {
       />
 
       {/* Floating Node Palette - Always Visible */}
-      <div className="fixed top-20 left-4 z-50 bg-background/95 backdrop-blur-sm border border-border/60 rounded-xl shadow-xl p-4 min-w-[160px]">
+      <div className="fixed top-20 left-4 z-50 bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-xl shadow-sm p-4 min-w-[160px]">
         <div className="space-y-4">
           <div>
             <div className="text-xs text-muted-foreground font-semibold mb-3 uppercase tracking-wider">Core</div>
@@ -1330,7 +1330,7 @@ export default function WorkflowsPage() {
 
       {/* Edit Panel - Floating Box */}
       {isEditPanelOpen && editingNode && (
-        <div className="fixed top-20 right-4 z-50 bg-background/95 backdrop-blur-sm border border-border/60 rounded-xl shadow-xl p-4 w-80 max-h-[80vh] overflow-y-auto">
+        <div className="fixed top-20 right-4 z-50 bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-xl shadow-sm p-4 w-80 max-h-[80vh] overflow-y-auto">
             {/* Header */}
             <div className="mb-4">
               {editingNode.type === 'generate' ? (
