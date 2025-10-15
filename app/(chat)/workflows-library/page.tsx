@@ -14,7 +14,7 @@ async function getWorkflows(userId: string): Promise<Workflow[]> {
 }
 
 export default async function WorkflowsLibraryPage() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
