@@ -130,6 +130,11 @@ export default function WorkflowsPage() {
   // Edit panel state
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<any | null>(null);
+  
+  // Toolbar state
+  const [selectedTool, setSelectedTool] = useState<'select' | 'move'>('select');
+  const [undoHistory, setUndoHistory] = useState<any[]>([]);
+  const [redoHistory, setRedoHistory] = useState<any[]>([]);
   const [executionLogs, setExecutionLogs] = useState<Array<{
     id: string;
     timestamp: Date;
@@ -1509,7 +1514,71 @@ export default function WorkflowsPage() {
           </div>
       )}
 
-      {/* Workflow Console */}
+      {/* Floating Toolbar */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-1 bg-gray-800 backdrop-blur-sm border border-gray-700 rounded-full p-2 shadow-xl">
+        {/* Select Tool */}
+        <button
+          onClick={() => setSelectedTool('select')}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+            selectedTool === 'select' 
+              ? 'bg-gray-600 text-white' 
+              : 'text-gray-400 hover:text-white hover:bg-gray-700'
+          }`}
+          title="Select"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+            <path d="M13 13l6 6"/>
+          </svg>
+        </button>
+
+        {/* Move Tool */}
+        <button
+          onClick={() => setSelectedTool('move')}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+            selectedTool === 'move' 
+              ? 'bg-gray-600 text-white' 
+              : 'text-gray-400 hover:text-white hover:bg-gray-700'
+          }`}
+          title="Move"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/>
+          </svg>
+        </button>
+
+        {/* Undo Tool */}
+        <button
+          onClick={() => {
+            // TODO: Implement undo functionality
+            console.log('Undo clicked');
+          }}
+          className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200"
+          title="Undo"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 7v6h6"/>
+            <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/>
+          </svg>
+        </button>
+
+        {/* Redo Tool */}
+        <button
+          onClick={() => {
+            // TODO: Implement redo functionality
+            console.log('Redo clicked');
+          }}
+          className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200"
+          title="Redo"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 7v6h-6"/>
+            <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Workflow Console - Moved to Left */}
       <WorkflowConsole
         isOpen={isConsoleOpen}
         onToggle={() => setIsConsoleOpen(!isConsoleOpen)}

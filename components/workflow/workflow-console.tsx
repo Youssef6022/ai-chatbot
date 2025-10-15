@@ -175,8 +175,8 @@ export function WorkflowConsole({
   };
 
   return (
-    <div className={`-translate-x-1/2 fixed bottom-4 left-1/2 z-50 transform transition-all duration-500 ease-out ${
-      isOpen ? 'h-80 w-[700px]' : 'h-12 w-44'
+    <div className={`fixed bottom-4 left-4 z-50 transition-all duration-500 ease-out ${
+      isOpen ? 'h-80 w-[400px]' : 'h-12 w-36'
     }`}>
       <div className={`h-full w-full rounded-lg border-2 border-border/60 bg-background/50 shadow-sm backdrop-blur-sm transition-all duration-500 ease-out ${
         isOpen ? 'hover:border-border' : ''
@@ -238,26 +238,26 @@ export function WorkflowConsole({
               {selectedNode ? (
                 <div className="h-full">
                   {selectedNode.type === 'generate' ? (
-                    <div className='grid h-full grid-cols-3 gap-4'>
+                    <div className='space-y-4'>
                       {/* Basic Info */}
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <div>
-                          <Label htmlFor="agent-name" className='text-gray-700 text-sm dark:text-gray-300'>Agent Name</Label>
+                          <Label htmlFor="agent-name" className='text-gray-700 text-xs dark:text-gray-300'>Agent Name</Label>
                           <Input
                             id="agent-name"
                             value={currentData.variableName || ''}
                             onChange={(e) => updateLocalData('variableName', e.target.value)}
                             placeholder="Enter agent name"
-                            className="mt-1"
+                            className="mt-1 text-sm"
                           />
                         </div>
                         <div>
-                          <Label className='text-gray-700 text-sm dark:text-gray-300'>AI Model</Label>
+                          <Label className='text-gray-700 text-xs dark:text-gray-300'>AI Model</Label>
                           <Select
                             value={currentData.selectedModel || ''}
                             onValueChange={(value) => updateLocalData('selectedModel', value)}
                           >
-                            <SelectTrigger className="mt-1">
+                            <SelectTrigger className="mt-1 text-sm">
                               <SelectValue placeholder="Select a model" />
                             </SelectTrigger>
                             <SelectContent>
@@ -273,57 +273,23 @@ export function WorkflowConsole({
 
                       {/* System Prompt */}
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label className='text-gray-700 text-sm dark:text-gray-300'>System Prompt</Label>
-                          {variables.length > 0 && (
-                            <div className="flex gap-1">
-                              {variables.slice(0, 3).map((variable) => (
-                                <Button
-                                  key={variable.id}
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-6 px-2 text-xs"
-                                  onClick={() => insertVariable(variable.name, 'systemPrompt')}
-                                >
-                                  {variable.name}
-                                </Button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                        <Label className='text-gray-700 text-xs dark:text-gray-300'>System Prompt</Label>
                         <Textarea
                           value={currentData.systemPrompt || ''}
                           onChange={(e) => updateLocalData('systemPrompt', e.target.value)}
                           placeholder="Enter system instructions..."
-                          className="h-[180px] resize-none text-sm"
+                          className="h-[60px] resize-none text-xs"
                         />
                       </div>
 
                       {/* User Prompt */}
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label className='text-gray-700 text-sm dark:text-gray-300'>User Prompt</Label>
-                          {variables.length > 0 && (
-                            <div className="flex gap-1">
-                              {variables.slice(0, 3).map((variable) => (
-                                <Button
-                                  key={variable.id}
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-6 px-2 text-xs"
-                                  onClick={() => insertVariable(variable.name, 'userPrompt')}
-                                >
-                                  {variable.name}
-                                </Button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                        <Label className='text-gray-700 text-xs dark:text-gray-300'>User Prompt</Label>
                         <Textarea
                           value={currentData.userPrompt || ''}
                           onChange={(e) => updateLocalData('userPrompt', e.target.value)}
                           placeholder="Enter user prompt..."
-                          className="h-[180px] resize-none text-sm"
+                          className="h-[60px] resize-none text-xs"
                         />
                       </div>
                     </div>
