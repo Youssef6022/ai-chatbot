@@ -52,8 +52,8 @@
   - Option pour changer le format de copie (actuellement conserve le Markdown) ✅
   - Permettre un formatage standard pour Word/Google Docs ✅
 - **Export CSV** : 
-  - Remplacer "copy as .csv" par un vrai téléchargement "download as .csv"
-  - Option d'export vers Google Sheets
+  - Remplacer "copy as .csv" par un vrai téléchargement "download as .csv" ✅
+  - Option d'export vers Google Sheets ✅
 
 ### 4.3 Types d'Artefacts Supportés
 - Text Artifact : Rédaction d'essais et emails
