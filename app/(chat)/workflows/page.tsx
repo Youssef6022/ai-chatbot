@@ -128,7 +128,6 @@ export default function WorkflowsPage() {
   // Console state
   const [isConsoleOpen, setIsConsoleOpen] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [consoleTab, setConsoleTab] = useState<'edit' | 'results'>('edit');
   
   // Edit panel state
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
@@ -856,8 +855,7 @@ export default function WorkflowsPage() {
   const handleRun = useCallback(async () => {
     setIsRunning(true);
     
-    // Switch to results tab and open console
-    setConsoleTab('results');
+    // Open console to show results
     setIsConsoleOpen(true);
     
     // Clear previous logs
@@ -1812,12 +1810,8 @@ export default function WorkflowsPage() {
       <WorkflowConsole
         isOpen={isConsoleOpen}
         onToggle={() => setIsConsoleOpen(!isConsoleOpen)}
-        selectedNode={selectedNode}
-        activeTab={consoleTab}
-        onTabChange={setConsoleTab}
         executionLogs={executionLogs}
         variables={variables}
-        onNodeUpdate={updateNodeData}
         nodes={nodes}
       />
 

@@ -3,21 +3,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { ArrowUpIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { chatModels } from '@/lib/ai/models';
 import type { Variable } from './variables-panel';
 import JSZip from 'jszip';
 
 interface WorkflowConsoleProps {
   isOpen: boolean;
   onToggle: () => void;
-  selectedNode: any | null;
-  activeTab: 'edit' | 'results';
-  onTabChange: (tab: 'edit' | 'results') => void;
   executionLogs: Array<{
     id: string;
     timestamp: Date;
@@ -27,42 +18,16 @@ interface WorkflowConsoleProps {
     message: string;
   }>;
   variables?: Variable[];
-  onNodeUpdate?: (nodeId: string, data: any) => void;
   nodes?: any[];
 }
 
 export function WorkflowConsole({
   isOpen,
   onToggle,
-  selectedNode,
-  activeTab,
-  onTabChange,
   executionLogs,
   variables = [],
-  onNodeUpdate,
   nodes = []
 }: WorkflowConsoleProps) {
-  const [localData, setLocalData] = useState<any>({});
-
-  // Update local data when selected node changes
-  const updateLocalData = useCallback((key: string, value: any) => {
-    const newData = { ...localData, [key]: value };
-    setLocalData(newData);
-    
-    // Update the node immediately
-    if (selectedNode && onNodeUpdate) {
-      onNodeUpdate(selectedNode.id, { [key]: value });
-    }
-  }, [localData, selectedNode, onNodeUpdate]);
-
-  // Get current node data with local overrides
-  const currentData = selectedNode ? { ...selectedNode.data, ...localData } : {};
-
-  const insertVariable = useCallback((varName: string, targetField: 'systemPrompt' | 'userPrompt') => {
-    const currentText = currentData[targetField] || '';
-    const newText = `${currentText}{{${varName}}}`;
-    updateLocalData(targetField, newText);
-  }, [currentData, updateLocalData]);
 
   // Filter out duplicate logs using a Map to track unique combinations
   const uniqueLogs = useMemo(() => {
@@ -198,16 +163,7 @@ export function WorkflowConsole({
                   </div>
                 </Button>
                 
-                <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as 'edit' | 'results')}>
-                  <TabsList className='h-8 border border-border/60 bg-background/40'>
-                    <TabsTrigger value="edit" className='px-3 text-xs data-[state=active]:bg-background data-[state=active]:text-foreground'>
-                      Edit {selectedNode ? `- ${selectedNode.data.variableName || selectedNode.data.label}` : ''}
-                    </TabsTrigger>
-                    <TabsTrigger value="results" className='px-3 text-xs data-[state=active]:bg-background data-[state=active]:text-foreground'>
-                      Results
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
+<span className='text-gray-700 text-sm dark:text-gray-300'>Results</span>
               </div>
               
               {/* Close button when open */}
@@ -232,88 +188,7 @@ export function WorkflowConsole({
 
         {/* Console Content */}
         {isOpen && (
-          <div className="h-[calc(100%-3rem)]">
-            <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as 'edit' | 'results')} className="h-full">
-              <TabsContent value="edit" className='m-0 h-full overflow-auto p-4'>
-              {selectedNode ? (
-                <div className="h-full">
-                  {selectedNode.type === 'generate' ? (
-                    <div className='space-y-4'>
-                      {/* Basic Info */}
-                      <div className="space-y-3">
-                        <div>
-                          <Label htmlFor="agent-name" className='text-gray-700 text-xs dark:text-gray-300'>Agent Name</Label>
-                          <Input
-                            id="agent-name"
-                            value={currentData.variableName || ''}
-                            onChange={(e) => updateLocalData('variableName', e.target.value)}
-                            placeholder="Enter agent name"
-                            className="mt-1 text-sm"
-                          />
-                        </div>
-                        <div>
-                          <Label className='text-gray-700 text-xs dark:text-gray-300'>AI Model</Label>
-                          <Select
-                            value={currentData.selectedModel || ''}
-                            onValueChange={(value) => updateLocalData('selectedModel', value)}
-                          >
-                            <SelectTrigger className="mt-1 text-sm">
-                              <SelectValue placeholder="Select a model" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {chatModels.map((model) => (
-                                <SelectItem key={model.id} value={model.id}>
-                                  {model.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      {/* System Prompt */}
-                      <div className="space-y-2">
-                        <Label className='text-gray-700 text-xs dark:text-gray-300'>System Prompt</Label>
-                        <Textarea
-                          value={currentData.systemPrompt || ''}
-                          onChange={(e) => updateLocalData('systemPrompt', e.target.value)}
-                          placeholder="Enter system instructions..."
-                          className="h-[60px] resize-none text-xs"
-                        />
-                      </div>
-
-                      {/* User Prompt */}
-                      <div className="space-y-2">
-                        <Label className='text-gray-700 text-xs dark:text-gray-300'>User Prompt</Label>
-                        <Textarea
-                          value={currentData.userPrompt || ''}
-                          onChange={(e) => updateLocalData('userPrompt', e.target.value)}
-                          placeholder="Enter user prompt..."
-                          className="h-[60px] resize-none text-xs"
-                        />
-                      </div>
-                    </div>
-                  ) : selectedNode.type === 'files' ? (
-                    <div className="space-y-4">
-                      <h3 className='font-medium text-lg'>Files Node</h3>
-                      <div className='text-muted-foreground text-sm'>
-                        {selectedNode.data.selectedFiles?.length || 0} files selected
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center text-muted-foreground">
-                      Unsupported node type
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className='flex h-full items-center justify-center text-muted-foreground'>
-                  Select a block to edit its properties
-                </div>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="results" className='m-0 flex h-full flex-col p-0'>
+          <div className="h-[calc(100%-3rem)] flex flex-col p-0">
               {/* Download Button */}
               {uniqueLogs.some(log => log.type === 'success' && log.message.includes('Generation completed')) && (
                 <div className='border-border/60 border-b p-3'>
@@ -355,9 +230,7 @@ export function WorkflowConsole({
                   </div>
                 )}
               </div>
-            </TabsContent>
-          </Tabs>
-        </div>
+          </div>
       )}
       </div>
     </div>
