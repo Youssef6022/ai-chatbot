@@ -7,10 +7,11 @@ import { cookies } from 'next/headers';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
+    const { id } = await params;
     
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -37,7 +38,7 @@ export async function GET(
       .from(workflow)
       .where(
         and(
-          eq(workflow.id, params.id),
+          eq(workflow.id, id),
           eq(workflow.userId, user.id)
         )
       );
@@ -61,10 +62,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
+    const { id } = await params;
     
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -99,7 +101,7 @@ export async function PUT(
       })
       .where(
         and(
-          eq(workflow.id, params.id),
+          eq(workflow.id, id),
           eq(workflow.userId, user.id)
         )
       )
@@ -124,10 +126,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
+    const { id } = await params;
     
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -153,7 +156,7 @@ export async function DELETE(
       .delete(workflow)
       .where(
         and(
-          eq(workflow.id, params.id),
+          eq(workflow.id, id),
           eq(workflow.userId, user.id)
         )
       )
