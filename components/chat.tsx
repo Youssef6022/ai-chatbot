@@ -104,6 +104,7 @@ export function Chat({
             selectedChatModel: currentModelIdRef.current,
             selectedVisibilityType: visibilityType,
             isSearchGroundingEnabled: lastMessage?.data?.isSearchGroundingEnabled || false,
+            isReasoningEnabled: lastMessage?.data?.isReasoningEnabled || false,
             ...body,
           },
         };

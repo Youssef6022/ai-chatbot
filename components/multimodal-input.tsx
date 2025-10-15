@@ -23,6 +23,7 @@ import {
   ChevronDownIcon,
   GlobeIcon,
 } from './icons';
+import { BrainIcon } from 'lucide-react';
 import { PreviewAttachment } from './preview-attachment';
 import { Button } from './ui/button';
 import {
@@ -136,6 +137,10 @@ function PureMultimodalInput({
     'search-grounding-enabled',
     false,
   );
+  const [isReasoningEnabled, setIsReasoningEnabled] = useLocalStorage(
+    'reasoning-enabled',
+    false,
+  );
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
@@ -178,6 +183,7 @@ function PureMultimodalInput({
       ],
       data: {
         isSearchGroundingEnabled,
+        isReasoningEnabled,
       },
     });
 
@@ -361,6 +367,12 @@ function PureMultimodalInput({
             <SearchGroundingButton
               isEnabled={isSearchGroundingEnabled}
               onToggle={setIsSearchGroundingEnabled}
+              status={status}
+              isHydrated={isHydrated}
+            />
+            <ReasoningButton
+              isEnabled={isReasoningEnabled}
+              onToggle={setIsReasoningEnabled}
               status={status}
               isHydrated={isHydrated}
             />
@@ -565,3 +577,47 @@ function PureSearchGroundingButton({
 }
 
 const SearchGroundingButton = memo(PureSearchGroundingButton);
+
+function PureReasoningButton({
+  isEnabled,
+  onToggle,
+  status,
+  isHydrated,
+}: {
+  isEnabled: boolean;
+  onToggle: (enabled: boolean) => void;
+  status: UseChatHelpers<ChatMessage>['status'];
+  isHydrated: boolean;
+}) {
+  // Éviter l'erreur d'hydratation en utilisant une valeur par défaut côté serveur
+  const title = isHydrated
+    ? isEnabled ? 'Désactiver la réflexion IA' : 'Activer la réflexion IA'
+    : 'Réflexion IA';
+
+  console.log('ReasoningButton render:', { isEnabled, status, isHydrated, disabled: status !== 'ready' });
+
+  return (
+    <Button
+      data-testid="reasoning-button"
+      className={`aspect-square h-8 cursor-pointer rounded-lg p-1 transition-colors hover:bg-accent ${
+        isEnabled && isHydrated ? 'bg-purple-500/10 text-purple-500 hover:bg-purple-500/20' : ''
+      }`}
+      onClick={(event) => {
+        event.preventDefault();
+        onToggle(!isEnabled);
+        console.log('Reasoning button clicked:', !isEnabled); // Debug log
+      }}
+      disabled={status !== 'ready'}
+      variant="ghost"
+      title={title}
+      style={{ 
+        pointerEvents: 'auto',
+        cursor: status !== 'ready' ? 'not-allowed' : 'pointer'
+      }}
+    >
+      <BrainIcon size={14} style={{ width: 14, height: 14 }} />
+    </Button>
+  );
+}
+
+const ReasoningButton = memo(PureReasoningButton);

@@ -105,12 +105,14 @@ export async function POST(request: Request) {
       selectedChatModel,
       selectedVisibilityType,
       isSearchGroundingEnabled = false,
+      isReasoningEnabled = false,
     }: {
       id: string;
       message: ChatMessage;
       selectedChatModel: ChatModel['id'];
       selectedVisibilityType: VisibilityType;
       isSearchGroundingEnabled?: boolean;
+      isReasoningEnabled?: boolean;
     } = requestBody;
 
     const supabase = await createClient();
@@ -231,6 +233,9 @@ export async function POST(request: Request) {
           tools.google_search = google.tools.googleSearch({});
         }
 
+        // Configuration conditionnelle du reasoning selon la documentation
+        console.log('💭 Reasoning enabled:', isReasoningEnabled);
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel, requestHints }),
@@ -239,6 +244,16 @@ export async function POST(request: Request) {
           experimental_activeTools: activeTools,
           experimental_transform: smoothStream({ chunking: 'word' }),
           tools,
+          ...(isReasoningEnabled && {
+            providerOptions: {
+              google: {
+                thinkingConfig: {
+                  thinkingBudget: 8192,
+                  includeThoughts: true,
+                },
+              },
+            },
+          }),
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
             functionId: 'stream-text',

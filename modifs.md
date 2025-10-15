@@ -35,7 +35,7 @@
   - Ajouter l'option useSearchGrounding ✅
   - Icône planète avec "Recherche web" ✅
 - **Thinking Process** : 
-  - Ajouter un chevron pour déplier et voir la réflexion de l'IA
+  - Ajouter un chevron pour déplier et voir la réflexion de l'IA ✅
 
 ## 4. SYSTÈME D'ARTEFACTS
 
