@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/dialog';
 import { GenerateNode } from '@/components/workflow/generate-node';
 import { FilesNode } from '@/components/workflow/files-node';
+import { NoteNode } from '@/components/workflow/note-node';
 import { CustomEdge } from '@/components/workflow/custom-edge';
 import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
 import { WorkflowConsole } from '@/components/workflow/workflow-console';
@@ -71,6 +72,7 @@ const SettingsIcon = ({ size = 16 }: { size?: number }) => (
 const nodeTypes = {
   generate: GenerateNode,
   files: FilesNode,
+  note: NoteNode,
 };
 
 const edgeTypes = {
@@ -105,8 +107,6 @@ export default function WorkflowsPage() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isRunning, setIsRunning] = useState(false);
   const [variables, setVariables] = useState<Variable[]>([]);
-  const [showAddMenu, setShowAddMenu] = useState(false);
-  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveTitle, setSaveTitle] = useState('');
   const [saveDescription, setSaveDescription] = useState('');
@@ -114,8 +114,6 @@ export default function WorkflowsPage() {
   const [currentWorkflowId, setCurrentWorkflowId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [workflowTitle, setWorkflowTitle] = useState<string>('');
-  const addMenuRef = useRef<HTMLDivElement>(null);
-  const settingsMenuRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   
   // Connection highlighting state
@@ -128,6 +126,10 @@ export default function WorkflowsPage() {
   const [isConsoleOpen, setIsConsoleOpen] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [consoleTab, setConsoleTab] = useState<'edit' | 'results'>('edit');
+  
+  // Edit panel state
+  const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
+  const [editingNode, setEditingNode] = useState<any | null>(null);
   const [executionLogs, setExecutionLogs] = useState<Array<{
     id: string;
     timestamp: Date;
@@ -136,6 +138,7 @@ export default function WorkflowsPage() {
     nodeName?: string;
     message: string;
   }>>([]);
+  
 
   // Track theme for dots color
   const [dotsColor, setDotsColor] = useState('#e2e8f0');
@@ -210,25 +213,6 @@ export default function WorkflowsPage() {
     }
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (addMenuRef.current && !addMenuRef.current.contains(event.target as Node)) {
-        setShowAddMenu(false);
-      }
-      if (settingsMenuRef.current && !settingsMenuRef.current.contains(event.target as Node)) {
-        setShowSettingsMenu(false);
-      }
-    };
-
-    if (showAddMenu || showSettingsMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showAddMenu, showSettingsMenu]);
 
   // Update dots color based on theme
   useEffect(() => {
@@ -377,12 +361,10 @@ export default function WorkflowsPage() {
   // Open save modal
   const openSaveModal = useCallback(() => {
     setShowSaveModal(true);
-    setShowSettingsMenu(false);
   }, []);
 
   // Import workflow from JSON
-  const importWorkflow = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const importWorkflow = useCallback((file: File) => {
     if (!file) return;
 
     const reader = new FileReader();
@@ -434,9 +416,6 @@ export default function WorkflowsPage() {
       }
     };
     reader.readAsText(file);
-    
-    // Reset the input value so the same file can be imported again
-    event.target.value = '';
   }, [setNodes, setEdges]);
 
   // Handle connection start to highlight compatible handles
@@ -580,17 +559,19 @@ export default function WorkflowsPage() {
     setSelectedEdge(edge.id);
   }, []);
 
-  // Handle background click to deselect edge
+
+  // Handle background click to deselect edge and close edit panel
   const onPaneClick = useCallback(() => {
     setSelectedEdge(null);
+    setIsEditPanelOpen(false);
+    setEditingNode(null);
   }, []);
 
-  // Handle node selection for console
+  // Handle node selection for edit panel
   const onNodeClick = useCallback((event: React.MouseEvent, node: any) => {
     event.stopPropagation();
-    setSelectedNodeId(node.id);
-    setIsConsoleOpen(true);
-    setConsoleTab('edit');
+    setEditingNode(node);
+    setIsEditPanelOpen(true);
   }, []);
 
   // Add execution log
@@ -689,6 +670,21 @@ export default function WorkflowsPage() {
         label: 'Files',
         selectedFiles: [],
         onFilesChange: () => {},
+        onDelete: () => {},
+      },
+    };
+    setNodes((nds) => [...nds, newNode]);
+  }, [setNodes]);
+
+  const addNoteNode = useCallback(() => {
+    const newNode = {
+      id: `note-${Date.now()}`,
+      type: 'note',
+      position: { x: Math.random() * 300 + 200, y: Math.random() * 300 + 100 },
+      data: {
+        label: 'Note',
+        content: '',
+        onContentChange: () => {},
         onDelete: () => {},
       },
     };
@@ -1089,6 +1085,9 @@ export default function WorkflowsPage() {
         onFilesChange: node.type === 'files'
           ? (files: any[]) => updateNodeData(node.id, { selectedFiles: files })
           : undefined,
+        onContentChange: node.type === 'note'
+          ? (content: string) => updateNodeData(node.id, { content })
+          : undefined,
         onDelete: () => deleteNode(node.id),
         isHandleHighlighted: (handleId: string, handleType: 'source' | 'target') => 
           isHandleHighlighted(node.id, handleId, handleType),
@@ -1100,214 +1099,177 @@ export default function WorkflowsPage() {
   return (
     <div className='fixed inset-0 z-50 bg-background'>
       {/* Header with back arrow and title */}
-      <div className='flex items-center gap-3 border-b px-4 py-3'>
-        <Button
-          variant="ghost"
-          size="sm"
-          className='h-8 w-8 p-0'
-          onClick={() => window.history.back()}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-        </Button>
-        <h1 className='font-semibold text-lg'>
-          {workflowTitle || 'New Workflow'}
-        </h1>
-      </div>
-      
-      <div className='relative flex h-[calc(100vh-60px)] flex-col'>
-      {/* Loading indicator */}
-      {isLoading && (
-        <div className='absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm'>
-          <div className='flex items-center gap-3 rounded-lg border bg-background px-6 py-4 shadow-lg'>
-            <div className='h-6 w-6 animate-spin rounded-full border-primary border-b-2' />
-            <span className='font-medium text-sm'>Chargement du workflow...</span>
-          </div>
-        </div>
-      )}
-
-      {/* Floating Minimal Toolbar */}
-      <div className='-translate-x-1/2 absolute top-6 left-1/2 z-50 transform'>
-        <div className='flex items-center gap-1 rounded-full border border-white/20 bg-background/90 p-1.5 shadow-2xl backdrop-blur-xl transition-shadow duration-300 hover:shadow-3xl'>
-          {/* Library Button */}
+      <div className='flex items-center justify-between border-b px-4 py-3'>
+        <div className='flex items-center gap-3'>
           <Button
             variant="ghost"
             size="sm"
-            className='group h-8 w-8 rounded-full p-0 transition-all duration-300 hover:scale-110 hover:bg-white/10'
-            title="Workflow Library"
-            onClick={() => {
-              window.location.href = '/workflows-library';
-            }}
+            className='h-8 w-8 p-0'
+            onClick={() => window.history.back()}
           >
-            <LibraryIcon size={14} />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </Button>
+          <h1 className='font-semibold text-lg'>
+            {workflowTitle || 'New Workflow'}
+          </h1>
+        </div>
+
+        <div className='flex items-center gap-2'>
+          {/* Variables Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsConsoleOpen(!isConsoleOpen)}
+            className='flex items-center gap-2'
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+            </svg>
+            Variables
           </Button>
 
-          {/* Separator */}
-          <div className='mx-2 h-5 w-px bg-foreground/40' />
+          {/* Import Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => document.getElementById('import-file')?.click()}
+            className='flex items-center gap-2'
+          >
+            <UploadIcon size={14} />
+            Import
+          </Button>
 
-          {/* Add Menu Button */}
-          <div className="relative" ref={addMenuRef}>
-            <Button
-              variant="ghost"
-              size="sm"
-              className='group flex h-8 items-center gap-1.5 rounded-full px-3 transition-all duration-300 hover:scale-105 hover:bg-white/10'
-              onClick={() => setShowAddMenu(!showAddMenu)}
-            >
-              <PlusIcon size={14} />
-              <span className='font-medium text-sm'>Add</span>
-              <ChevronDownIcon size={10} />
-            </Button>
-            
-            {/* Dropdown Menu */}
-            {showAddMenu && (
-              <div className='fade-in slide-in-from-top-2 absolute top-full left-0 z-20 mt-3 min-w-[180px] animate-in overflow-hidden rounded-xl border border-white/10 bg-background/80 shadow-2xl backdrop-blur-xl duration-300'>
-                <div className="p-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
-                    onClick={() => {
-                      addGenerateNode();
-                      setShowAddMenu(false);
-                    }}
-                  >
-                    <span className='text-lg transition-transform duration-200 group-hover:scale-110'>🤖</span>
-                    <span className="font-medium">AI Generator</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
-                    onClick={() => {
-                      addFilesNode();
-                      setShowAddMenu(false);
-                    }}
-                  >
-                    <span className='text-lg transition-transform duration-200 group-hover:scale-110'>📁</span>
-                    <span className="font-medium">Files</span>
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Export Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportWorkflow()}
+            className='flex items-center gap-2'
+          >
+            <DownloadIcon size={14} />
+            Export
+          </Button>
 
-          {/* Separator */}
-          <div className='mx-1 h-4 w-px bg-border/30' />
-
-          {/* Variables Panel */}
-          <div className="flex items-center">
-            <VariablesPanel 
-              variables={variables} 
-              onVariablesChange={setVariables} 
-            />
-          </div>
-
-          {/* Separator */}
-          <div className='mx-1 h-4 w-px bg-border/30' />
-
-          {/* Settings Menu Button */}
-          <div className="relative" ref={settingsMenuRef}>
-            <Button
-              variant="ghost"
-              size="sm"
-              className='group h-8 w-8 rounded-full p-0 transition-all duration-300 hover:scale-110 hover:bg-white/10'
-              onClick={() => setShowSettingsMenu(!showSettingsMenu)}
-              title="Settings"
-            >
-              <SettingsIcon size={14} />
-            </Button>
-            
-            {/* Settings Dropdown Menu */}
-            {showSettingsMenu && (
-              <div className='fade-in slide-in-from-top-2 absolute top-full right-0 z-20 mt-3 min-w-[180px] animate-in overflow-hidden rounded-xl border border-white/10 bg-background/80 shadow-2xl backdrop-blur-xl duration-300'>
-                <div className="p-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
-                    onClick={openSaveModal}
-                  >
-                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                      <polyline points="17,21 17,13 7,13 7,21"/>
-                      <polyline points="7,3 7,8 15,8"/>
-                    </svg>
-                    <span className="font-medium">{currentWorkflowId ? 'Mettre à jour' : 'Sauvegarder'}</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
-                    onClick={() => {
-                      exportWorkflow();
-                      setShowSettingsMenu(false);
-                    }}
-                  >
-                    <DownloadIcon size={12} />
-                    <span className="font-medium">Export JSON</span>
-                  </Button>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={(e) => {
-                        importWorkflow(e);
-                        setShowSettingsMenu(false);
-                      }}
-                      className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
-                      id="import-workflow-settings"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className='group w-full justify-start gap-3 rounded-lg transition-all duration-200 hover:scale-105 hover:bg-white/10'
-                      asChild
-                    >
-                      <label htmlFor="import-workflow-settings" className="cursor-pointer">
-                        <UploadIcon size={12} />
-                        <span className="font-medium">Import JSON</span>
-                      </label>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Separator */}
-          <div className='mx-2 h-5 w-px bg-foreground/40' />
+          {/* Save Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowSaveModal(true)}
+            className='flex items-center gap-2'
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17,21 17,13 7,13 7,21"/>
+              <polyline points="7,3 7,8 15,8"/>
+            </svg>
+            {currentWorkflowId ? 'Update' : 'Save'}
+          </Button>
 
           {/* Run Button */}
-          <Button 
-            onClick={handleRun} 
-            disabled={isRunning}
-            className='group flex h-8 items-center gap-2 rounded-full bg-blue-primary px-4 transition-all duration-300 hover:scale-105 hover:bg-blue-primary/90 disabled:opacity-50'
-            style={{ backgroundColor: isRunning ? 'var(--blue-primary)' : 'var(--blue-primary)' }}
+          <Button
+            onClick={handleRun}
+            disabled={isRunning || nodes.length === 0}
+            size="sm"
+            className='flex items-center gap-2 bg-green-600 hover:bg-green-700'
           >
-            <div className={`transition-all duration-300 ${isRunning ? 'animate-spin' : 'group-hover:scale-110'}`} style={{ color: 'white' }}>
-              <svg
-                height={12}
-                strokeLinejoin="round"
-                viewBox="0 0 16 16"
-                width={12}
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M13.4549 7.22745L13.3229 7.16146L2.5 1.74999L2.4583 1.72914L1.80902 1.4045L1.3618 1.18089C1.19558 1.09778 1 1.21865 1 1.4045L1 1.9045L1 2.63041L1 2.67704L1 13.3229L1 13.3696L1 14.0955L1 14.5955C1 14.7813 1.19558 14.9022 1.3618 14.8191L1.80902 14.5955L2.4583 14.2708L2.5 14.25L13.3229 8.83852L13.4549 8.77253L14.2546 8.37267L14.5528 8.2236C14.737 8.13147 14.737 7.86851 14.5528 7.77638L14.2546 7.62731L13.4549 7.22745ZM11.6459 7.99999L2.5 3.42704L2.5 12.5729L11.6459 7.99999Z"
-                  fill="white"
-                />
+            {isRunning ? (
+              <div className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <polygon fill="currentColor" points="5,3 19,12 5,21" />
               </svg>
-            </div>
-            <span className='font-medium text-sm text-white'>
-              {isRunning ? 'Running...' : 'Run'}
-            </span>
+            )}
+            {isRunning ? 'Running...' : 'Run'}
           </Button>
         </div>
       </div>
       
-      <div className="flex-1">
+      <div className='h-[calc(100vh-60px)] relative'>
+      
+      {/* Hidden file input for import */}
+      <input
+        id="import-file"
+        type="file"
+        accept=".json"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) {
+            importWorkflow(file);
+          }
+        }}
+      />
+
+      {/* Floating Node Palette - Always Visible */}
+      <div className="fixed top-20 left-4 z-50 bg-background/95 backdrop-blur-sm border border-border/60 rounded-xl shadow-xl p-4 min-w-[160px]">
+        <div className="space-y-4">
+          <div>
+            <div className="text-xs text-muted-foreground font-semibold mb-3 uppercase tracking-wider">Core</div>
+            <div className="space-y-2">
+              <button
+                onClick={addGenerateNode}
+                className="group w-full flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 border border-transparent hover:border-blue-200 dark:hover:border-blue-800 text-sm transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:shadow-md"
+              >
+                <div className="w-6 h-6 bg-yellow-100 dark:bg-yellow-200 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" className="text-gray-700 dark:text-gray-800">
+                    <path fill="currentColor" d="M18.5 10.255q0 .067-.003.133A1.54 1.54 0 0 0 17.473 10q-.243 0-.473.074V5.75a.75.75 0 0 0-.75-.75h-8.5a.75.75 0 0 0-.75.75v4.505c0 .414.336.75.75.75h8.276l-.01.025l-.003.012l-.45 1.384l-.01.026l-.019.053H7.75a2.25 2.25 0 0 1-2.25-2.25V5.75A2.25 2.25 0 0 1 7.75 3.5h3.5v-.75a.75.75 0 0 1 .649-.743L12 2a.75.75 0 0 1 .743.649l.007.101l-.001.75h3.5a2.25 2.25 0 0 1 2.25 2.25zm-5.457 3.781l.112-.036H6.254a2.25 2.25 0 0 0-2.25 2.25v.907a3.75 3.75 0 0 0 1.305 2.844c1.563 1.343 3.802 2 6.691 2c2.076 0 3.817-.339 5.213-1.028a1.55 1.55 0 0 1-1.169-1.003l-.004-.012l-.03-.093c-1.086.422-2.42.636-4.01.636c-2.559 0-4.455-.556-5.713-1.638a2.25 2.25 0 0 1-.783-1.706v-.907a.75.75 0 0 1 .75-.75H12v-.003a1.54 1.54 0 0 1 1.031-1.456zM10.999 7.75a1.25 1.25 0 1 0-2.499 0a1.25 1.25 0 0 0 2.499 0m3.243-1.25a1.25 1.25 0 1 1 0 2.499a1.25 1.25 0 0 1 0-2.499m1.847 10.912a2.83 2.83 0 0 0-1.348-.955l-1.377-.448a.544.544 0 0 1 0-1.025l1.377-.448a2.84 2.84 0 0 0 1.76-1.762l.01-.034l.449-1.377a.544.544 0 0 1 1.026 0l.448 1.377a2.84 2.84 0 0 0 1.798 1.796l1.378.448l.027.007a.544.544 0 0 1 0 1.025l-1.378.448a2.84 2.84 0 0 0-1.798 1.796l-.447 1.377a.55.55 0 0 1-.2.263a.544.544 0 0 1-.827-.263l-.448-1.377a2.8 2.8 0 0 0-.45-.848m7.694 3.801l-.765-.248a1.58 1.58 0 0 1-.999-.998l-.249-.765a.302.302 0 0 0-.57 0l-.249.764a1.58 1.58 0 0 1-.983.999l-.766.248a.302.302 0 0 0 0 .57l.766.249a1.58 1.58 0 0 1 .999 1.002l.248.764a.303.303 0 0 0 .57 0l.25-.764a1.58 1.58 0 0 1 .998-.999l.766-.248a.302.302 0 0 0 0-.57z"/>
+                  </svg>
+                </div>
+                <span className="font-medium text-foreground">AI Generator</span>
+              </button>
+              
+              <button
+                onClick={addNoteNode}
+                className="group w-full flex items-center gap-3 p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/30 border border-transparent hover:border-amber-200 dark:hover:border-amber-800 text-sm transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:shadow-md"
+              >
+                <div className="w-6 h-6 bg-yellow-100 dark:bg-yellow-200 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" className="text-gray-700 dark:text-gray-800">
+                    <path fill="currentColor" d="M3 17.75A3.25 3.25 0 0 0 6.25 21h4.915l.356-1.423l.02-.077H6.25a1.75 1.75 0 0 1-1.75-1.75V11h3.25l.184-.005A3.25 3.25 0 0 0 11 7.75V4.5h6.75c.966 0 1.75.784 1.75 1.75v4.982c.479-.19.994-.263 1.5-.22V6.25A3.25 3.25 0 0 0 17.75 3h-6.879a2.25 2.25 0 0 0-1.59.659L3.658 9.28A2.25 2.25 0 0 0 3 10.871zM7.75 9.5H5.561L9.5 5.561V7.75l-.006.144A1.75 1.75 0 0 1 7.75 9.5m11.35 3.17l-5.903 5.902a2.7 2.7 0 0 0-.706 1.247l-.458 1.831a1.087 1.087 0 0 0 1.319 1.318l1.83-.457a2.7 2.7 0 0 0 1.248-.707l5.902-5.902A2.286 2.286 0 0 0 19.1 12.67"/>
+                  </svg>
+                </div>
+                <span className="font-medium text-foreground">Note</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="border-t border-border/40 pt-3">
+            <div className="text-xs text-muted-foreground font-semibold mb-3 uppercase tracking-wider">Tools</div>
+            <div className="space-y-2">
+              <button
+                onClick={addFilesNode}
+                className="group w-full flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-950/30 border border-transparent hover:border-orange-200 dark:hover:border-orange-800 text-sm transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:shadow-md"
+              >
+                <div className="w-6 h-6 bg-yellow-100 dark:bg-yellow-200 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-800">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                  </svg>
+                </div>
+                <span className="font-medium text-foreground">Files</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      {/* Main Content Area */}
+      <div className="w-full h-full relative">
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className='absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm'>
+            <div className='flex items-center gap-3 rounded-lg border bg-background px-6 py-4 shadow-lg'>
+              <div className='h-6 w-6 animate-spin rounded-full border-primary border-b-2' />
+              <span className='font-medium text-sm'>Chargement du workflow...</span>
+            </div>
+          </div>
+        )}
+
         <ReactFlow
           nodes={nodesWithCallbacks}
           edges={edges}
@@ -1361,6 +1323,170 @@ export default function WorkflowsPage() {
           />
         </ReactFlow>
       </div>
+
+      {/* Edit Panel - Floating Box */}
+      {isEditPanelOpen && editingNode && (
+        <div className="fixed top-20 right-4 z-50 bg-background/95 backdrop-blur-sm border border-border/60 rounded-xl shadow-xl p-4 w-80 max-h-[80vh] overflow-y-auto">
+            {/* Header */}
+            <div className="mb-4">
+              <h3 className="font-semibold text-base">
+                {editingNode.type === 'generate' ? editingNode.data.variableName || 'AI Agent' : 
+                 editingNode.type === 'note' ? 'Note' : 
+                 editingNode.type === 'files' ? 'Files' : 'Node'}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                {editingNode.type === 'generate' ? 'Call the model with your instructions and tools' :
+                 editingNode.type === 'note' ? 'Add notes and documentation' :
+                 editingNode.type === 'files' ? 'Select and manage files' : 'Configure this node'}
+              </p>
+            </div>
+
+            {/* Content */}
+            <div className="space-y-4">
+              {editingNode.type === 'generate' && (
+                <>
+                  {/* Name Field */}
+                  <div className="space-y-1">
+                    <Label htmlFor="node-name" className="text-xs font-medium text-muted-foreground">Name</Label>
+                    <Input
+                      id="node-name"
+                      value={editingNode.data.variableName || ''}
+                      onChange={(e) => {
+                        updateNodeData(editingNode.id, { variableName: e.target.value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, variableName: e.target.value }
+                        });
+                      }}
+                      placeholder="My agent"
+                      className="text-sm"
+                    />
+                  </div>
+
+                  {/* Instructions */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-medium text-muted-foreground">Instructions</Label>
+                      <div className="flex items-center gap-1">
+                        <button className="w-5 h-5 rounded bg-muted hover:bg-muted/80 flex items-center justify-center">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M12 5v14M5 12h14"/>
+                          </svg>
+                        </button>
+                        <button className="w-5 h-5 rounded bg-muted hover:bg-muted/80 flex items-center justify-center">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <Textarea
+                      value={editingNode.data.systemPrompt || ''}
+                      onChange={(e) => {
+                        updateNodeData(editingNode.id, { systemPrompt: e.target.value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, systemPrompt: e.target.value }
+                        });
+                      }}
+                      placeholder="You are a helpful assistant."
+                      className="min-h-[80px] resize-none text-sm"
+                    />
+                  </div>
+
+                  {/* Model Selection */}
+                  <div className="space-y-1">
+                    <Label className="text-xs font-medium text-muted-foreground">Model</Label>
+                    <select
+                      value={editingNode.data.selectedModel || 'chat-model-medium'}
+                      onChange={(e) => {
+                        updateNodeData(editingNode.id, { selectedModel: e.target.value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, selectedModel: e.target.value }
+                        });
+                      }}
+                      className="w-full p-2 border border-border rounded-md bg-background text-sm"
+                    >
+                      <option value="chat-model-small">Small</option>
+                      <option value="chat-model-medium">Medium</option>
+                      <option value="chat-model-large">Large</option>
+                    </select>
+                  </div>
+
+                  {/* User Prompt */}
+                  <div className="space-y-1">
+                    <Label className="text-xs font-medium text-muted-foreground">User Prompt</Label>
+                    <Textarea
+                      value={editingNode.data.userPrompt || ''}
+                      onChange={(e) => {
+                        updateNodeData(editingNode.id, { userPrompt: e.target.value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, userPrompt: e.target.value }
+                        });
+                      }}
+                      placeholder="Enter your prompt..."
+                      className="min-h-[60px] resize-none text-sm"
+                    />
+                  </div>
+                </>
+              )}
+
+              {editingNode.type === 'note' && (
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-muted-foreground">Note Content</Label>
+                  <Textarea
+                    value={editingNode.data.content || ''}
+                    onChange={(e) => {
+                      updateNodeData(editingNode.id, { content: e.target.value });
+                      setEditingNode({
+                        ...editingNode,
+                        data: { ...editingNode.data, content: e.target.value }
+                      });
+                    }}
+                    placeholder="Add your note here..."
+                    className="min-h-[120px] resize-none text-sm"
+                  />
+                </div>
+              )}
+
+              {editingNode.type === 'files' && (
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium text-muted-foreground">Selected Files</Label>
+                  <div className="border border-border rounded-md p-2 min-h-[80px]">
+                    {editingNode.data.selectedFiles?.length > 0 ? (
+                      <div className="space-y-1">
+                        {editingNode.data.selectedFiles.map((file: any, index: number) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-muted rounded text-xs">
+                            <span className="truncate">{file.name}</span>
+                            <button
+                              onClick={() => {
+                                const updatedFiles = editingNode.data.selectedFiles.filter((_: any, i: number) => i !== index);
+                                updateNodeData(editingNode.id, { selectedFiles: updatedFiles });
+                                setEditingNode({
+                                  ...editingNode,
+                                  data: { ...editingNode.data, selectedFiles: updatedFiles }
+                                });
+                              }}
+                              className="w-4 h-4 rounded bg-red-500 text-white hover:bg-red-600 flex items-center justify-center"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center text-muted-foreground text-xs">
+                        No files selected
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+      )}
 
       {/* Workflow Console */}
       <WorkflowConsole
