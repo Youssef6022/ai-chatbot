@@ -1345,9 +1345,9 @@ export default function WorkflowsPage() {
             <div className="space-y-4">
               {editingNode.type === 'generate' && (
                 <>
-                  {/* Name Field */}
-                  <div className="space-y-1">
-                    <Label htmlFor="node-name" className="text-xs font-medium text-muted-foreground">Name</Label>
+                  {/* Name Field - Label and input on same line */}
+                  <div className="flex items-center gap-3">
+                    <Label htmlFor="node-name" className="text-xs font-medium text-muted-foreground w-12 shrink-0">Name</Label>
                     <Input
                       id="node-name"
                       value={editingNode.data.variableName || ''}
@@ -1359,7 +1359,24 @@ export default function WorkflowsPage() {
                         });
                       }}
                       placeholder="My agent"
-                      className="text-sm"
+                      className="text-sm flex-1"
+                    />
+                  </div>
+
+                  {/* User Prompt */}
+                  <div className="space-y-1">
+                    <Label className="text-xs font-medium text-muted-foreground">User Prompt</Label>
+                    <Textarea
+                      value={editingNode.data.userPrompt || ''}
+                      onChange={(e) => {
+                        updateNodeData(editingNode.id, { userPrompt: e.target.value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, userPrompt: e.target.value }
+                        });
+                      }}
+                      placeholder="Enter your prompt..."
+                      className="min-h-[60px] resize-none text-sm"
                     />
                   </div>
 
@@ -1394,41 +1411,37 @@ export default function WorkflowsPage() {
                     />
                   </div>
 
-                  {/* Model Selection */}
-                  <div className="space-y-1">
+                  {/* Model Selection - Label and custom dropdown */}
+                  <div className="flex items-center justify-between">
                     <Label className="text-xs font-medium text-muted-foreground">Model</Label>
-                    <select
-                      value={editingNode.data.selectedModel || 'chat-model-medium'}
-                      onChange={(e) => {
-                        updateNodeData(editingNode.id, { selectedModel: e.target.value });
-                        setEditingNode({
-                          ...editingNode,
-                          data: { ...editingNode.data, selectedModel: e.target.value }
-                        });
-                      }}
-                      className="w-full p-2 border border-border rounded-md bg-background text-sm"
-                    >
-                      <option value="chat-model-small">Small</option>
-                      <option value="chat-model-medium">Medium</option>
-                      <option value="chat-model-large">Large</option>
-                    </select>
-                  </div>
-
-                  {/* User Prompt */}
-                  <div className="space-y-1">
-                    <Label className="text-xs font-medium text-muted-foreground">User Prompt</Label>
-                    <Textarea
-                      value={editingNode.data.userPrompt || ''}
-                      onChange={(e) => {
-                        updateNodeData(editingNode.id, { userPrompt: e.target.value });
-                        setEditingNode({
-                          ...editingNode,
-                          data: { ...editingNode.data, userPrompt: e.target.value }
-                        });
-                      }}
-                      placeholder="Enter your prompt..."
-                      className="min-h-[60px] resize-none text-sm"
-                    />
+                    <div className="relative">
+                      <select
+                        value={editingNode.data.selectedModel || 'chat-model-medium'}
+                        onChange={(e) => {
+                          updateNodeData(editingNode.id, { selectedModel: e.target.value });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, selectedModel: e.target.value }
+                          });
+                        }}
+                        className="appearance-none bg-transparent text-sm text-foreground pr-6 cursor-pointer focus:outline-none"
+                      >
+                        <option value="chat-model-small">Small</option>
+                        <option value="chat-model-medium">Medium</option>
+                        <option value="chat-model-large">Large</option>
+                      </select>
+                      <svg 
+                        width="12" 
+                        height="12" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        className="absolute right-0 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
+                      >
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
+                    </div>
                   </div>
                 </>
               )}
