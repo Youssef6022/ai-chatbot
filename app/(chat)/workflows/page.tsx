@@ -161,7 +161,7 @@ export default function WorkflowsPage() {
         // Load the workflow data
         const workflowData = workflow.workflowData;
         
-        if (workflowData && workflowData.nodes && workflowData.edges) {
+        if (workflowData?.nodes && workflowData.edges) {
           // Restore nodes with proper callback functions
           const importedNodes = workflowData.nodes.map((node: any) => ({
             id: node.id,
@@ -863,7 +863,7 @@ export default function WorkflowsPage() {
           if (!userPrompt.trim()) {
             userPrompt = inputNode.data.result;
           } else {
-            userPrompt += '\n\n' + inputNode.data.result;
+            userPrompt += `\n\n${inputNode.data.result}`;
           }
         }
       }
@@ -1098,10 +1098,10 @@ export default function WorkflowsPage() {
     <div className='relative flex h-screen flex-col'>
       {/* Loading indicator */}
       {isLoading && (
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="flex items-center gap-3 bg-background border rounded-lg px-6 py-4 shadow-lg">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-            <span className="text-sm font-medium">Chargement du workflow...</span>
+        <div className='absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm'>
+          <div className='flex items-center gap-3 rounded-lg border bg-background px-6 py-4 shadow-lg'>
+            <div className='h-6 w-6 animate-spin rounded-full border-primary border-b-2' />
+            <span className='font-medium text-sm'>Chargement du workflow...</span>
           </div>
         </div>
       )}

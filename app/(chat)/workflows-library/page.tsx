@@ -1,4 +1,4 @@
-import { Workflow, workflow } from '@/lib/db/schema';
+import { type Workflow, workflow } from '@/lib/db/schema';
 import { db } from '@/lib/db';
 import { eq, desc } from 'drizzle-orm';
 import { createServerClient } from '@supabase/ssr';
@@ -34,8 +34,8 @@ export default async function WorkflowsLibraryPage() {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-2xl font-bold mb-4">Connectez-vous</h1>
+      <div className='flex min-h-screen flex-col items-center justify-center'>
+        <h1 className='mb-4 font-bold text-2xl'>Connectez-vous</h1>
         <p className="text-muted-foreground">
           Vous devez être connecté pour accéder à votre bibliothèque de workflows.
         </p>

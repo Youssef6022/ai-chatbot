@@ -8,7 +8,7 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ## Development Commands
 
-**Package Manager**: This project uses `pnpm` as the package manager (required).
+**Package Manager**: This project uses `pnpm` as the package manager (required). See `"packageManager": "pnpm@9.12.3"` in package.json.
 
 ### Core Development
 - **Development server**: `pnpm dev` (runs on port 9627 with Turbo)
@@ -67,6 +67,7 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Auth Routes**: Login (`/login`), Register (`/register`), Auth callback (`/auth/callback`), Signout (`/api/auth/signout`)
 - **Session Updates**: Automatic session refresh via Supabase middleware
 - **Guest Support**: Allows unauthenticated access with appropriate route protection
+- **Password Hashing**: Uses `bcrypt-ts` for secure password handling
 
 ### File Storage
 - **Provider**: Vercel Blob Storage
@@ -79,7 +80,7 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Styling**: Tailwind CSS v4 with custom configuration
 - **Icons**: Lucide React + Simple Icons (`@icons-pack/react-simple-icons`)
 - **Editor**: ProseMirror integration for rich document editing
-- **Code Highlighting**: Shiki with multiple language support + CodeMirror for interactive editing
+- **Code Highlighting**: Shiki with multiple language support + CodeMirror for interactive editing (supports JavaScript, Python)
 - **Data Fetching**: SWR for client-side data management
 - **Animations**: Framer Motion for smooth UI transitions
 
@@ -89,7 +90,6 @@ Required environment variables (see `.env.example`):
 
 ```env
 AUTH_SECRET=**** # Generate with: openssl rand -base64 32
-AI_GATEWAY_API_KEY=**** # Required for non-Vercel deployments
 BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token
 POSTGRES_URL=**** # PostgreSQL database connection string
 REDIS_URL=**** # Optional Redis for caching/performance
@@ -112,11 +112,12 @@ GOOGLE_GENERATIVE_AI_API_KEY=**** # Google AI API key for Gemini models
 - Integration with AI for document generation
 
 ### Workflow Builder
-- Visual workflow designer using ReactFlow
+- Visual workflow designer using ReactFlow (`@xyflow/react`)
 - Two node types: Text Input (prompt) and Generate Text (AI generation)
 - Variable replacement system with global variables and connected node results
 - JSON export/import functionality for workflow persistence
 - Real-time execution with API integration at `/api/workflow/generate`
+- Accessible via `/workflows` route
 
 ### Advanced AI Features
 - Multi-turn conversations with context preservation
@@ -177,3 +178,5 @@ GOOGLE_GENERATIVE_AI_API_KEY=**** # Google AI API key for Gemini models
 - Authentication supports both authenticated and guest users via Supabase
 - Redis is optional but recommended for production performance and caching
 - Message format migration: Legacy `Message` table is deprecated, use `Message_v2` for new code
+- React 19 RC is used (`react@19.0.0-rc-45804af1-20241021`)
+- File uploads support: JSZip for archive handling, PapaParse for CSV processing

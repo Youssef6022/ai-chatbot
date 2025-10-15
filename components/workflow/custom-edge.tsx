@@ -5,7 +5,6 @@ import {
   getBezierPath,
   EdgeLabelRenderer,
   type EdgeProps,
-  type Edge,
 } from '@xyflow/react';
 
 interface CustomEdgeProps extends EdgeProps {

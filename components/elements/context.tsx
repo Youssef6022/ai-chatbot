@@ -164,7 +164,7 @@ export const Context = ({ className, usage, userQuota, selectedModelId, ...props
           {quotaText ? (
             // Display quota information
             <div className="space-y-3">
-              <div className="text-sm font-medium">Message Quotas</div>
+              <div className='font-medium text-sm'>Message Quotas</div>
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Small</span>

@@ -21,6 +21,7 @@ import {
   CpuIcon,
   StopIcon,
   ChevronDownIcon,
+  GlobeIcon,
 } from './icons';
 import { PreviewAttachment } from './preview-attachment';
 import { Button } from './ui/button';
@@ -131,6 +132,15 @@ function PureMultimodalInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
+  const [isSearchGroundingEnabled, setIsSearchGroundingEnabled] = useLocalStorage(
+    'search-grounding-enabled',
+    false,
+  );
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const submitForm = useCallback(async () => {
     window.history.replaceState({}, '', `/chat/${chatId}`);
@@ -166,6 +176,9 @@ function PureMultimodalInput({
           text: input,
         },
       ],
+      data: {
+        isSearchGroundingEnabled,
+      },
     });
 
     setAttachments([]);
@@ -345,6 +358,12 @@ function PureMultimodalInput({
               selectedModelId={selectedModelId}
               onFileModalOpen={() => setIsFileModalOpen(true)}
             />
+            <SearchGroundingButton
+              isEnabled={isSearchGroundingEnabled}
+              onToggle={setIsSearchGroundingEnabled}
+              status={status}
+              isHydrated={isHydrated}
+            />
             <ModelSelectorCompact selectedModelId={selectedModelId} onModelChange={onModelChange} />
           </PromptInputTools>
 
@@ -509,3 +528,40 @@ function PureStopButton({
 }
 
 const StopButton = memo(PureStopButton);
+
+function PureSearchGroundingButton({
+  isEnabled,
+  onToggle,
+  status,
+  isHydrated,
+}: {
+  isEnabled: boolean;
+  onToggle: (enabled: boolean) => void;
+  status: UseChatHelpers<ChatMessage>['status'];
+  isHydrated: boolean;
+}) {
+  // Éviter l'erreur d'hydratation en utilisant une valeur par défaut côté serveur
+  const title = isHydrated
+    ? isEnabled ? 'Désactiver la recherche web' : 'Activer la recherche web'
+    : 'Recherche web';
+
+  return (
+    <Button
+      data-testid="search-grounding-button"
+      className={`aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent ${
+        isEnabled && isHydrated ? 'bg-blue-primary/10 text-blue-primary hover:bg-blue-primary/20' : ''
+      }`}
+      onClick={(event) => {
+        event.preventDefault();
+        onToggle(!isEnabled);
+      }}
+      disabled={status !== 'ready'}
+      variant="ghost"
+      title={title}
+    >
+      <GlobeIcon size={14} style={{ width: 14, height: 14 }} />
+    </Button>
+  );
+}
+
+const SearchGroundingButton = memo(PureSearchGroundingButton);

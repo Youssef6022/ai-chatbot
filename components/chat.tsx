@@ -96,12 +96,14 @@ export function Chat({
       api: '/api/chat',
       fetch: fetchWithErrorHandlers,
       prepareSendMessagesRequest({ messages, id, body }) {
+        const lastMessage = messages.at(-1);
         return {
           body: {
             id,
-            message: messages.at(-1),
+            message: lastMessage,
             selectedChatModel: currentModelIdRef.current,
             selectedVisibilityType: visibilityType,
+            isSearchGroundingEnabled: lastMessage?.data?.isSearchGroundingEnabled || false,
             ...body,
           },
         };

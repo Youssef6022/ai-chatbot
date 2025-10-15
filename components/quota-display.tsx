@@ -24,7 +24,7 @@ export function QuotaDisplay({ modelUsage }: QuotaDisplayProps) {
   }, [modelUsage]);
 
   return (
-    <div className="text-xs text-muted-foreground font-mono bg-muted/30 px-2 py-1 rounded-md">
+    <div className='rounded-md bg-muted/30 px-2 py-1 font-mono text-muted-foreground text-xs'>
       {quotaText}
     </div>
   );

@@ -32,8 +32,8 @@
 - **Sélection de modèle** : 
   - Proposer "Magistral Small", "Magistral Medium", "Magistral Large (Pro)" ✅
 - **Fonction Grounding** : 
-  - Ajouter l'option useSearchGrounding
-  - Icône planète avec "Recherche web"
+  - Ajouter l'option useSearchGrounding ✅
+  - Icône planète avec "Recherche web" ✅
 - **Thinking Process** : 
   - Ajouter un chevron pour déplier et voir la réflexion de l'IA
 

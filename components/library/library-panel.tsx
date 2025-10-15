@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { UploadIcon, FileIcon, TrashIcon, Eye, Loader2, FolderPlus, Folder, ChevronLeft, ChevronRight, MoreHorizontal, Move } from 'lucide-react';
+import { UploadIcon, FileIcon, TrashIcon, Eye, Loader2, FolderPlus, ChevronLeft, Move } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserFile {
@@ -460,7 +460,7 @@ export function LibraryPanel() {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   const getFileIcon = (mimeType: string) => {
@@ -477,7 +477,7 @@ export function LibraryPanel() {
     <>
       <div 
         className={`flex h-full flex-col bg-background transition-colors ${
-          isDragOver ? 'bg-blue-50 border-2 border-dashed border-blue-300' : ''
+          isDragOver ? 'border-2 border-blue-300 border-dashed bg-blue-50' : ''
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -495,19 +495,19 @@ export function LibraryPanel() {
 
         {/* Files List */}
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-3 min-h-full">
+          <div className='min-h-full space-y-3 p-4'>
             {/* Loading State */}
             {isLoading && (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Loader2 size={32} className="animate-spin mb-3" />
+                <Loader2 size={32} className='mb-3 animate-spin' />
                 <p>Loading your files...</p>
               </div>
             )}
 
             {/* Breadcrumbs Navigation */}
-            <div className="flex items-center justify-between gap-2 mb-4 p-3 bg-muted/50 rounded-lg">
+            <div className='mb-4 flex items-center justify-between gap-2 rounded-lg bg-muted/50 p-3'>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-foreground rounded flex items-center justify-center">
+                <div className='flex h-6 w-6 items-center justify-center rounded bg-foreground'>
                   <svg 
                     width="12" 
                     height="12" 
@@ -532,7 +532,7 @@ export function LibraryPanel() {
                   Retour
                 </Button>
                 <div className="flex items-center">
-                  <span className="text-sm text-muted-foreground font-mono">/</span>
+                  <span className='font-mono text-muted-foreground text-sm'>/</span>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -540,13 +540,13 @@ export function LibraryPanel() {
                       setCurrentFolderId(null);
                       setFolderPath([]);
                     }}
-                    className="h-8 px-0 text-xs font-mono"
+                    className='h-8 px-0 font-mono text-xs'
                   >
                     home
                   </Button>
                   {folderPath.map((folder, index) => (
                     <div key={folder.id} className="flex items-center">
-                      <span className="text-sm text-muted-foreground">/</span>
+                      <span className='text-muted-foreground text-sm'>/</span>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -555,7 +555,7 @@ export function LibraryPanel() {
                           setFolderPath(newPath);
                           setCurrentFolderId(folder.id);
                         }}
-                        className="h-8 px-0 text-xs font-mono"
+                        className='h-8 px-0 font-mono text-xs'
                       >
                         {folder.name}
                       </Button>
@@ -570,7 +570,7 @@ export function LibraryPanel() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="gap-2 w-[100px]"
+                      className='w-[100px] gap-2'
                     >
                       <FolderPlus size={16} />
                       Folder
@@ -587,7 +587,7 @@ export function LibraryPanel() {
                         onChange={(e) => setNewFolderName(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleCreateFolder()}
                       />
-                      <div className="flex gap-2 justify-end">
+                      <div className='flex justify-end gap-2'>
                         <Button variant="outline" onClick={() => setIsCreateFolderOpen(false)}>
                           Annuler
                         </Button>
@@ -603,7 +603,7 @@ export function LibraryPanel() {
                   disabled={isUploading}
                   variant="outline"
                   size="sm"
-                  className="gap-2 w-[100px]"
+                  className='w-[100px] gap-2'
                 >
                   {isUploading ? (
                     <>
@@ -622,11 +622,11 @@ export function LibraryPanel() {
 
             {/* Drag & Drop Overlay */}
             {isDragOver && (
-              <div className="fixed inset-0 bg-blue-100/50 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-none">
-                <div className="bg-white rounded-lg shadow-lg p-8 border-2 border-dashed border-blue-400">
+              <div className='pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-blue-100/50 backdrop-blur-sm'>
+                <div className='rounded-lg border-2 border-blue-400 border-dashed bg-white p-8 shadow-lg'>
                   <div className="text-center">
                     <UploadIcon size={48} className="mx-auto mb-4 text-blue-600" />
-                    <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                    <h3 className='mb-2 font-semibold text-blue-900 text-lg'>
                       Drop files here to upload
                     </h3>
                     <p className="text-blue-700">
@@ -640,27 +640,27 @@ export function LibraryPanel() {
             {/* Empty State */}
             {files.length === 0 && folders.length === 0 && !isLoading && (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4 border">
+                <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-muted'>
                   <FileIcon size={24} className="text-muted-foreground" />
                 </div>
-                <h3 className="font-medium mb-2">No files yet</h3>
-                <p className="text-sm text-center max-w-48">
+                <h3 className='mb-2 font-medium'>No files yet</h3>
+                <p className='max-w-48 text-center text-sm'>
                   Upload your first file to start building your library or drag files from your desktop
                 </p>
               </div>
             )}
 
             {/* Files and Folders Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+            <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'>
               {/* Folders */}
               {folders.map((folder) => (
                 <div
                   key={folder.id}
-                  className="group relative p-3 border border-border rounded-lg bg-card hover:shadow-md hover:border-blue-200 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer"
+                  className='group hover:-translate-y-0.5 relative cursor-pointer rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:border-blue-200 hover:shadow-md'
                   onClick={() => navigateToFolder(folder)}
                 >
                   {/* Folder Icon */}
-                  <div className="w-full aspect-square mb-2 flex items-center justify-center">
+                  <div className='mb-2 flex aspect-square w-full items-center justify-center'>
                     <svg 
                       width="64" 
                       height="64" 
@@ -677,10 +677,10 @@ export function LibraryPanel() {
                   
                   {/* Folder Info */}
                   <div className="space-y-1">
-                    <div className="font-medium text-sm truncate group-hover:text-blue-600 transition-colors" title={folder.name}>
+                    <div className='truncate font-medium text-sm transition-colors group-hover:text-blue-600' title={folder.name}>
                       📁 {folder.name}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className='text-muted-foreground text-xs'>
                       {(() => {
                         const itemCount = getFolderItemCount(folder.id);
                         return itemCount === 0 ? 'Dossier vide' : `${itemCount} élément${itemCount > 1 ? 's' : ''}`;
@@ -689,7 +689,7 @@ export function LibraryPanel() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-md p-1">
+                  <div className='absolute top-2 right-2 flex items-center gap-1 rounded-md bg-white/90 p-1 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 dark:bg-gray-900/90'>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -722,15 +722,15 @@ export function LibraryPanel() {
               {files.map((file) => (
                 <div
                   key={file.id}
-                  className="group relative p-3 border border-border rounded-lg bg-card hover:shadow-md hover:border-blue-200 transition-all duration-200 hover:-translate-y-0.5"
+                  className='group hover:-translate-y-0.5 relative rounded-lg border border-border bg-card p-3 transition-all duration-200 hover:border-blue-200 hover:shadow-md'
                 >
                   {/* File Preview/Icon */}
-                  <div className="w-full aspect-square mb-2 flex items-center justify-center">
+                  <div className='mb-2 flex aspect-square w-full items-center justify-center'>
                     {file.mime_type.startsWith('image/') ? (
                       <img
                         src={file.blob_url}
                         alt={file.original_name}
-                        className="w-full h-full object-cover rounded-lg"
+                        className='h-full w-full rounded-lg object-cover'
                       />
                     ) : (
                       <span className="text-6xl">{getFileIcon(file.mime_type)}</span>
@@ -739,16 +739,16 @@ export function LibraryPanel() {
                   
                   {/* File Info */}
                   <div className="space-y-1">
-                    <div className="font-medium text-sm truncate group-hover:text-blue-600 transition-colors" title={file.original_name}>
+                    <div className='truncate font-medium text-sm transition-colors group-hover:text-blue-600' title={file.original_name}>
                       {file.original_name}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className='text-muted-foreground text-xs'>
                       {formatFileSize(file.size_bytes)}
                     </div>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-md p-1">
+                  <div className='absolute top-2 right-2 flex items-center gap-1 rounded-md bg-white/90 p-1 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 dark:bg-gray-900/90'>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -791,7 +791,7 @@ export function LibraryPanel() {
             <DialogTitle>Déplacer {selectedItem?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
+            <p className='text-muted-foreground text-sm'>
               Sélectionnez le dossier de destination :
             </p>
             <Select onValueChange={handleMoveItem}>
@@ -807,7 +807,7 @@ export function LibraryPanel() {
                 ))}
               </SelectContent>
             </Select>
-            <div className="flex gap-2 justify-end">
+            <div className='flex justify-end gap-2'>
               <Button variant="outline" onClick={() => setIsMoveDialogOpen(false)}>
                 Annuler
               </Button>

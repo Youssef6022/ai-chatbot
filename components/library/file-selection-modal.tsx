@@ -163,7 +163,7 @@ export function FileSelectionModal({
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   const getFileIcon = (mimeType: string) => {
@@ -179,7 +179,7 @@ export function FileSelectionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh]">
+      <DialogContent className='max-h-[80vh] sm:max-w-[600px]'>
         <DialogHeader>
           <DialogTitle>Sélectionner des fichiers</DialogTitle>
         </DialogHeader>
@@ -188,7 +188,7 @@ export function FileSelectionModal({
           {/* Bouton Upload nouveau */}
           <Button
             onClick={handleUploadNew}
-            className="w-full flex items-center gap-2"
+            className='flex w-full items-center gap-2'
             variant="outline"
           >
             <Upload size={16} />
@@ -199,7 +199,7 @@ export function FileSelectionModal({
           <div className="border-t pt-4">
             {/* Navigation */}
             {folderPath.length > 0 && (
-              <div className="flex items-center gap-2 mb-3">
+              <div className='mb-3 flex items-center gap-2'>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -209,50 +209,50 @@ export function FileSelectionModal({
                   <ChevronLeft size={14} />
                   Retour
                 </Button>
-                <span className="text-xs text-muted-foreground">
+                <span className='text-muted-foreground text-xs'>
                   {folderPath.map(folder => folder.name).join(' / ')}
                 </span>
               </div>
             )}
             
-            <h3 className="font-medium text-sm mb-3">
+            <h3 className='mb-3 font-medium text-sm'>
               Choisir depuis votre Library ({files.length} fichiers, {folders.length} dossiers)
             </h3>
             
             {loading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="animate-spin" size={20} />
-                <span className="ml-2 text-sm text-muted-foreground">
+                <span className='ml-2 text-muted-foreground text-sm'>
                   Chargement...
                 </span>
               </div>
             ) : files.length === 0 && folders.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className='py-8 text-center text-muted-foreground'>
                 <File size={40} className="mx-auto mb-2 opacity-50" />
                 <p>Aucun fichier dans votre Library</p>
                 <p className="text-xs">Uploadez d'abord des fichiers</p>
               </div>
             ) : (
-              <div className="max-h-[300px] overflow-y-auto space-y-2">
+              <div className='max-h-[300px] space-y-2 overflow-y-auto'>
                 {/* Dossiers */}
                 {folders.map((folder) => (
                   <div
                     key={folder.id}
-                    className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
+                    className={`flex cursor-pointer items-center rounded-lg border p-3 transition-colors ${
                       selectedFolders.has(folder.id)
-                        ? 'bg-blue-50 border-blue-200'
-                        : 'hover:bg-gray-50 border-gray-200'
+                        ? 'border-blue-200 bg-blue-50'
+                        : 'border-gray-200 hover:bg-gray-50'
                     }`}
                   >
-                    <div className="text-lg mr-3" onClick={() => navigateToFolder(folder)}>
+                    <div className='mr-3 text-lg' onClick={() => navigateToFolder(folder)}>
                       <Folder size={20} className="text-blue-600" />
                     </div>
                     
-                    <div className="flex-1 min-w-0" onClick={() => navigateToFolder(folder)}>
-                      <p className="font-medium text-sm truncate">
+                    <div className='min-w-0 flex-1' onClick={() => navigateToFolder(folder)}>
+                      <p className='truncate font-medium text-sm'>
                         📁 {folder.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className='text-muted-foreground text-xs'>
                         Dossier • {new Date(folder.created_at).toLocaleDateString('fr-FR')}
                       </p>
                     </div>
@@ -276,28 +276,28 @@ export function FileSelectionModal({
                 {files.map((file) => (
                   <div
                     key={file.id}
-                    className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
+                    className={`flex cursor-pointer items-center rounded-lg border p-3 transition-colors ${
                       selectedFiles.has(file.id)
-                        ? 'bg-blue-50 border-blue-200'
-                        : 'hover:bg-gray-50 border-gray-200'
+                        ? 'border-blue-200 bg-blue-50'
+                        : 'border-gray-200 hover:bg-gray-50'
                     }`}
                     onClick={() => toggleFileSelection(file.id)}
                   >
-                    <div className="text-lg mr-3">
+                    <div className='mr-3 text-lg'>
                       {getFileIcon(file.mime_type)}
                     </div>
                     
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">
+                    <div className='min-w-0 flex-1'>
+                      <p className='truncate font-medium text-sm'>
                         {file.original_name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className='text-muted-foreground text-xs'>
                         {formatFileSize(file.size_bytes)} • {new Date(file.created_at).toLocaleDateString('fr-FR')}
                       </p>
                     </div>
 
                     {selectedFiles.has(file.id) && (
-                      <Check size={16} className="text-blue-600 ml-2" />
+                      <Check size={16} className='ml-2 text-blue-600' />
                     )}
                   </div>
                 ))}
@@ -306,8 +306,8 @@ export function FileSelectionModal({
           </div>
 
           {/* Boutons d'action */}
-          <div className="flex justify-between items-center pt-4 border-t">
-            <p className="text-sm text-muted-foreground">
+          <div className='flex items-center justify-between border-t pt-4'>
+            <p className='text-muted-foreground text-sm'>
               {selectedFiles.size} fichier(s) + {selectedFolders.size} dossier(s) sélectionné(s)
             </p>
             

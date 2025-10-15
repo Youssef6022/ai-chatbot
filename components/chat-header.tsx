@@ -1,6 +1,4 @@
 'use client';
-
-import { useRouter } from 'next/navigation';
 import { memo } from 'react';
 import { type VisibilityType, VisibilitySelector } from './visibility-selector';
 import type { AuthSession } from '@/lib/auth/types';

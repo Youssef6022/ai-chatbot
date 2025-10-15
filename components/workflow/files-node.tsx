@@ -2,9 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { TrashIcon, FileIcon } from '@/components/icons';
+import { FileIcon } from '@/components/icons';
 import { FileSelectionModal } from '@/components/library/file-selection-modal';
 
 interface SelectedFile {
@@ -71,17 +69,17 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
 
   return (
     <>
-      <div className="relative group">
+      <div className='group relative'>
         {/* File Count Badge */}
         {data.selectedFiles.length > 0 && (
-          <div className="absolute -top-2 -right-2 z-20 w-6 h-6 bg-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-gray-800 shadow-lg">
+          <div className='-top-2 -right-2 absolute z-20 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-orange-500 font-bold text-white text-xs shadow-lg dark:border-gray-800'>
             {data.selectedFiles.length}
           </div>
         )}
         
         {/* Circular Files Node */}
         <div 
-          className={`w-16 h-16 rounded-full cursor-pointer transition-all duration-300 flex items-center justify-center ${getExecutionStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
+          className={`flex h-16 w-16 cursor-pointer items-center justify-center rounded-full transition-all duration-300 ${getExecutionStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
           onDoubleClick={() => setIsModalOpen(true)}
         >
           <FileIcon size={24} className="text-gray-600 dark:text-gray-300" />

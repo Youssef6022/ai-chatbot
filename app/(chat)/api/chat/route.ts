@@ -29,6 +29,7 @@ import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
+import { google } from '@ai-sdk/google';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
 import { postRequestBodySchema, type PostRequestBody } from './schema';
 import { geolocation } from '@vercel/functions';
@@ -103,11 +104,13 @@ export async function POST(request: Request) {
       message,
       selectedChatModel,
       selectedVisibilityType,
+      isSearchGroundingEnabled = false,
     }: {
       id: string;
       message: ChatMessage;
       selectedChatModel: ChatModel['id'];
       selectedVisibilityType: VisibilityType;
+      isSearchGroundingEnabled?: boolean;
     } = requestBody;
 
     const supabase = await createClient();
@@ -204,27 +207,38 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
+        // Prepare tools configuration
+        const activeTools = [
+          'getWeather',
+          'createDocument',
+          'updateDocument',
+          'requestSuggestions',
+        ];
+        
+        const tools: Record<string, any> = {
+          getWeather,
+          createDocument: createDocument({ session: user ? { user } : undefined, dataStream }),
+          updateDocument: updateDocument({ session: user ? { user } : undefined, dataStream }),
+          requestSuggestions: requestSuggestions({
+            session: user ? { user } : undefined,
+            dataStream,
+          }),
+        };
+
+        // Add Google Search tool if search grounding is enabled
+        if (isSearchGroundingEnabled) {
+          activeTools.push('google_search');
+          tools.google_search = google.tools.googleSearch({});
+        }
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
           system: systemPrompt({ selectedChatModel, requestHints }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
-          experimental_activeTools: [
-            'getWeather',
-            'createDocument',
-            'updateDocument',
-            'requestSuggestions',
-          ],
+          experimental_activeTools: activeTools,
           experimental_transform: smoothStream({ chunking: 'word' }),
-          tools: {
-            getWeather,
-            createDocument: createDocument({ session: user ? { user } : undefined, dataStream }),
-            updateDocument: updateDocument({ session: user ? { user } : undefined, dataStream }),
-            requestSuggestions: requestSuggestions({
-              session: user ? { user } : undefined,
-              dataStream,
-            }),
-          },
+          tools,
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
             functionId: 'stream-text',

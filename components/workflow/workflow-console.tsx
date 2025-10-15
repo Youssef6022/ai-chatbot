@@ -1,15 +1,13 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { ChevronDownIcon, ArrowUpIcon } from '@/components/icons';
+import { ArrowUpIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { chatModels } from '@/lib/ai/models';
 import type { Variable } from './variables-panel';
 import JSZip from 'jszip';
@@ -177,35 +175,35 @@ export function WorkflowConsole({
   };
 
   return (
-    <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 transition-all duration-500 ease-out z-50 ${
+    <div className={`-translate-x-1/2 fixed bottom-4 left-1/2 z-50 transform transition-all duration-500 ease-out ${
       isOpen ? 'h-80 w-[700px]' : 'h-12 w-44'
     }`}>
-      <div className={`w-full h-full bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-lg shadow-sm transition-all duration-500 ease-out ${
+      <div className={`h-full w-full rounded-lg border-2 border-border/60 bg-background/50 shadow-sm backdrop-blur-sm transition-all duration-500 ease-out ${
         isOpen ? 'hover:border-border' : ''
       }`}>
         {/* Console Header */}
-        <div className={`flex items-center px-3 h-12 ${isOpen ? 'border-b border-border/60 justify-between' : 'justify-center cursor-pointer hover:bg-background/20 transition-colors'}`}
+        <div className={`flex h-12 items-center px-3 ${isOpen ? 'justify-between border-border/60 border-b' : 'cursor-pointer justify-center transition-colors hover:bg-background/20'}`}
              onClick={!isOpen ? onToggle : undefined}>
           {isOpen ? (
             <>
-              <div className="flex items-center gap-3 flex-1">
+              <div className='flex flex-1 items-center gap-3'>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={onToggle}
-                  className="h-8 w-8 p-0 hover:bg-background/20 rounded-lg transition-all duration-300 group"
+                  className='group h-8 w-8 rounded-lg p-0 transition-all duration-300 hover:bg-background/20'
                 >
                   <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-                    <ArrowUpIcon size={16} className="text-gray-700 dark:text-gray-300 group-hover:text-foreground" />
+                    <ArrowUpIcon size={16} className='text-gray-700 group-hover:text-foreground dark:text-gray-300' />
                   </div>
                 </Button>
                 
                 <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as 'edit' | 'results')}>
-                  <TabsList className="h-8 bg-background/40 border border-border/60">
-                    <TabsTrigger value="edit" className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground px-3">
+                  <TabsList className='h-8 border border-border/60 bg-background/40'>
+                    <TabsTrigger value="edit" className='px-3 text-xs data-[state=active]:bg-background data-[state=active]:text-foreground'>
                       Edit {selectedNode ? `- ${selectedNode.data.variableName || selectedNode.data.label}` : ''}
                     </TabsTrigger>
-                    <TabsTrigger value="results" className="text-xs data-[state=active]:bg-background data-[state=active]:text-foreground px-3">
+                    <TabsTrigger value="results" className='px-3 text-xs data-[state=active]:bg-background data-[state=active]:text-foreground'>
                       Results
                     </TabsTrigger>
                   </TabsList>
@@ -217,17 +215,17 @@ export function WorkflowConsole({
                 variant="ghost"
                 size="sm"
                 onClick={onToggle}
-                className="h-8 w-8 p-0 hover:bg-background/20 rounded-lg transition-all duration-300"
+                className='h-8 w-8 rounded-lg p-0 transition-all duration-300 hover:bg-background/20'
               >
-                <span className="text-gray-700 dark:text-gray-300 text-sm">✕</span>
+                <span className='text-gray-700 text-sm dark:text-gray-300'>✕</span>
               </Button>
             </>
           ) : (
-            <div className="flex items-center gap-2 pointer-events-none">
+            <div className='pointer-events-none flex items-center gap-2'>
               <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
                 <ArrowUpIcon size={16} className="text-gray-700 dark:text-gray-300" />
               </div>
-              <span className="text-sm text-gray-700 dark:text-gray-300">Console</span>
+              <span className='text-gray-700 text-sm dark:text-gray-300'>Console</span>
             </div>
           )}
         </div>
@@ -236,15 +234,15 @@ export function WorkflowConsole({
         {isOpen && (
           <div className="h-[calc(100%-3rem)]">
             <Tabs value={activeTab} onValueChange={(value) => onTabChange(value as 'edit' | 'results')} className="h-full">
-              <TabsContent value="edit" className="h-full m-0 p-4 overflow-auto">
+              <TabsContent value="edit" className='m-0 h-full overflow-auto p-4'>
               {selectedNode ? (
                 <div className="h-full">
                   {selectedNode.type === 'generate' ? (
-                    <div className="grid grid-cols-3 gap-4 h-full">
+                    <div className='grid h-full grid-cols-3 gap-4'>
                       {/* Basic Info */}
                       <div className="space-y-4">
                         <div>
-                          <Label htmlFor="agent-name" className="text-sm text-gray-700 dark:text-gray-300">Agent Name</Label>
+                          <Label htmlFor="agent-name" className='text-gray-700 text-sm dark:text-gray-300'>Agent Name</Label>
                           <Input
                             id="agent-name"
                             value={currentData.variableName || ''}
@@ -254,7 +252,7 @@ export function WorkflowConsole({
                           />
                         </div>
                         <div>
-                          <Label className="text-sm text-gray-700 dark:text-gray-300">AI Model</Label>
+                          <Label className='text-gray-700 text-sm dark:text-gray-300'>AI Model</Label>
                           <Select
                             value={currentData.selectedModel || ''}
                             onValueChange={(value) => updateLocalData('selectedModel', value)}
@@ -276,7 +274,7 @@ export function WorkflowConsole({
                       {/* System Prompt */}
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <Label className="text-sm text-gray-700 dark:text-gray-300">System Prompt</Label>
+                          <Label className='text-gray-700 text-sm dark:text-gray-300'>System Prompt</Label>
                           {variables.length > 0 && (
                             <div className="flex gap-1">
                               {variables.slice(0, 3).map((variable) => (
@@ -304,7 +302,7 @@ export function WorkflowConsole({
                       {/* User Prompt */}
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <Label className="text-sm text-gray-700 dark:text-gray-300">User Prompt</Label>
+                          <Label className='text-gray-700 text-sm dark:text-gray-300'>User Prompt</Label>
                           {variables.length > 0 && (
                             <div className="flex gap-1">
                               {variables.slice(0, 3).map((variable) => (
@@ -331,8 +329,8 @@ export function WorkflowConsole({
                     </div>
                   ) : selectedNode.type === 'files' ? (
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Files Node</h3>
-                      <div className="text-sm text-muted-foreground">
+                      <h3 className='font-medium text-lg'>Files Node</h3>
+                      <div className='text-muted-foreground text-sm'>
                         {selectedNode.data.selectedFiles?.length || 0} files selected
                       </div>
                     </div>
@@ -343,20 +341,20 @@ export function WorkflowConsole({
                   )}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
+                <div className='flex h-full items-center justify-center text-muted-foreground'>
                   Select a block to edit its properties
                 </div>
               )}
             </TabsContent>
             
-            <TabsContent value="results" className="h-full m-0 p-0 flex flex-col">
+            <TabsContent value="results" className='m-0 flex h-full flex-col p-0'>
               {/* Download Button */}
               {uniqueLogs.some(log => log.type === 'success' && log.message.includes('Generation completed')) && (
-                <div className="border-b border-border/60 p-3">
+                <div className='border-border/60 border-b p-3'>
                   <Button
                     onClick={downloadResults}
                     size="sm"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    className='w-full bg-green-600 text-white hover:bg-green-700'
                   >
                     📦 Download Results (ZIP)
                   </Button>
@@ -366,24 +364,24 @@ export function WorkflowConsole({
               {/* Logs Content */}
               <div className="flex-1 overflow-y-auto p-4">
                 {uniqueLogs.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-sm text-muted-foreground mb-2">No execution logs</div>
-                    <div className="text-xs text-muted-foreground/60">Run your workflow to see results</div>
+                  <div className='py-12 text-center'>
+                    <div className='mb-2 text-muted-foreground text-sm'>No execution logs</div>
+                    <div className='text-muted-foreground/60 text-xs'>Run your workflow to see results</div>
                   </div>
                 ) : (
-                  <div className="space-y-1 min-h-[400px]">
+                  <div className='min-h-[400px] space-y-1'>
                     {uniqueLogs.map((log, index) => (
-                      <div key={`${log.id}-${index}`} className="flex items-center gap-3 py-2 px-3 rounded-md hover:bg-muted/30 transition-colors">
-                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getLogColor(log.type)}`}></div>
-                        <div className="text-xs text-muted-foreground font-mono min-w-[60px]">
+                      <div key={`${log.id}-${index}`} className='flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-muted/30'>
+                        <div className={`h-2 w-2 flex-shrink-0 rounded-full ${getLogColor(log.type)}`} />
+                        <div className='min-w-[60px] font-mono text-muted-foreground text-xs'>
                           {formatLogTime(log.timestamp)}
                         </div>
                         {log.nodeName && (
-                          <div className="text-xs font-medium text-orange-600 bg-orange-50 dark:bg-orange-900/20 px-2 py-0.5 rounded-sm">
+                          <div className='rounded-sm bg-orange-50 px-2 py-0.5 font-medium text-orange-600 text-xs dark:bg-orange-900/20'>
                             {log.nodeName}
                           </div>
                         )}
-                        <div className="text-sm text-foreground flex-1 truncate">
+                        <div className='flex-1 truncate text-foreground text-sm'>
                           {log.message}
                         </div>
                       </div>

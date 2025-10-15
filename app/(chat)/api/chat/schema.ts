@@ -58,6 +58,7 @@ export const postRequestBodySchema = z.object({
   }),
   selectedChatModel: z.enum(['chat-model-small', 'chat-model-medium', 'chat-model-large']),
   selectedVisibilityType: z.enum(['public', 'private']),
+  isSearchGroundingEnabled: z.boolean().optional(),
 });
 
 export type PostRequestBody = z.infer<typeof postRequestBodySchema>;
