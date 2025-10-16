@@ -690,6 +690,16 @@ export default function WorkflowsPage() {
     return () => clearTimeout(timeoutId);
   }, [nodes, edges, variables, currentWorkflowId, autoSaveWorkflow]);
 
+  // Sync editingNode with nodes state changes (for real-time updates during execution)
+  useEffect(() => {
+    if (editingNode && editingNode.id !== 'variables-panel') {
+      const currentNode = nodes.find(node => node.id === editingNode.id);
+      if (currentNode) {
+        setEditingNode(currentNode);
+      }
+    }
+  }, [nodes, editingNode]);
+
   // Handle connection start to highlight compatible handles
   const onConnectStart: OnConnectStart = useCallback((event, { nodeId, handleId, handleType }) => {
     setConnectingFrom({ nodeId, handleId, handleType });
