@@ -7,7 +7,6 @@ import {
   useNodesState,
   useEdgesState,
   addEdge,
-  Controls,
   Background,
   MiniMap,
   BackgroundVariant,
@@ -34,9 +33,10 @@ import { GenerateNode } from '@/components/workflow/generate-node';
 import { FilesNode } from '@/components/workflow/files-node';
 import { NoteNode } from '@/components/workflow/note-node';
 import { CustomEdge } from '@/components/workflow/custom-edge';
-import { VariablesPanel, type Variable } from '@/components/workflow/variables-panel';
+import type { Variable } from '@/components/workflow/variables-panel';
 import { WorkflowConsole } from '@/components/workflow/workflow-console';
-import { PlusIcon, DownloadIcon, UploadIcon, LibraryIcon, ChevronDownIcon, GlobeIcon } from '@/components/icons';
+import { HighlightedTextarea } from '@/components/workflow/highlighted-textarea';
+import { DownloadIcon, UploadIcon, GlobeIcon } from '@/components/icons';
 import { BrainIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -269,6 +269,11 @@ export default function WorkflowsPage() {
     variable?: { id: string; name: string; value: string };
   }>({ isOpen: false, mode: 'add' });
 
+  // Variable validation state
+  const [invalidVariables, setInvalidVariables] = useState<{
+    [nodeId: string]: { hasInvalid: boolean; variables: string[] };
+  }>({});
+
   // Show notification helper
   const showNotification = useCallback((message: string, type: 'error' | 'warning' | 'success' | 'info' = 'info') => {
     setNotification({ message, type, visible: true });
@@ -278,6 +283,25 @@ export default function WorkflowsPage() {
       setNotification(prev => ({ ...prev, visible: false }));
     }, 5000);
   }, []);
+
+  // Memoized validation callbacks to prevent infinite loops
+  const handleSystemPromptValidation = useCallback((hasInvalid: boolean, invalidVars: string[]) => {
+    if (editingNode) {
+      setInvalidVariables(prev => ({
+        ...prev,
+        [`${editingNode.id}-system`]: { hasInvalid, variables: invalidVars }
+      }));
+    }
+  }, [editingNode?.id]);
+
+  const handleUserPromptValidation = useCallback((hasInvalid: boolean, invalidVars: string[]) => {
+    if (editingNode) {
+      setInvalidVariables(prev => ({
+        ...prev,
+        [`${editingNode.id}-user`]: { hasInvalid, variables: invalidVars }
+      }));
+    }
+  }, [editingNode?.id]);
 
   
 
@@ -1003,6 +1027,42 @@ export default function WorkflowsPage() {
       showNotification(`Cannot run workflow: The following AI Generator(s) are missing User Prompts: ${nodeNames}`, 'error');
       return;
     }
+
+    // Validate that all variables used in prompts exist
+    const nodesWithInvalidVariables: Array<{node: any, invalidVars: string[]}> = [];
+    
+    generateNodes.forEach(node => {
+      const allInvalidVars: string[] = [];
+      
+      // Check system prompt variables
+      const systemValidation = invalidVariables[`${node.id}-system`];
+      if (systemValidation?.hasInvalid) {
+        allInvalidVars.push(...systemValidation.variables);
+      }
+      
+      // Check user prompt variables
+      const userValidation = invalidVariables[`${node.id}-user`];
+      if (userValidation?.hasInvalid) {
+        allInvalidVars.push(...userValidation.variables);
+      }
+      
+      if (allInvalidVars.length > 0) {
+        nodesWithInvalidVariables.push({ 
+          node, 
+          invalidVars: [...new Set(allInvalidVars)] // Remove duplicates
+        });
+      }
+    });
+
+    if (nodesWithInvalidVariables.length > 0) {
+      const invalidVarsList = nodesWithInvalidVariables.map(({ node, invalidVars }) => {
+        const nodeName = node.data.variableName || node.data.label || 'Unnamed AI Agent';
+        return `${nodeName}: {{${invalidVars.join('}}, {{')}}}`; 
+      }).join('; ');
+      
+      showNotification(`Cannot run workflow: The following variables are not defined: ${invalidVarsList}`, 'error');
+      return;
+    }
     
     setIsRunning(true);
     
@@ -1047,7 +1107,7 @@ export default function WorkflowsPage() {
     } finally {
       setIsRunning(false);
     }
-  }, [nodes, updateNodeData, setNodes]);
+  }, [nodes, updateNodeData, setNodes, invalidVariables, showNotification]);
   
   // Helper function to process prompt text with variables
   const processPromptText = (text: string, latestNodes: any[]) => {
@@ -1418,14 +1478,14 @@ export default function WorkflowsPage() {
     <div className='fixed inset-0 z-50 bg-background'>
       {/* Notification Toast */}
       {notification.visible && (
-        <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] px-6 py-3 rounded-lg shadow-lg backdrop-blur-sm border-2 transition-all duration-300 ease-out animate-in slide-in-from-top-2 ${
+        <div className={`-translate-x-1/2 slide-in-from-top-2 fixed top-6 left-1/2 z-[100] transform animate-in rounded-lg border-2 px-6 py-3 shadow-lg backdrop-blur-sm transition-all duration-300 ease-out ${
           notification.type === 'error' 
-            ? 'bg-red-500/90 border-red-400/60 text-white' 
+            ? 'border-red-400/60 bg-red-500/90 text-white' 
             : notification.type === 'warning'
-            ? 'bg-yellow-500/90 border-yellow-400/60 text-white'
+            ? 'border-yellow-400/60 bg-yellow-500/90 text-white'
             : notification.type === 'success'
-            ? 'bg-green-500/90 border-green-400/60 text-white'
-            : 'bg-blue-500/90 border-blue-400/60 text-white'
+            ? 'border-green-400/60 bg-green-500/90 text-white'
+            : 'border-blue-400/60 bg-blue-500/90 text-white'
         }`}>
           <div className="flex items-center gap-3">
             <div className="flex-shrink-0">
@@ -1457,10 +1517,10 @@ export default function WorkflowsPage() {
                 </svg>
               )}
             </div>
-            <span className="text-sm font-medium">{notification.message}</span>
+            <span className='font-medium text-sm'>{notification.message}</span>
             <button 
               onClick={() => setNotification(prev => ({ ...prev, visible: false }))}
-              className="flex-shrink-0 ml-2 hover:bg-white/20 rounded-full p-1 transition-colors"
+              className='ml-2 flex-shrink-0 rounded-full p-1 transition-colors hover:bg-white/20'
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -1472,20 +1532,20 @@ export default function WorkflowsPage() {
       )}
 
       {/* Floating Header - Transparent with floating elements */}
-      <div className='absolute top-0 left-0 right-0 z-60 flex items-center justify-between px-6 py-4'>
+      <div className='absolute top-0 right-0 left-0 z-60 flex items-center justify-between px-6 py-4'>
         {/* Left side - Title and back button floating */}
         <div className='flex items-center gap-4'>
           <Button
             variant="ghost"
             size="sm"
-            className='h-10 w-10 p-0 rounded-full bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200'
+            className='h-10 w-10 rounded-full border-2 border-border/60 bg-background/60 p-0 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-border/80 hover:bg-background/80'
             onClick={() => window.history.back()}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
           </Button>
-          <div className='flex items-center bg-background/60 backdrop-blur-sm border-2 border-border/60 rounded-full px-4 py-2 shadow-lg'>
+          <div className='flex items-center rounded-full border-2 border-border/60 bg-background/60 px-4 py-2 shadow-lg backdrop-blur-sm'>
             <h1 className='font-semibold text-lg'>
               {workflowTitle || 'New Workflow'}
             </h1>
@@ -1508,7 +1568,7 @@ export default function WorkflowsPage() {
               setIsEditPanelOpen(true); // Force open the panel
               setShowResults(false); // Reset results view
             }}
-            className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
+            className='flex h-10 items-center gap-2 rounded-full border-2 border-border/60 bg-background/60 px-4 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-border/80 hover:bg-background/80'
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
@@ -1521,7 +1581,7 @@ export default function WorkflowsPage() {
             variant="outline"
             size="sm"
             onClick={() => document.getElementById('import-file')?.click()}
-            className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
+            className='flex h-10 items-center gap-2 rounded-full border-2 border-border/60 bg-background/60 px-4 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-border/80 hover:bg-background/80'
           >
             <UploadIcon size={14} />
             Import
@@ -1532,7 +1592,7 @@ export default function WorkflowsPage() {
             variant="outline"
             size="sm"
             onClick={() => exportWorkflow()}
-            className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
+            className='flex h-10 items-center gap-2 rounded-full border-2 border-border/60 bg-background/60 px-4 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-border/80 hover:bg-background/80'
           >
             <DownloadIcon size={14} />
             Export
@@ -1544,7 +1604,7 @@ export default function WorkflowsPage() {
             onClick={handleRun}
             disabled={isRunning || nodes.length === 0}
             size="sm"
-            className='flex items-center gap-2 h-10 px-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 border-2 border-green-500/60 backdrop-blur-sm shadow-lg shadow-green-500/20 transition-all duration-200 hover:shadow-green-500/30 rounded-full'
+            className='flex h-10 items-center gap-2 rounded-full border-2 border-green-500/60 bg-gradient-to-r from-green-600 to-green-700 px-4 shadow-green-500/20 shadow-lg backdrop-blur-sm transition-all duration-200 hover:from-green-700 hover:to-green-800 hover:shadow-green-500/30'
           >
             {isRunning ? (
               <div className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -1558,7 +1618,7 @@ export default function WorkflowsPage() {
         </div>
       </div>
       
-      <div className='h-full relative'>
+      <div className='relative h-full'>
       
       {/* Hidden file input for import */}
       <input
@@ -1575,16 +1635,16 @@ export default function WorkflowsPage() {
       />
 
       {/* Floating Node Palette - Always Visible */}
-      <div className="fixed top-20 left-4 z-50 bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-xl shadow-sm p-4 min-w-[160px]">
+      <div className='fixed top-20 left-4 z-50 min-w-[160px] rounded-xl border-2 border-border/60 bg-background/50 p-4 shadow-sm backdrop-blur-sm'>
         <div className="space-y-4">
           <div>
-            <div className="text-xs text-muted-foreground font-semibold mb-3 uppercase tracking-wider">Core</div>
+            <div className='mb-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider'>Core</div>
             <div className="space-y-2">
               <button
                 onClick={addGenerateNode}
-                className="group w-full flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30 border border-transparent hover:border-blue-200 dark:hover:border-blue-800 text-sm transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:shadow-md"
+                className='group flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent p-3 text-sm transition-all duration-200 hover:scale-[1.02] hover:border-blue-200 hover:bg-blue-50 hover:shadow-md dark:hover:border-blue-800 dark:hover:bg-blue-950/30'
               >
-                <div className="w-6 h-6 bg-yellow-100 dark:bg-yellow-200 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                <div className='flex h-6 w-6 items-center justify-center rounded-lg bg-yellow-100 shadow-sm transition-shadow group-hover:shadow-md dark:bg-yellow-200'>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" className="text-gray-700 dark:text-gray-800">
                     <path fill="currentColor" d="M18.5 10.255q0 .067-.003.133A1.54 1.54 0 0 0 17.473 10q-.243 0-.473.074V5.75a.75.75 0 0 0-.75-.75h-8.5a.75.75 0 0 0-.75.75v4.505c0 .414.336.75.75.75h8.276l-.01.025l-.003.012l-.45 1.384l-.01.026l-.019.053H7.75a2.25 2.25 0 0 1-2.25-2.25V5.75A2.25 2.25 0 0 1 7.75 3.5h3.5v-.75a.75.75 0 0 1 .649-.743L12 2a.75.75 0 0 1 .743.649l.007.101l-.001.75h3.5a2.25 2.25 0 0 1 2.25 2.25zm-5.457 3.781l.112-.036H6.254a2.25 2.25 0 0 0-2.25 2.25v.907a3.75 3.75 0 0 0 1.305 2.844c1.563 1.343 3.802 2 6.691 2c2.076 0 3.817-.339 5.213-1.028a1.55 1.55 0 0 1-1.169-1.003l-.004-.012l-.03-.093c-1.086.422-2.42.636-4.01.636c-2.559 0-4.455-.556-5.713-1.638a2.25 2.25 0 0 1-.783-1.706v-.907a.75.75 0 0 1 .75-.75H12v-.003a1.54 1.54 0 0 1 1.031-1.456zM10.999 7.75a1.25 1.25 0 1 0-2.499 0a1.25 1.25 0 0 0 2.499 0m3.243-1.25a1.25 1.25 0 1 1 0 2.499a1.25 1.25 0 0 1 0-2.499m1.847 10.912a2.83 2.83 0 0 0-1.348-.955l-1.377-.448a.544.544 0 0 1 0-1.025l1.377-.448a2.84 2.84 0 0 0 1.76-1.762l.01-.034l.449-1.377a.544.544 0 0 1 1.026 0l.448 1.377a2.84 2.84 0 0 0 1.798 1.796l1.378.448l.027.007a.544.544 0 0 1 0 1.025l-1.378.448a2.84 2.84 0 0 0-1.798 1.796l-.447 1.377a.55.55 0 0 1-.2.263a.544.544 0 0 1-.827-.263l-.448-1.377a2.8 2.8 0 0 0-.45-.848m7.694 3.801l-.765-.248a1.58 1.58 0 0 1-.999-.998l-.249-.765a.302.302 0 0 0-.57 0l-.249.764a1.58 1.58 0 0 1-.983.999l-.766.248a.302.302 0 0 0 0 .57l.766.249a1.58 1.58 0 0 1 .999 1.002l.248.764a.303.303 0 0 0 .57 0l.25-.764a1.58 1.58 0 0 1 .998-.999l.766-.248a.302.302 0 0 0 0-.57z"/>
                   </svg>
@@ -1594,9 +1654,9 @@ export default function WorkflowsPage() {
               
               <button
                 onClick={addNoteNode}
-                className="group w-full flex items-center gap-3 p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/30 border border-transparent hover:border-amber-200 dark:hover:border-amber-800 text-sm transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:shadow-md"
+                className='group flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent p-3 text-sm transition-all duration-200 hover:scale-[1.02] hover:border-amber-200 hover:bg-amber-50 hover:shadow-md dark:hover:border-amber-800 dark:hover:bg-amber-950/30'
               >
-                <div className="w-6 h-6 bg-yellow-100 dark:bg-yellow-200 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                <div className='flex h-6 w-6 items-center justify-center rounded-lg bg-yellow-100 shadow-sm transition-shadow group-hover:shadow-md dark:bg-yellow-200'>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" className="text-gray-700 dark:text-gray-800">
                     <path fill="currentColor" d="M3 17.75A3.25 3.25 0 0 0 6.25 21h4.915l.356-1.423l.02-.077H6.25a1.75 1.75 0 0 1-1.75-1.75V11h3.25l.184-.005A3.25 3.25 0 0 0 11 7.75V4.5h6.75c.966 0 1.75.784 1.75 1.75v4.982c.479-.19.994-.263 1.5-.22V6.25A3.25 3.25 0 0 0 17.75 3h-6.879a2.25 2.25 0 0 0-1.59.659L3.658 9.28A2.25 2.25 0 0 0 3 10.871zM7.75 9.5H5.561L9.5 5.561V7.75l-.006.144A1.75 1.75 0 0 1 7.75 9.5m11.35 3.17l-5.903 5.902a2.7 2.7 0 0 0-.706 1.247l-.458 1.831a1.087 1.087 0 0 0 1.319 1.318l1.83-.457a2.7 2.7 0 0 0 1.248-.707l5.902-5.902A2.286 2.286 0 0 0 19.1 12.67"/>
                   </svg>
@@ -1606,20 +1666,20 @@ export default function WorkflowsPage() {
             </div>
           </div>
 
-          <div className="border-t border-border/40 pt-3">
-            <div className="text-xs text-muted-foreground font-semibold mb-3 uppercase tracking-wider">Tools</div>
+          <div className='border-border/40 border-t pt-3'>
+            <div className='mb-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider'>Tools</div>
             <div className="space-y-2">
               <button
                 onClick={addFilesNode}
-                className="group w-full flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-950/30 border border-transparent hover:border-orange-200 dark:hover:border-orange-800 text-sm transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:shadow-md"
+                className='group flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent p-3 text-sm transition-all duration-200 hover:scale-[1.02] hover:border-orange-200 hover:bg-orange-50 hover:shadow-md dark:hover:border-orange-800 dark:hover:bg-orange-950/30'
               >
-                <div className="w-6 h-6 bg-yellow-100 dark:bg-yellow-200 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                <div className='flex h-6 w-6 items-center justify-center rounded-lg bg-yellow-100 shadow-sm transition-shadow group-hover:shadow-md dark:bg-yellow-200'>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-gray-800">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14,2 14,8 20,8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10,9 9,9 8,9"></polyline>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14,2 14,8 20,8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10,9 9,9 8,9" />
                   </svg>
                 </div>
                 <span className="font-medium text-foreground">Files</span>
@@ -1631,7 +1691,7 @@ export default function WorkflowsPage() {
 
 
       {/* Main Content Area */}
-      <div className="w-full h-full relative">
+      <div className='relative h-full w-full'>
         {/* Loading indicator */}
         {isLoading && (
           <div className='absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm'>
@@ -1704,7 +1764,7 @@ export default function WorkflowsPage() {
 
       {/* Edit Panel - Floating Box */}
       {isEditPanelOpen && editingNode && (
-        <div className="fixed top-20 right-4 z-50 bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-xl shadow-sm p-4 w-80 max-h-[80vh] overflow-y-auto">
+        <div className='fixed top-20 right-4 z-50 max-h-[80vh] w-80 overflow-y-auto rounded-xl border-2 border-border/60 bg-background/50 p-4 shadow-sm backdrop-blur-sm'>
             {/* Header */}
             <div className="mb-4">
               {showResults ? (
@@ -1713,7 +1773,7 @@ export default function WorkflowsPage() {
                     <div className="flex items-center gap-3">
                       <button 
                         onClick={() => setShowResults(false)}
-                        className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted/20 transition-colors"
+                        className='flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-muted/20'
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M19 12H5M12 19l-7-7 7-7"/>
@@ -1725,7 +1785,7 @@ export default function WorkflowsPage() {
                       <path d="M20 6L9 17l-5-5"/>
                     </svg>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className='mt-1 text-muted-foreground text-xs'>
                     Generated content from {editingNode.data.variableName || 'AI Agent'}
                   </p>
                 </div>
@@ -1743,7 +1803,7 @@ export default function WorkflowsPage() {
                           });
                         }}
                         placeholder="AI Agent"
-                        className="font-semibold text-base bg-transparent border-none outline-none w-full group-hover:bg-muted/30 focus:bg-muted/30 rounded px-1 py-0.5 pr-6 transition-colors"
+                        className='w-full rounded border-none bg-transparent px-1 py-0.5 pr-6 font-semibold text-base outline-none transition-colors focus:bg-muted/30 group-hover:bg-muted/30'
                       />
                       <svg 
                         width="12" 
@@ -1752,7 +1812,7 @@ export default function WorkflowsPage() {
                         fill="none" 
                         stroke="currentColor" 
                         strokeWidth="2" 
-                        className="absolute right-1 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors pointer-events-none"
+                        className='-translate-y-1/2 pointer-events-none absolute top-1/2 right-1 transform text-muted-foreground/50 transition-colors group-hover:text-muted-foreground'
                       >
                         <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
                       </svg>
@@ -1764,7 +1824,7 @@ export default function WorkflowsPage() {
                        editingNode.type === 'variables' ? 'Global Variables' : 'Node'}
                     </h3>
                   )}
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className='mt-1 text-muted-foreground text-xs'>
                     {editingNode.type === 'generate' ? 'Call the model with your instructions and tools' :
                      editingNode.type === 'note' ? 'Add notes and documentation' :
                      editingNode.type === 'files' ? 'Select and manage files' :
@@ -1781,66 +1841,70 @@ export default function WorkflowsPage() {
                   {/* System Prompt */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs font-medium text-muted-foreground">System Prompt</Label>
+                      <Label className='font-medium text-muted-foreground text-xs'>System Prompt</Label>
                       <button 
                         onClick={() => {
                           setExpandedField('systemPrompt');
                           setExpandedContent(editingNode.data.systemPrompt || '');
                         }}
-                        className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                        className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
                         </svg>
                       </button>
                     </div>
-                    <Textarea
+                    <HighlightedTextarea
                       value={editingNode.data.systemPrompt || ''}
-                      onChange={(e) => {
-                        updateNodeData(editingNode.id, { systemPrompt: e.target.value });
+                      onChange={(value) => {
+                        updateNodeData(editingNode.id, { systemPrompt: value });
                         setEditingNode({
                           ...editingNode,
-                          data: { ...editingNode.data, systemPrompt: e.target.value }
+                          data: { ...editingNode.data, systemPrompt: value }
                         });
                       }}
                       placeholder="You are a helpful assistant."
                       className="min-h-[80px] resize-none text-sm"
+                      variables={variables}
+                      onVariableValidation={handleSystemPromptValidation}
                     />
                   </div>
 
                   {/* User Prompt */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs font-medium text-muted-foreground">User Prompt</Label>
+                      <Label className='font-medium text-muted-foreground text-xs'>User Prompt</Label>
                       <button 
                         onClick={() => {
                           setExpandedField('userPrompt');
                           setExpandedContent(editingNode.data.userPrompt || '');
                         }}
-                        className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                        className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
                         </svg>
                       </button>
                     </div>
-                    <Textarea
+                    <HighlightedTextarea
                       value={editingNode.data.userPrompt || ''}
-                      onChange={(e) => {
-                        updateNodeData(editingNode.id, { userPrompt: e.target.value });
+                      onChange={(value) => {
+                        updateNodeData(editingNode.id, { userPrompt: value });
                         setEditingNode({
                           ...editingNode,
-                          data: { ...editingNode.data, userPrompt: e.target.value }
+                          data: { ...editingNode.data, userPrompt: value }
                         });
                       }}
                       placeholder="Enter your prompt..."
                       className="min-h-[60px] resize-none text-sm"
+                      variables={variables}
+                      onVariableValidation={handleUserPromptValidation}
                     />
                   </div>
 
                   {/* Model Selection - Label and custom dropdown */}
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs font-medium text-muted-foreground">Model</Label>
+                    <Label className='font-medium text-muted-foreground text-xs'>Model</Label>
                     <div className="relative">
                       <select
                         value={editingNode.data.selectedModel || 'chat-model-medium'}
@@ -1851,7 +1915,7 @@ export default function WorkflowsPage() {
                             data: { ...editingNode.data, selectedModel: e.target.value }
                           });
                         }}
-                        className="appearance-none bg-transparent text-sm text-foreground pr-6 cursor-pointer focus:outline-none"
+                        className='cursor-pointer appearance-none bg-transparent pr-6 text-foreground text-sm focus:outline-none'
                       >
                         <option value="chat-model-small">Small</option>
                         <option value="chat-model-medium">Medium</option>
@@ -1864,7 +1928,7 @@ export default function WorkflowsPage() {
                         fill="none" 
                         stroke="currentColor" 
                         strokeWidth="2" 
-                        className="absolute right-0 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
+                        className='-translate-y-1/2 pointer-events-none absolute top-1/2 right-0 transform text-muted-foreground'
                       >
                         <path d="M6 9l6 6 6-6"/>
                       </svg>
@@ -1875,7 +1939,7 @@ export default function WorkflowsPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <GlobeIcon size={14} />
-                      <span className="text-xs font-medium text-muted-foreground">Search Grounding</span>
+                      <span className='font-medium text-muted-foreground text-xs'>Search Grounding</span>
                     </div>
                     <button
                         onClick={() => {
@@ -1886,13 +1950,13 @@ export default function WorkflowsPage() {
                             data: { ...editingNode.data, isSearchGroundingEnabled: newValue }
                           });
                         }}
-                        className={`w-10 h-5 rounded-full border transition-colors relative ${
+                        className={`relative h-5 w-10 rounded-full border transition-colors ${
                           editingNode.data.isSearchGroundingEnabled 
-                            ? 'bg-blue-500 border-blue-500' 
-                            : 'bg-muted border-border'
+                            ? 'border-blue-500 bg-blue-500' 
+                            : 'border-border bg-muted'
                         }`}
                       >
-                        <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${
+                        <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
                           editingNode.data.isSearchGroundingEnabled ? 'translate-x-5' : 'translate-x-0.5'
                         }`} />
                       </button>
@@ -1902,7 +1966,7 @@ export default function WorkflowsPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <BrainIcon size={14} />
-                        <span className="text-xs font-medium text-muted-foreground">Thinking Mode</span>
+                        <span className='font-medium text-muted-foreground text-xs'>Thinking Mode</span>
                       </div>
                       <button
                         onClick={() => {
@@ -1913,13 +1977,13 @@ export default function WorkflowsPage() {
                             data: { ...editingNode.data, isReasoningEnabled: newValue }
                           });
                         }}
-                        className={`w-10 h-5 rounded-full border transition-colors relative ${
+                        className={`relative h-5 w-10 rounded-full border transition-colors ${
                           editingNode.data.isReasoningEnabled 
-                            ? 'bg-purple-500 border-purple-500' 
-                            : 'bg-muted border-border'
+                            ? 'border-purple-500 bg-purple-500' 
+                            : 'border-border bg-muted'
                         }`}
                       >
-                        <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-transform ${
+                        <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
                           editingNode.data.isReasoningEnabled ? 'translate-x-5' : 'translate-x-0.5'
                         }`} />
                       </button>
@@ -1929,7 +1993,7 @@ export default function WorkflowsPage() {
 
               {editingNode.type === 'note' && (
                 <div className="space-y-1">
-                  <Label className="text-xs font-medium text-muted-foreground">Note Content</Label>
+                  <Label className='font-medium text-muted-foreground text-xs'>Note Content</Label>
                   <Textarea
                     value={editingNode.data.content || ''}
                     onChange={(e) => {
@@ -1947,12 +2011,12 @@ export default function WorkflowsPage() {
 
               {editingNode.type === 'files' && (
                 <div className="space-y-1">
-                  <Label className="text-xs font-medium text-muted-foreground">Selected Files</Label>
-                  <div className="border border-border rounded-md p-2 min-h-[80px]">
+                  <Label className='font-medium text-muted-foreground text-xs'>Selected Files</Label>
+                  <div className='min-h-[80px] rounded-md border border-border p-2'>
                     {editingNode.data.selectedFiles?.length > 0 ? (
                       <div className="space-y-1">
                         {editingNode.data.selectedFiles.map((file: any, index: number) => (
-                          <div key={index} className="flex items-center justify-between p-2 bg-muted rounded text-xs">
+                          <div key={index} className='flex items-center justify-between rounded bg-muted p-2 text-xs'>
                             <span className="truncate">{file.name}</span>
                             <button
                               onClick={() => {
@@ -1963,7 +2027,7 @@ export default function WorkflowsPage() {
                                   data: { ...editingNode.data, selectedFiles: updatedFiles }
                                 });
                               }}
-                              className="w-4 h-4 rounded bg-red-500 text-white hover:bg-red-600 flex items-center justify-center"
+                              className='flex h-4 w-4 items-center justify-center rounded bg-red-500 text-white hover:bg-red-600'
                             >
                               ×
                             </button>
@@ -1981,11 +2045,11 @@ export default function WorkflowsPage() {
               
               {/* Show Results Section */}
               {editingNode.type === 'generate' && editingNode.data.result && !showResults && (
-                <div className="mt-6 space-y-2 border-t border-border/40 pt-4">
+                <div className='mt-6 space-y-2 border-border/40 border-t pt-4'>
                   <div className="flex justify-center">
                     <button 
                       onClick={() => setShowResults(true)}
-                      className="px-3 py-1.5 bg-transparent hover:bg-muted/50 text-foreground rounded transition-colors text-sm flex items-center gap-2"
+                      className='flex items-center gap-2 rounded bg-transparent px-3 py-1.5 text-foreground text-sm transition-colors hover:bg-muted/50'
                     >
                       Show Results
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2000,9 +2064,9 @@ export default function WorkflowsPage() {
               {showResults && editingNode.type === 'generate' && editingNode.data.result && (
                 <div className="space-y-4">
                   {/* Full Results Content */}
-                  <div className="bg-muted/30 rounded-lg border border-border/40">
-                    <div className="flex items-center justify-between p-3 border-b border-border/40">
-                      <span className="text-xs font-medium text-muted-foreground">Generated Content</span>
+                  <div className='rounded-lg border border-border/40 bg-muted/30'>
+                    <div className='flex items-center justify-between border-border/40 border-b p-3'>
+                      <span className='font-medium text-muted-foreground text-xs'>Generated Content</span>
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={() => {
@@ -2019,7 +2083,7 @@ export default function WorkflowsPage() {
                             document.body.removeChild(link);
                             URL.revokeObjectURL(url);
                           }}
-                          className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                          className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
                           title="Download as Markdown"
                         >
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2033,7 +2097,7 @@ export default function WorkflowsPage() {
                             setExpandedField('result');
                             setExpandedContent(editingNode.data.result || '');
                           }}
-                          className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                          className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
                           title="Expand"
                         >
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2043,16 +2107,16 @@ export default function WorkflowsPage() {
                       </div>
                     </div>
                     <div className="p-4">
-                      <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+                      <div className='max-h-48 overflow-y-auto whitespace-pre-wrap text-foreground text-sm leading-relaxed'>
                         {editingNode.data.result}
                       </div>
                     </div>
                   </div>
                   
                   {/* Metadata */}
-                  <div className="bg-background/50 rounded-lg p-3 border border-border/40">
-                    <h4 className="font-medium text-foreground mb-2 text-xs">Generation Details</h4>
-                    <div className="space-y-1 text-xs text-muted-foreground">
+                  <div className='rounded-lg border border-border/40 bg-background/50 p-3'>
+                    <h4 className='mb-2 font-medium text-foreground text-xs'>Generation Details</h4>
+                    <div className='space-y-1 text-muted-foreground text-xs'>
                       <div className="flex justify-between">
                         <span>Model:</span>
                         <span className="font-mono">{editingNode.data.selectedModel}</span>
@@ -2084,7 +2148,7 @@ export default function WorkflowsPage() {
                   {/* Add Button */}
                   <Button 
                     onClick={() => setVariableModal({ isOpen: true, mode: 'add' })}
-                    className="w-full h-8 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded-lg"
+                    className='h-8 w-full rounded-lg bg-orange-600 text-white text-xs hover:bg-orange-700'
                     size="sm"
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-1.5">
@@ -2097,34 +2161,34 @@ export default function WorkflowsPage() {
                   {/* Variables List */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <Label className='font-medium text-xs text-muted-foreground'>Variables</Label>
-                      <span className="text-xs text-muted-foreground/60">({variables.length})</span>
+                      <Label className='font-medium text-muted-foreground text-xs'>Variables</Label>
+                      <span className='text-muted-foreground/60 text-xs'>({variables.length})</span>
                     </div>
                     
                     {variables.length === 0 ? (
-                      <div className="bg-muted/20 rounded-lg p-4 text-center">
+                      <div className='rounded-lg bg-muted/20 p-4 text-center'>
                         <div className="text-muted-foreground text-xs">No variables defined yet</div>
-                        <div className="text-muted-foreground/60 text-xs mt-1">Use {'{{variable_name}}'} in prompts</div>
+                        <div className='mt-1 text-muted-foreground/60 text-xs'>Use {'{{variable_name}}'} in prompts</div>
                       </div>
                     ) : (
                       <div className="space-y-1">
                         {variables.map((variable) => (
-                          <div key={variable.id} className="flex items-center justify-between bg-muted/20 rounded-lg p-2 hover:bg-muted/30 transition-colors group">
+                          <div key={variable.id} className='group flex items-center justify-between rounded-lg bg-muted/20 p-2 transition-colors hover:bg-muted/30'>
                             <button
                               onClick={() => setVariableModal({ 
                                 isOpen: true, 
                                 mode: 'edit', 
                                 variable: variable 
                               })}
-                              className="flex-1 text-left text-xs font-medium text-foreground hover:text-orange-600 transition-colors"
+                              className='flex-1 text-left font-medium text-foreground text-xs transition-colors hover:text-orange-600'
                             >
-                              {'{{' + variable.name + '}}'} 
+                              {`{{${variable.name}}}`} 
                             </button>
                             <button
                               onClick={() => {
                                 setVariables(variables.filter(v => v.id !== variable.id));
                               }}
-                              className="opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-red-500 hover:bg-red-500/10 transition-all"
+                              className='flex h-5 w-5 items-center justify-center rounded text-red-500 opacity-0 transition-all hover:bg-red-500/10 group-hover:opacity-100'
                             >
                               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -2152,15 +2216,15 @@ export default function WorkflowsPage() {
           />
           
           {/* Modal */}
-          <div className="relative bg-background/95 backdrop-blur-sm border-2 border-border/60 rounded-xl shadow-2xl p-6 w-96 max-w-[90vw] max-h-[80vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+          <div className='zoom-in-95 relative max-h-[80vh] w-96 max-w-[90vw] animate-in overflow-y-auto rounded-xl border-2 border-border/60 bg-background/95 p-6 shadow-2xl backdrop-blur-sm duration-200'>
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">
+            <div className='mb-4 flex items-center justify-between'>
+              <h3 className='font-semibold text-lg'>
                 {variableModal.mode === 'add' ? 'Add Variable' : 'Edit Variable'}
               </h3>
               <button
                 onClick={() => setVariableModal({ isOpen: false, mode: 'add' })}
-                className="w-6 h-6 rounded-full hover:bg-muted/30 flex items-center justify-center transition-colors"
+                className='flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-muted/30'
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18"/>
@@ -2172,26 +2236,26 @@ export default function WorkflowsPage() {
             {/* Form */}
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium text-muted-foreground mb-2 block">Variable Name</Label>
+                <Label className='mb-2 block font-medium text-muted-foreground text-sm'>Variable Name</Label>
                 <input
                   id="modal-var-name"
                   defaultValue={variableModal.variable?.name || ''}
                   placeholder="Enter variable name (e.g., company_name)"
-                  className="w-full px-3 py-2.5 text-sm bg-background border-2 border-border/60 rounded-lg focus:outline-none focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/20 transition-all"
+                  className='w-full rounded-lg border-2 border-border/60 bg-background px-3 py-2.5 text-sm transition-all focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20'
                 />
-                <div className="mt-1.5 text-xs text-muted-foreground">
-                  Use in prompts with: <span className="font-mono text-orange-600 bg-orange-50 dark:bg-orange-900/20 px-1 py-0.5 rounded">{'{{variable_name}}'}</span>
+                <div className='mt-1.5 text-muted-foreground text-xs'>
+                  Use in prompts with: <span className='rounded bg-orange-50 px-1 py-0.5 font-mono text-orange-600 dark:bg-orange-900/20'>{'{{variable_name}}'}</span>
                 </div>
               </div>
 
               <div>
-                <Label className="text-sm font-medium text-muted-foreground mb-2 block">Variable Value</Label>
+                <Label className='mb-2 block font-medium text-muted-foreground text-sm'>Variable Value</Label>
                 <textarea
                   id="modal-var-value"
                   defaultValue={variableModal.variable?.value || ''}
                   placeholder="Enter the value for this variable..."
                   rows={4}
-                  className="w-full px-3 py-2.5 text-sm bg-background border-2 border-border/60 rounded-lg focus:outline-none focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/20 transition-all resize-none"
+                  className='w-full resize-none rounded-lg border-2 border-border/60 bg-background px-3 py-2.5 text-sm transition-all focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20'
                 />
               </div>
 
@@ -2219,7 +2283,7 @@ export default function WorkflowsPage() {
                         setVariables([...variables, newVariable]);
                       } else if (variableModal.variable) {
                         setVariables(variables.map(v => 
-                          v.id === variableModal.variable!.id 
+                          v.id === variableModal.variable?.id 
                             ? { ...v, name: nameInput.value.trim(), value: valueInput.value.trim() }
                             : v
                         ));
@@ -2227,7 +2291,7 @@ export default function WorkflowsPage() {
                       setVariableModal({ isOpen: false, mode: 'add' });
                     }
                   }}
-                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                  className='flex-1 bg-orange-600 text-white hover:bg-orange-700'
                 >
                   {variableModal.mode === 'add' ? 'Add Variable' : 'Update Variable'}
                 </Button>
@@ -2238,14 +2302,14 @@ export default function WorkflowsPage() {
       )}
 
       {/* Floating Toolbar */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-1 bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-full p-2 shadow-sm">
+      <div className='-translate-x-1/2 fixed bottom-6 left-1/2 z-50 flex transform items-center gap-1 rounded-full border-2 border-border/60 bg-background/50 p-2 shadow-sm backdrop-blur-sm'>
         {/* Select Tool */}
         <button
           onClick={() => setSelectedTool('select')}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+          className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
             selectedTool === 'select' 
-              ? 'bg-background text-foreground border border-border' 
-              : 'text-muted-foreground hover:text-foreground hover:bg-background/20'
+              ? 'border border-border bg-background text-foreground' 
+              : 'text-muted-foreground hover:bg-background/20 hover:text-foreground'
           }`}
           title="Select"
         >
@@ -2258,10 +2322,10 @@ export default function WorkflowsPage() {
         {/* Move Tool */}
         <button
           onClick={() => setSelectedTool('move')}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+          className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
             selectedTool === 'move' 
-              ? 'bg-background text-foreground border border-border' 
-              : 'text-muted-foreground hover:text-foreground hover:bg-background/20'
+              ? 'border border-border bg-background text-foreground' 
+              : 'text-muted-foreground hover:bg-background/20 hover:text-foreground'
           }`}
           title="Move"
         >
@@ -2274,10 +2338,10 @@ export default function WorkflowsPage() {
         <button
           onClick={undo}
           disabled={!canUndo}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+          className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
             canUndo 
-              ? 'text-muted-foreground hover:text-foreground hover:bg-background/20' 
-              : 'text-muted-foreground/30 cursor-not-allowed'
+              ? 'text-muted-foreground hover:bg-background/20 hover:text-foreground' 
+              : 'cursor-not-allowed text-muted-foreground/30'
           }`}
           title="Undo"
         >
@@ -2291,10 +2355,10 @@ export default function WorkflowsPage() {
         <button
           onClick={redo}
           disabled={!canRedo}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+          className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
             canRedo 
-              ? 'text-muted-foreground hover:text-foreground hover:bg-background/20' 
-              : 'text-muted-foreground/30 cursor-not-allowed'
+              ? 'text-muted-foreground hover:bg-background/20 hover:text-foreground' 
+              : 'cursor-not-allowed text-muted-foreground/30'
           }`}
           title="Redo"
         >
@@ -2375,16 +2439,16 @@ export default function WorkflowsPage() {
 
       {/* Expanded Field Modal */}
       {expandedField !== null && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-8">
-          <div className="w-[70vw] h-[50vh] bg-background border border-border rounded-lg shadow-lg">
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-8 backdrop-blur-sm'>
+          <div className='h-[50vh] w-[70vw] rounded-lg border border-border bg-background shadow-lg'>
             {expandedField === 'result' ? (
-              <div className="h-full p-6 overflow-y-auto">
-                <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+              <div className='h-full overflow-y-auto p-6'>
+                <div className='whitespace-pre-wrap text-foreground text-sm leading-relaxed'>
                   {expandedContent}
                 </div>
               </div>
             ) : (
-              <div className="relative w-full h-full">
+              <div className='relative h-full w-full'>
                 <Textarea
                   value={expandedContent}
                   onChange={(e) => {
@@ -2403,7 +2467,7 @@ export default function WorkflowsPage() {
                       });
                     }
                   }}
-                  className="w-full h-full border-0 resize-none text-sm leading-relaxed p-6 focus:ring-0 focus:outline-none rounded-lg"
+                  className='h-full w-full resize-none rounded-lg border-0 p-6 text-sm leading-relaxed focus:outline-none focus:ring-0'
                   placeholder={expandedField === 'userPrompt' ? 'Entrez votre prompt...' : 'Entrez les instructions...'}
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') {
@@ -2413,7 +2477,7 @@ export default function WorkflowsPage() {
                 />
                 <Button 
                   onClick={() => setExpandedField(null)}
-                  className="absolute bottom-4 right-4 px-4 py-2"
+                  className='absolute right-4 bottom-4 px-4 py-2'
                 >
                   Sauvegarder
                 </Button>
@@ -2422,7 +2486,7 @@ export default function WorkflowsPage() {
             
             {/* Close on click outside or ESC */}
             <div 
-              className="fixed inset-0 -z-10" 
+              className='-z-10 fixed inset-0' 
               onClick={() => setExpandedField(null)}
             />
           </div>

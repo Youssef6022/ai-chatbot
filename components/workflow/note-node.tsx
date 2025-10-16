@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { type NodeProps } from '@xyflow/react';
+import type { NodeProps } from '@xyflow/react';
 
 interface NoteNodeData {
   label: string;
@@ -33,12 +33,12 @@ export function NoteNode({ data, selected }: NodeProps<NoteNodeData>) {
   }, [handleSave, handleCancel]);
 
   return (
-    <div className={`relative bg-yellow-200 dark:bg-yellow-300 border-2 border-yellow-300 dark:border-yellow-400 rounded-lg shadow-lg min-w-[200px] min-h-[120px] p-3 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
+    <div className={`relative min-h-[120px] min-w-[200px] rounded-lg border-2 border-yellow-300 bg-yellow-200 p-3 shadow-lg dark:border-yellow-400 dark:bg-yellow-300 ${selected ? 'ring-2 ring-blue-500' : ''}`}>
       {/* Delete button */}
       {data.onDelete && (
         <button
           onClick={data.onDelete}
-          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white text-xs hover:bg-red-600 flex items-center justify-center"
+          className='absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs hover:bg-red-600'
           title="Delete note"
         >
           ×
@@ -53,20 +53,20 @@ export function NoteNode({ data, selected }: NodeProps<NoteNodeData>) {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full h-20 p-2 text-sm bg-yellow-100 dark:bg-yellow-200 border border-yellow-400 dark:border-yellow-500 rounded resize-none focus:outline-none focus:ring-1 focus:ring-yellow-500 text-gray-800 dark:text-gray-900"
+              className='h-20 w-full resize-none rounded border border-yellow-400 bg-yellow-100 p-2 text-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 dark:border-yellow-500 dark:bg-yellow-200 dark:text-gray-900'
               placeholder="Tapez votre note..."
               autoFocus
             />
             <div className="flex gap-1">
               <button
                 onClick={handleSave}
-                className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                className='rounded bg-green-500 px-2 py-1 text-white text-xs hover:bg-green-600'
               >
                 ✓
               </button>
               <button
                 onClick={handleCancel}
-                className="px-2 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
+                className='rounded bg-gray-500 px-2 py-1 text-white text-xs hover:bg-gray-600'
               >
                 ✕
               </button>
@@ -75,7 +75,7 @@ export function NoteNode({ data, selected }: NodeProps<NoteNodeData>) {
         ) : (
           <div
             onClick={() => setIsEditing(true)}
-            className="min-h-[60px] p-2 text-sm cursor-text hover:bg-yellow-100 dark:hover:bg-yellow-200 rounded text-gray-800 dark:text-gray-900"
+            className='min-h-[60px] cursor-text rounded p-2 text-gray-800 text-sm hover:bg-yellow-100 dark:text-gray-900 dark:hover:bg-yellow-200'
           >
             {data.content || 'Cliquez pour ajouter une note...'}
           </div>
@@ -84,7 +84,7 @@ export function NoteNode({ data, selected }: NodeProps<NoteNodeData>) {
 
       {/* Helper text */}
       {!isEditing && (
-        <div className="absolute bottom-1 right-2 text-xs text-yellow-700 dark:text-yellow-800 opacity-60">
+        <div className='absolute right-2 bottom-1 text-xs text-yellow-700 opacity-60 dark:text-yellow-800'>
           📝
         </div>
       )}

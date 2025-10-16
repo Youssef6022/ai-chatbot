@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ArrowUpIcon, DownloadIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import type { Variable } from './variables-panel';
@@ -194,7 +194,7 @@ export function WorkflowConsole({
 
         {/* Console Content */}
         {isOpen && (
-          <div className="h-[calc(100%-3rem)] flex flex-col p-0 relative">
+          <div className='relative flex h-[calc(100%-3rem)] flex-col p-0'>
               {/* Logs Content */}
               <div className="flex-1 overflow-y-auto p-4">
                 {uniqueLogs.length === 0 ? (
@@ -207,11 +207,11 @@ export function WorkflowConsole({
                     {uniqueLogs.map((log, index) => (
                       <div key={`${log.id}-${index}`} className='flex items-center gap-2 rounded px-2 py-1 text-xs transition-colors hover:bg-muted/20'>
                         <div className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${getLogColor(log.type)}`} />
-                        <div className='min-w-[50px] font-mono text-muted-foreground text-[10px]'>
+                        <div className='min-w-[50px] font-mono text-[10px] text-muted-foreground'>
                           {formatLogTime(log.timestamp)}
                         </div>
                         {log.nodeName && (
-                          <span className='text-muted-foreground text-[10px] opacity-60'>
+                          <span className='text-[10px] text-muted-foreground opacity-60'>
                             {log.nodeName}
                           </span>
                         )}
@@ -229,7 +229,7 @@ export function WorkflowConsole({
                 <Button
                   onClick={downloadResults}
                   size="sm"
-                  className='absolute bottom-3 right-3 h-8 w-8 rounded-full bg-green-600 p-0 text-white shadow-lg hover:bg-green-700'
+                  className='absolute right-3 bottom-3 h-8 w-8 rounded-full bg-green-600 p-0 text-white shadow-lg hover:bg-green-700'
                   title="Download Results"
                 >
                   <DownloadIcon size={14} />

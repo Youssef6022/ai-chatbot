@@ -56,9 +56,9 @@
   - Option d'export vers Google Sheets ✅
 
 ### 4.3 Types d'Artefacts Supportés
-- Text Artifact : Rédaction d'essais et emails
-- Code Artifact : Écriture et exécution de code
-- Sheet Artifact : Création et analyse de données tabulaires
+- Text Artifact : Rédaction d'essais et emails ✅
+- Code Artifact : Écriture et exécution de code ✅
+- Sheet Artifact : Création et analyse de données tabulaires ✅
 
 A voir comment on les améliore...
 
@@ -69,15 +69,15 @@ A voir comment on les améliore...
   - Les éléments "+ add" doivent apparaître sous la barre de création
   - Non plus en bas de la toile
 - **Console d'édition** : 
-  - Considérer le placement sur le volet de droite (comme n8n et ChatGPT Workflow), ou revoir l'intégration en bas comme actuellement
+  - Considérer le placement sur le volet de droite (comme n8n et ChatGPT Workflow), ou revoir l'intégration en bas comme actuellement ✅
 - **Gestion des variables** : 
-  - Notification rouge avec le nombre de variables non remplies
+  - Notification rouge avec le nombre de variables non remplies 
   - Détection automatique des variables dans les prompts
 
 ### 5.2 Nouvelles Fonctionnalités
 
 #### 5.2.1 Node Tools
-- **Google Search** : Ancrage pour recherche Google
+- **Google Search** : Ancrage pour recherche Google 
 - **RAG (Retrieval-Augmented Generation)** :
   - Bibliothèque de RAG pré-classés par domaine
   - Exemple : Code Civil, Code du Commerce pour avocats
@@ -95,7 +95,7 @@ A voir comment on les améliore...
 
 #### 5.2.3 Notes
 - **Fonction "Note"** : Post-it jaune pour annotations sur la toile
-- Permettre la description du workflow
+- Permettre la description du workflow ✅
 
 #### 5.2.4 Nodes Conditionnels
 - Création de conditions pour diriger le flux
@@ -213,8 +213,8 @@ A voir comment on les améliore...
    - Menu hamburger fonctionnel mobile
 
 3. **Dark Mode** :
-   - Cohérence des couleurs sur tous les éléments
-   - Contraste optimal pour la lisibilité
+   - Cohérence des couleurs sur tous les éléments ✅
+   - Contraste optimal pour la lisibilité✅
 
 ### 11.2 Optimisations Interface
 1. **Workflow Builder** :
