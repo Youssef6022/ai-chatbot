@@ -1580,6 +1580,36 @@ export default function WorkflowsPage() {
             <div className="space-y-4">
               {editingNode.type === 'generate' && !showResults && (
                 <>
+                  {/* System Prompt */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-medium text-muted-foreground">System Prompt</Label>
+                      <button 
+                        onClick={() => {
+                          setExpandedField('systemPrompt');
+                          setExpandedContent(editingNode.data.systemPrompt || '');
+                        }}
+                        className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <Textarea
+                      value={editingNode.data.systemPrompt || ''}
+                      onChange={(e) => {
+                        updateNodeData(editingNode.id, { systemPrompt: e.target.value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, systemPrompt: e.target.value }
+                        });
+                      }}
+                      placeholder="You are a helpful assistant."
+                      className="min-h-[80px] resize-none text-sm"
+                    />
+                  </div>
+
                   {/* User Prompt */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
@@ -1607,36 +1637,6 @@ export default function WorkflowsPage() {
                       }}
                       placeholder="Enter your prompt..."
                       className="min-h-[60px] resize-none text-sm"
-                    />
-                  </div>
-
-                  {/* Instructions */}
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs font-medium text-muted-foreground">Instructions</Label>
-                      <button 
-                        onClick={() => {
-                          setExpandedField('systemPrompt');
-                          setExpandedContent(editingNode.data.systemPrompt || '');
-                        }}
-                        className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                        </svg>
-                      </button>
-                    </div>
-                    <Textarea
-                      value={editingNode.data.systemPrompt || ''}
-                      onChange={(e) => {
-                        updateNodeData(editingNode.id, { systemPrompt: e.target.value });
-                        setEditingNode({
-                          ...editingNode,
-                          data: { ...editingNode.data, systemPrompt: e.target.value }
-                        });
-                      }}
-                      placeholder="You are a helpful assistant."
-                      className="min-h-[80px] resize-none text-sm"
                     />
                   </div>
 
