@@ -133,6 +133,8 @@ export default function WorkflowsPage() {
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<any | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [expandedField, setExpandedField] = useState<string | null>(null);
+  const [expandedContent, setExpandedContent] = useState<string>('');
   
   // Toolbar state
   const [selectedTool, setSelectedTool] = useState<'select' | 'move'>('move');
@@ -1576,7 +1578,20 @@ export default function WorkflowsPage() {
                 <>
                   {/* User Prompt */}
                   <div className="space-y-1">
-                    <Label className="text-xs font-medium text-muted-foreground">User Prompt</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-medium text-muted-foreground">User Prompt</Label>
+                      <button 
+                        onClick={() => {
+                          setExpandedField('userPrompt');
+                          setExpandedContent(editingNode.data.userPrompt || '');
+                        }}
+                        className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                        </svg>
+                      </button>
+                    </div>
                     <Textarea
                       value={editingNode.data.userPrompt || ''}
                       onChange={(e) => {
@@ -1604,6 +1619,17 @@ export default function WorkflowsPage() {
                         <button className="w-5 h-5 rounded bg-muted hover:bg-muted/80 flex items-center justify-center">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                          </svg>
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setExpandedField('systemPrompt');
+                            setExpandedContent(editingNode.data.systemPrompt || '');
+                          }}
+                          className="w-5 h-5 rounded bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
                           </svg>
                         </button>
                       </div>
@@ -1766,19 +1792,17 @@ export default function WorkflowsPage() {
               {/* Show Results Section */}
               {editingNode.type === 'generate' && editingNode.data.result && !showResults && (
                 <div className="mt-6 space-y-2 border-t border-border/40 pt-4">
-                  <button 
-                    onClick={() => setShowResults(true)}
-                    className="flex items-center gap-2 mb-3 w-full text-left hover:bg-muted/20 p-2 rounded-lg transition-colors group"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14,2 14,8 20,8"/>
-                    </svg>
-                    <Label className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Show Results</Label>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-auto text-muted-foreground group-hover:text-foreground transition-colors">
-                      <path d="M9 18l6-6-6-6"/>
-                    </svg>
-                  </button>
+                  <div className="flex justify-center">
+                    <button 
+                      onClick={() => setShowResults(true)}
+                      className="px-3 py-1.5 bg-transparent hover:bg-muted/50 text-foreground rounded transition-colors text-sm flex items-center gap-2"
+                    >
+                      Show Results
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 18l6-6-6-6"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               )}
               
@@ -1786,9 +1810,25 @@ export default function WorkflowsPage() {
               {showResults && editingNode.type === 'generate' && editingNode.data.result && (
                 <div className="space-y-4">
                   {/* Full Results Content */}
-                  <div className="bg-muted/30 rounded-lg p-4 border border-border/40">
-                    <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
-                      {editingNode.data.result}
+                  <div className="bg-muted/30 rounded-lg border border-border/40">
+                    <div className="flex items-center justify-between p-3 border-b border-border/40">
+                      <span className="text-xs font-medium text-muted-foreground">Generated Content</span>
+                      <button 
+                        onClick={() => {
+                          setExpandedField('result');
+                          setExpandedContent(editingNode.data.result || '');
+                        }}
+                        className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="p-4">
+                      <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+                        {editingNode.data.result}
+                      </div>
                     </div>
                   </div>
                   
@@ -1956,6 +1996,55 @@ export default function WorkflowsPage() {
                 : (currentWorkflowId ? 'Mettre à jour' : 'Sauvegarder')
               }
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Field Modal */}
+      <Dialog open={expandedField !== null} onOpenChange={() => setExpandedField(null)}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>
+              {expandedField === 'userPrompt' && 'User Prompt'}
+              {expandedField === 'systemPrompt' && 'Instructions (System Prompt)'}
+              {expandedField === 'result' && 'Generated Result'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-hidden">
+            {expandedField === 'result' ? (
+              <div className="h-full bg-muted/30 rounded-lg p-6 border border-border/40 overflow-y-auto max-h-[60vh]">
+                <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                  {expandedContent}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <Textarea
+                  value={expandedContent}
+                  onChange={(e) => setExpandedContent(e.target.value)}
+                  className="min-h-[400px] text-sm leading-relaxed resize-none"
+                  placeholder={expandedField === 'userPrompt' ? 'Enter your prompt...' : 'Enter system instructions...'}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setExpandedField(null)}>
+                    Annuler
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      if (expandedField === 'userPrompt') {
+                        updateNodeData(editingNode.id, { userPrompt: expandedContent });
+                      } else if (expandedField === 'systemPrompt') {
+                        updateNodeData(editingNode.id, { systemPrompt: expandedContent });
+                      }
+                      setExpandedField(null);
+                    }}
+                  >
+                    Sauvegarder
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
