@@ -191,30 +191,26 @@ export default function WorkflowsPage() {
     });
   }, [nodes, edges]);
   
-  // Helper function to check if two nodes are in the same connected component
-  const areNodesConnected = useCallback((nodeId1: string, nodeId2: string) => {
+  // Helper function to get all ancestor nodes (nodes that the current node depends on)
+  const getNodeAncestors = useCallback((nodeId: string) => {
+    const ancestors = new Set<string>();
+    const toVisit = [nodeId];
     const visited = new Set<string>();
-    const toVisit = [nodeId1];
     
     while (toVisit.length > 0) {
       const currentId = toVisit.pop()!;
       if (visited.has(currentId)) continue;
       visited.add(currentId);
       
-      if (currentId === nodeId2) return true;
-      
-      // Add all connected nodes (both incoming and outgoing edges)
-      edges.forEach(edge => {
-        if (edge.source === currentId && !visited.has(edge.target)) {
-          toVisit.push(edge.target);
-        }
-        if (edge.target === currentId && !visited.has(edge.source)) {
-          toVisit.push(edge.source);
-        }
+      // Find all incoming edges (dependencies)
+      const incomingEdges = edges.filter(edge => edge.target === currentId);
+      incomingEdges.forEach(edge => {
+        ancestors.add(edge.source);
+        toVisit.push(edge.source);
       });
     }
     
-    return false;
+    return ancestors;
   }, [edges]);
 
   // Get all available variables (global + AI Generator results)
@@ -222,29 +218,23 @@ export default function WorkflowsPage() {
     const allVariables: Variable[] = [...variables];
     
     if (currentNodeId) {
-      // Calculate execution order to validate which variables are available
-      const executionOrder = getExecutionOrder();
-      const currentNodeIndex = executionOrder.indexOf(currentNodeId);
+      // Get all ancestor nodes (nodes that the current node depends on)
+      const ancestors = getNodeAncestors(currentNodeId);
       
-      // Add AI Generator results as variables, but only from nodes that execute BEFORE the current node
+      // Add AI Generator results as variables, but only from ancestor nodes
       const generateNodes = nodes.filter(node => 
         node.type === 'generate' && 
         node.data.variableName &&
-        node.id !== currentNodeId  // Exclude current node
+        node.id !== currentNodeId &&  // Exclude current node
+        ancestors.has(node.id)        // Only include ancestors
       );
       
       generateNodes.forEach(node => {
-        const nodeIndex = executionOrder.indexOf(node.id);
-        // Only add variables from nodes that:
-        // 1. Execute before the current node (nodeIndex < currentNodeIndex)
-        // 2. Are connected to the current node in the same component
-        if (nodeIndex !== -1 && currentNodeIndex !== -1 && nodeIndex < currentNodeIndex && areNodesConnected(node.id, currentNodeId)) {
-          allVariables.push({
-            id: `ai-node-${node.id}`,
-            name: node.data.variableName,
-            value: node.data.result || ''
-          });
-        }
+        allVariables.push({
+          id: `ai-node-${node.id}`,
+          name: node.data.variableName,
+          value: node.data.result || ''
+        });
       });
     } else {
       // If no current node specified, include all generate nodes (for general validation)
@@ -263,7 +253,7 @@ export default function WorkflowsPage() {
     }
     
     return allVariables;
-  }, [variables, nodes, edges, getExecutionOrder, areNodesConnected]);
+  }, [variables, nodes, edges, getNodeAncestors]);
   
   // Save state to history
   const saveToHistory = useCallback((newNodes: any[], newEdges: any[]) => {
