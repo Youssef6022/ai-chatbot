@@ -173,6 +173,7 @@ export default function WorkflowsPage() {
     
     generateNodes.forEach(node => {
       allVariables.push({
+        id: `ai-node-${node.id}`,
         name: node.data.variableName,
         value: node.data.result || ''
       });
@@ -1277,6 +1278,38 @@ export default function WorkflowsPage() {
     }
   }, [nodes, updateNodeData, setNodes, invalidVariables, showNotification]);
   
+  // Helper function to extract clean text from result (handles both string and JSON objects)
+  const extractTextFromResult = (result: any): string => {
+    if (typeof result === 'string') {
+      // If it's already a string, try to parse it as JSON to see if it contains more data
+      try {
+        const parsed = JSON.parse(result);
+        // If it parsed successfully and has userPrompt, it's probably the JSON object bug
+        if (parsed && typeof parsed === 'object' && parsed.userPrompt) {
+          // Extract just the main response text part (everything before the JSON)
+          const lines = result.split('\n');
+          const nonJsonLines = [];
+          for (const line of lines) {
+            // Stop when we hit JSON-like content
+            if (line.trim().startsWith('{"') || line.trim().startsWith('"')) {
+              break;
+            }
+            nonJsonLines.push(line);
+          }
+          return nonJsonLines.join('\n').trim();
+        }
+        return result; // It's just a JSON string, return as is
+      } catch {
+        // Not JSON, return the string as is
+        return result;
+      }
+    } else if (result && typeof result === 'object') {
+      // If it's an object, try to find a text property
+      return result.text || result.content || result.message || result.userPrompt || String(result);
+    }
+    return String(result || '');
+  };
+
   // Helper function to process prompt text with variables
   const processPromptText = (text: string, latestNodes: any[]) => {
     let processedText = text;
@@ -1297,7 +1330,8 @@ export default function WorkflowsPage() {
           !(connectedGenerateNode.data as any).isLoading) {
         const variableName = connectedGenerateNode.data.variableName || 'AI Agent 1';
         const placeholder = `{{${variableName}}}`;
-        processedText = processedText.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), connectedGenerateNode.data.result);
+        const cleanResult = extractTextFromResult(connectedGenerateNode.data.result);
+        processedText = processedText.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), cleanResult);
       }
     });
     
@@ -1388,22 +1422,9 @@ export default function WorkflowsPage() {
       systemPrompt = processPromptText(systemPrompt, latestNodes);
       userPrompt = processPromptText(userPrompt, latestNodes);
       
-      // If there's an input connection from another Generate node, use its result as user prompt
-      if (inputEdge) {
-        const inputNode = latestNodes.find(node => node.id === inputEdge.source);
-        if (inputNode && inputNode.type === 'generate' && inputNode.data.result && 
-            inputNode.data.result.trim() !== '' && 
-            inputNode.data.result !== 'Generating...' &&
-            !(inputNode.data as any).isLoading) {
-          // If user prompt is empty, use the connected result as user prompt
-          // If user prompt exists, append the connected result
-          if (!userPrompt.trim()) {
-            userPrompt = inputNode.data.result;
-          } else {
-            userPrompt += `\n\n${inputNode.data.result}`;
-          }
-        }
-      }
+      // The input connection is only used for variable validation and replacement
+      // Variables are already processed in processPromptText() above
+      // No automatic injection of connected results
       
       // Process files from connected Files nodes
       let allFiles: any[] = [];
