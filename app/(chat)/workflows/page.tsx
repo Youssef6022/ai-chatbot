@@ -160,6 +160,26 @@ export default function WorkflowsPage() {
     return () => clearTimeout(timer);
   }, [historyIndex]);
   
+  // Get all available variables (global + AI Generator results)
+  const getAllAvailableVariables = useCallback(() => {
+    const allVariables: Variable[] = [...variables];
+    
+    // Add AI Generator results as variables
+    const generateNodes = nodes.filter(node => 
+      node.type === 'generate' && 
+      node.data.variableName
+    );
+    
+    generateNodes.forEach(node => {
+      allVariables.push({
+        name: node.data.variableName,
+        value: node.data.result || ''
+      });
+    });
+    
+    return allVariables;
+  }, [variables, nodes]);
+  
   // Save state to history
   const saveToHistory = useCallback((newNodes: any[], newEdges: any[]) => {
     const newState = {
@@ -2012,7 +2032,7 @@ export default function WorkflowsPage() {
                       }}
                       placeholder="You are a helpful assistant."
                       className="min-h-[80px] resize-none text-sm"
-                      variables={variables}
+                      variables={getAllAvailableVariables()}
                       onVariableValidation={handleSystemPromptValidation}
                     />
                   </div>
@@ -2044,7 +2064,7 @@ export default function WorkflowsPage() {
                       }}
                       placeholder="Enter your prompt..."
                       className="min-h-[60px] resize-none text-sm"
-                      variables={variables}
+                      variables={getAllAvailableVariables()}
                       onVariableValidation={handleUserPromptValidation}
                     />
                   </div>
