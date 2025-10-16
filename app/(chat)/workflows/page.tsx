@@ -2655,7 +2655,7 @@ export default function WorkflowsPage() {
       {/* Expanded Field Modal */}
       {expandedField !== null && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-8 backdrop-blur-sm'>
-          <div className='h-[50vh] w-[70vw] rounded-lg border border-border bg-background shadow-lg'>
+          <div className='h-[70vh] w-[90vw] rounded-lg border border-border bg-background shadow-lg'>
             {expandedField === 'result' ? (
               <div className='h-full overflow-y-auto p-6'>
                 <div className='whitespace-pre-wrap text-foreground text-sm leading-relaxed'>
@@ -2663,36 +2663,148 @@ export default function WorkflowsPage() {
                 </div>
               </div>
             ) : (
-              <div className='relative h-full w-full'>
-                <Textarea
-                  value={expandedContent}
-                  onChange={(e) => {
-                    setExpandedContent(e.target.value);
-                    if (expandedField === 'userPrompt') {
-                      updateNodeData(editingNode.id, { userPrompt: e.target.value });
-                      setEditingNode({
-                        ...editingNode,
-                        data: { ...editingNode.data, userPrompt: e.target.value }
-                      });
-                    } else if (expandedField === 'systemPrompt') {
-                      updateNodeData(editingNode.id, { systemPrompt: e.target.value });
-                      setEditingNode({
-                        ...editingNode,
-                        data: { ...editingNode.data, systemPrompt: e.target.value }
-                      });
-                    }
-                  }}
-                  className='h-full w-full resize-none rounded-lg border-0 p-6 text-sm leading-relaxed focus:outline-none focus:ring-0'
-                  placeholder={expandedField === 'userPrompt' ? 'Entrez votre prompt...' : 'Entrez les instructions...'}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      setExpandedField(null);
-                    }
-                  }}
-                />
+              <div className='relative h-full w-full flex'>
+                {/* Left side - Text Editor */}
+                <div className='flex-1 p-6 pr-3'>
+                  <div className='h-full flex flex-col'>
+                    <h3 className='text-lg font-semibold mb-4'>
+                      {expandedField === 'userPrompt' ? 'User Prompt' : 'System Prompt'}
+                    </h3>
+                    <div className='flex-1'>
+                      <HighlightedTextarea
+                        value={expandedContent}
+                        onChange={(value) => {
+                          setExpandedContent(value);
+                          if (expandedField === 'userPrompt') {
+                            updateNodeData(editingNode.id, { userPrompt: value });
+                            setEditingNode({
+                              ...editingNode,
+                              data: { ...editingNode.data, userPrompt: value }
+                            });
+                          } else if (expandedField === 'systemPrompt') {
+                            updateNodeData(editingNode.id, { systemPrompt: value });
+                            setEditingNode({
+                              ...editingNode,
+                              data: { ...editingNode.data, systemPrompt: value }
+                            });
+                          }
+                        }}
+                        className='h-full text-sm'
+                        placeholder={expandedField === 'userPrompt' ? 'Entrez votre prompt...' : 'Entrez les instructions...'}
+                        variables={getAllAvailableVariables(editingNode?.id)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Right side - Variables Panel */}
+                <div className='w-80 border-l border-border p-6 pl-3'>
+                  <div className='h-full flex flex-col'>
+                    <h3 className='text-lg font-semibold mb-4'>Variables disponibles</h3>
+                    
+                    {/* Global Variables */}
+                    {variables.length > 0 && (
+                      <div className='mb-6'>
+                        <h4 className='text-sm font-medium text-muted-foreground mb-2'>Variables globales</h4>
+                        <div className='space-y-1'>
+                          {variables.map((variable) => (
+                            <button
+                              key={variable.id}
+                              onClick={() => {
+                                const placeholder = `{{${variable.name}}}`;
+                                setExpandedContent(expandedContent + placeholder);
+                                if (expandedField === 'userPrompt') {
+                                  const newValue = expandedContent + placeholder;
+                                  updateNodeData(editingNode.id, { userPrompt: newValue });
+                                  setEditingNode({
+                                    ...editingNode,
+                                    data: { ...editingNode.data, userPrompt: newValue }
+                                  });
+                                } else if (expandedField === 'systemPrompt') {
+                                  const newValue = expandedContent + placeholder;
+                                  updateNodeData(editingNode.id, { systemPrompt: newValue });
+                                  setEditingNode({
+                                    ...editingNode,
+                                    data: { ...editingNode.data, systemPrompt: newValue }
+                                  });
+                                }
+                              }}
+                              className='w-full text-left p-2 rounded border border-dashed border-green-300 bg-green-50 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/20 dark:hover:bg-green-900/30 transition-colors'
+                            >
+                              <div className='text-sm font-mono text-green-700 dark:text-green-300'>
+                                {`{{${variable.name}}}`}
+                              </div>
+                              <div className='text-xs text-green-600 dark:text-green-400 truncate'>
+                                {variable.value || 'Aucune valeur'}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* AI Generator Variables */}
+                    {(() => {
+                      const aiVariables = getAllAvailableVariables(editingNode?.id)
+                        .filter(v => v.id?.startsWith('ai-node-'));
+                      
+                      if (aiVariables.length > 0) {
+                        return (
+                          <div className='mb-6'>
+                            <h4 className='text-sm font-medium text-muted-foreground mb-2'>Réponses AI Agents</h4>
+                            <div className='space-y-1'>
+                              {aiVariables.map((variable) => (
+                                <button
+                                  key={variable.id}
+                                  onClick={() => {
+                                    const placeholder = `{{${variable.name}}}`;
+                                    setExpandedContent(expandedContent + placeholder);
+                                    if (expandedField === 'userPrompt') {
+                                      const newValue = expandedContent + placeholder;
+                                      updateNodeData(editingNode.id, { userPrompt: newValue });
+                                      setEditingNode({
+                                        ...editingNode,
+                                        data: { ...editingNode.data, userPrompt: newValue }
+                                      });
+                                    } else if (expandedField === 'systemPrompt') {
+                                      const newValue = expandedContent + placeholder;
+                                      updateNodeData(editingNode.id, { systemPrompt: newValue });
+                                      setEditingNode({
+                                        ...editingNode,
+                                        data: { ...editingNode.data, systemPrompt: newValue }
+                                      });
+                                    }
+                                  }}
+                                  className='w-full text-left p-2 rounded border border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 dark:border-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 transition-colors'
+                                >
+                                  <div className='text-sm font-mono text-blue-700 dark:text-blue-300'>
+                                    {`{{${variable.name}}}`}
+                                  </div>
+                                  <div className='text-xs text-blue-600 dark:text-blue-400 truncate'>
+                                    {variable.value ? 'Réponse disponible' : 'Pas encore exécuté'}
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+                    
+                    {/* No variables message */}
+                    {variables.length === 0 && getAllAvailableVariables(editingNode?.id).filter(v => v.id?.startsWith('ai-node-')).length === 0 && (
+                      <div className='text-sm text-muted-foreground text-center py-8'>
+                        Aucune variable disponible.<br/>
+                        Créez des variables globales ou connectez des AI Agents.
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
                 <Button 
                   onClick={() => setExpandedField(null)}
-                  className='absolute right-4 bottom-4 px-4 py-2'
+                  className='absolute right-6 bottom-6 px-4 py-2'
                 >
                   Sauvegarder
                 </Button>
