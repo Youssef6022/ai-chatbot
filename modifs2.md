@@ -93,10 +93,6 @@ A voir comment on les améliore...
   - Select Files in library
   - Champ Description (optionnel)
 
-#### 5.2.3 Notes
-- **Fonction "Note"** : Post-it jaune pour annotations sur la toile
-- Permettre la description du workflow ✅
-
 #### 5.2.4 Nodes Conditionnels
 - Création de conditions pour diriger le flux
 - Exemple : Si mention "code civil" → direction vers node avec RAG Code Civil
@@ -212,11 +208,3 @@ A voir comment on les améliore...
 2. **Responsive Design** :
    - Menu hamburger fonctionnel mobile
 
-3. **Dark Mode** :
-   - Cohérence des couleurs sur tous les éléments ✅
-   - Contraste optimal pour la lisibilité✅
-
-### 11.2 Optimisations Interface
-1. **Workflow Builder** :
-   - Grille magnétique pour alignement ✅
-   - Faire apparaître une poubelle sur les blocs sélectionnés pour les supprimer ✅
