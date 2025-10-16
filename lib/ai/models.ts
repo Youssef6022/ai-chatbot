@@ -29,7 +29,7 @@ export const chatModels: Array<ChatModel> = [
   },
   {
     id: 'chat-model-large',
-    name: 'Magistral Large (Pro)',
+    name: 'Magistral Large',
     description: 'Most advanced model for complex tasks and reasoning',
   },
 ];
