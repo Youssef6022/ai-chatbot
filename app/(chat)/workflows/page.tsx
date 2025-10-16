@@ -132,6 +132,7 @@ export default function WorkflowsPage() {
   // Edit panel state
   const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<any | null>(null);
+  const [showResults, setShowResults] = useState(false);
   
   // Toolbar state
   const [selectedTool, setSelectedTool] = useState<'select' | 'move'>('move');
@@ -722,6 +723,7 @@ export default function WorkflowsPage() {
     event.stopPropagation();
     setEditingNode(node);
     setIsEditPanelOpen(true);
+    setShowResults(false); // Reset to edit view when switching nodes
   }, []);
 
   // Add execution log
@@ -1503,48 +1505,74 @@ export default function WorkflowsPage() {
         <div className="fixed top-20 right-4 z-50 bg-background/50 backdrop-blur-sm border-2 border-border/60 rounded-xl shadow-sm p-4 w-80 max-h-[80vh] overflow-y-auto">
             {/* Header */}
             <div className="mb-4">
-              {editingNode.type === 'generate' ? (
-                <div className="group relative">
-                  <input
-                    value={editingNode.data.variableName || ''}
-                    onChange={(e) => {
-                      updateNodeData(editingNode.id, { variableName: e.target.value });
-                      setEditingNode({
-                        ...editingNode,
-                        data: { ...editingNode.data, variableName: e.target.value }
-                      });
-                    }}
-                    placeholder="AI Agent"
-                    className="font-semibold text-base bg-transparent border-none outline-none w-full group-hover:bg-muted/30 focus:bg-muted/30 rounded px-1 py-0.5 pr-6 transition-colors"
-                  />
-                  <svg 
-                    width="12" 
-                    height="12" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors pointer-events-none"
-                  >
-                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                  </svg>
+              {showResults ? (
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => setShowResults(false)}
+                        className="w-6 h-6 rounded flex items-center justify-center hover:bg-muted/20 transition-colors"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                      </button>
+                      <h3 className="font-semibold text-base">Results</h3>
+                    </div>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-green-600">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Generated content from {editingNode.data.variableName || 'AI Agent'}
+                  </p>
                 </div>
               ) : (
-                <h3 className="font-semibold text-base">
-                  {editingNode.type === 'note' ? 'Note' : 
-                   editingNode.type === 'files' ? 'Files' : 'Node'}
-                </h3>
+                <div>
+                  {editingNode.type === 'generate' ? (
+                    <div className="group relative">
+                      <input
+                        value={editingNode.data.variableName || ''}
+                        onChange={(e) => {
+                          updateNodeData(editingNode.id, { variableName: e.target.value });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, variableName: e.target.value }
+                          });
+                        }}
+                        placeholder="AI Agent"
+                        className="font-semibold text-base bg-transparent border-none outline-none w-full group-hover:bg-muted/30 focus:bg-muted/30 rounded px-1 py-0.5 pr-6 transition-colors"
+                      />
+                      <svg 
+                        width="12" 
+                        height="12" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors pointer-events-none"
+                      >
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                      </svg>
+                    </div>
+                  ) : (
+                    <h3 className="font-semibold text-base">
+                      {editingNode.type === 'note' ? 'Note' : 
+                       editingNode.type === 'files' ? 'Files' : 'Node'}
+                    </h3>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {editingNode.type === 'generate' ? 'Call the model with your instructions and tools' :
+                     editingNode.type === 'note' ? 'Add notes and documentation' :
+                     editingNode.type === 'files' ? 'Select and manage files' : 'Configure this node'}
+                  </p>
+                </div>
               )}
-              <p className="text-xs text-muted-foreground mt-1">
-                {editingNode.type === 'generate' ? 'Call the model with your instructions and tools' :
-                 editingNode.type === 'note' ? 'Add notes and documentation' :
-                 editingNode.type === 'files' ? 'Select and manage files' : 'Configure this node'}
-              </p>
             </div>
 
             {/* Content */}
             <div className="space-y-4">
-              {editingNode.type === 'generate' && (
+              {editingNode.type === 'generate' && !showResults && (
                 <>
                   {/* User Prompt */}
                   <div className="space-y-1">
@@ -1731,6 +1759,64 @@ export default function WorkflowsPage() {
                         No files selected
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Show Results Section */}
+              {editingNode.type === 'generate' && editingNode.data.result && !showResults && (
+                <div className="mt-6 space-y-2 border-t border-border/40 pt-4">
+                  <button 
+                    onClick={() => setShowResults(true)}
+                    className="flex items-center gap-2 mb-3 w-full text-left hover:bg-muted/20 p-2 rounded-lg transition-colors group"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14,2 14,8 20,8"/>
+                    </svg>
+                    <Label className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Show Results</Label>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-auto text-muted-foreground group-hover:text-foreground transition-colors">
+                      <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                  </button>
+                </div>
+              )}
+              
+              {/* Results View - replaces content in same section */}
+              {showResults && editingNode.type === 'generate' && editingNode.data.result && (
+                <div className="space-y-4">
+                  {/* Full Results Content */}
+                  <div className="bg-muted/30 rounded-lg p-4 border border-border/40">
+                    <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+                      {editingNode.data.result}
+                    </div>
+                  </div>
+                  
+                  {/* Metadata */}
+                  <div className="bg-background/50 rounded-lg p-3 border border-border/40">
+                    <h4 className="font-medium text-foreground mb-2 text-xs">Generation Details</h4>
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      <div className="flex justify-between">
+                        <span>Model:</span>
+                        <span className="font-mono">{editingNode.data.selectedModel}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Length:</span>
+                        <span>{editingNode.data.result.length} characters</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Words:</span>
+                        <span>{editingNode.data.result.split(' ').length} words</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Search Grounding:</span>
+                        <span>{editingNode.data.isSearchGroundingEnabled ? 'Enabled' : 'Disabled'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Thinking Mode:</span>
+                        <span>{editingNode.data.isReasoningEnabled ? 'Enabled' : 'Disabled'}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
