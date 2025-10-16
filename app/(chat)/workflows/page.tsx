@@ -1801,17 +1801,44 @@ export default function WorkflowsPage() {
                   <div className="bg-muted/30 rounded-lg border border-border/40">
                     <div className="flex items-center justify-between p-3 border-b border-border/40">
                       <span className="text-xs font-medium text-muted-foreground">Generated Content</span>
-                      <button 
-                        onClick={() => {
-                          setExpandedField('result');
-                          setExpandedContent(editingNode.data.result || '');
-                        }}
-                        className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                        </svg>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => {
+                            // Create and download markdown file
+                            const content = editingNode.data.result || '';
+                            const fileName = `${editingNode.data.variableName || 'ai-result'}-${Date.now()}.md`;
+                            const blob = new Blob([content], { type: 'text/markdown' });
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = fileName;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                          }}
+                          className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                          title="Download as Markdown"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                          </svg>
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setExpandedField('result');
+                            setExpandedContent(editingNode.data.result || '');
+                          }}
+                          className="w-4 h-4 rounded hover:bg-muted/20 flex items-center justify-center transition-colors"
+                          title="Expand"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                     <div className="p-4">
                       <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">

@@ -12,8 +12,8 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ### Core Development
 - **Development server**: `pnpm dev` (runs on port 9627 with Turbo)
-- **Build**: `pnpm build` (includes automatic database migration)
-- **Production server**: `pnpm start`
+- **Build**: `pnpm build` (includes automatic database migration via `tsx lib/db/migrate`)
+- **Production server**: `pnpm start` (runs on port 3000 by default)
 
 ### Code Quality
 - **Linting**: `pnpm run lint` (uses Biome linter)
@@ -37,15 +37,16 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ### AI Integration
 - **Primary Framework**: Vercel AI SDK with multiple provider support
-- **Default Provider**: Google (Gemini models) direct integration via `@ai-sdk/google`
+- **Default Provider**: Google Gemini direct integration via `@ai-sdk/google`
 - **Models Configuration**: `lib/ai/providers.ts` defines model mappings with environment-based switching
 - **Available Models**: 
   - `chat-model-small`: `gemini-2.5-flash-lite`
   - `chat-model-medium`: `gemini-2.5-flash`
-  - `chat-model-large`: `gemini-2.5-pro` (reasoning model in tests)
+  - `chat-model-large`: `gemini-2.5-pro`
   - `title-model`: `gemini-2.5-flash-lite`
   - `artifact-model`: `gemini-2.5-flash`
 - **Test Environment**: Uses mock models from `lib/ai/models.mock.ts` with `isTestEnvironment` flag
+- **Alternative Providers**: Support for xAI Gateway and other providers through Vercel AI SDK
 
 ### Database Architecture (PostgreSQL + Drizzle ORM)
 - **Schema Location**: `lib/db/schema.ts`
@@ -90,6 +91,7 @@ Required environment variables (see `.env.example`):
 
 ```env
 AUTH_SECRET=**** # Generate with: openssl rand -base64 32
+AI_GATEWAY_API_KEY=**** # AI Gateway API Key (required for non-Vercel deployments)
 BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token
 POSTGRES_URL=**** # PostgreSQL database connection string (supports Neon/Vercel Postgres)
 REDIS_URL=**** # Optional Redis for caching/performance
@@ -182,4 +184,25 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 - React 19 RC is used (`react@19.0.0-rc-45804af1-20241021`)
 - File uploads support: JSZip for archive handling, PapaParse for CSV processing
 - Advanced dependencies: Data grids (`react-data-grid`), OpenTelemetry monitoring, token analytics (`tokenlens`)
-- Development port: All servers run on port 9627 to avoid conflicts with other local services
+- For production deployments on Vercel, OIDC tokens are used automatically for AI Gateway authentication
+- When switching AI providers, modify `lib/ai/providers.ts` to configure model mappings
+
+## Application Routes Structure
+
+### Public Routes
+- `/` - Main chat interface (supports guest access)
+- `/login` - User authentication
+- `/register` - User registration  
+- `/auth/callback` - Authentication callback
+- `/workflows` - Visual workflow builder interface
+- `/share/[id]` - Shared chat views
+
+### API Routes
+- `/api/auth/signout` - Sign out endpoint
+- `/api/chat/` - Chat streaming and management
+- `/api/files/upload/` - File upload to Vercel Blob
+- `/api/document/` - Document CRUD operations
+- `/api/workflow/generate` - Workflow execution
+- `/api/vote/` - Message voting
+- `/api/suggestions/` - Document editing suggestions
+- `/ping` - Health check for Playwright tests
