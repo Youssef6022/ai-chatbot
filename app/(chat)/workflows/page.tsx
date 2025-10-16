@@ -879,6 +879,12 @@ export default function WorkflowsPage() {
   // Handle node selection for edit panel
   const onNodeClick = useCallback((event: React.MouseEvent, node: any) => {
     event.stopPropagation();
+    
+    // Don't open edit panel for note nodes
+    if (node.type === 'note') {
+      return;
+    }
+    
     setEditingNode(node);
     setIsEditPanelOpen(true);
     setShowResults(false); // Reset to edit view when switching nodes
