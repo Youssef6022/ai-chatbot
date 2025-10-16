@@ -47,7 +47,7 @@ export default async function WorkflowsLibraryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-6">
         <WorkflowLibraryClient workflows={workflows} />
       </div>
     </div>
