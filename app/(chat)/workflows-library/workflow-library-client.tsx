@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { Workflow } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +23,36 @@ import {
 import { MoreHorizontal, Download, Trash2, Play } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+
+// Component to handle time display without hydration issues
+function TimeAgo({ date }: { date: Date }) {
+  const [timeString, setTimeString] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const updateTime = () => {
+      setTimeString(formatDistanceToNow(date, { 
+        addSuffix: true, 
+        locale: fr 
+      }));
+    };
+    updateTime();
+    
+    // Update every minute
+    const interval = setInterval(updateTime, 60000);
+    return () => clearInterval(interval);
+  }, [date]);
+
+  if (!mounted) {
+    return <span>...</span>;
+  }
+
+  return <span>{timeString}</span>;
+}
 import { toast } from 'sonner';
+import { WorkflowConsole } from '@/components/workflow/workflow-console';
+import JSZip from 'jszip';
 
 interface WorkflowLibraryClientProps {
   workflows: Workflow[];
@@ -36,6 +65,178 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
   const [newWorkflowTitle, setNewWorkflowTitle] = useState('');
   const [newWorkflowDescription, setNewWorkflowDescription] = useState('');
   const [importedWorkflowData, setImportedWorkflowData] = useState<any>(null);
+  
+  // Console state
+  const [isConsoleOpen, setIsConsoleOpen] = useState(false);
+  const [executionLogs, setExecutionLogs] = useState<Array<{
+    id: string;
+    timestamp: Date;
+    type: 'info' | 'success' | 'error' | 'warning';
+    nodeId?: string;
+    nodeName?: string;
+    message: string;
+  }>>([]);
+  const [currentWorkflowNodes, setCurrentWorkflowNodes] = useState<any[]>([]);
+  const [isRunning, setIsRunning] = useState(false);
+
+  // Function to add execution logs
+  const addExecutionLog = useCallback((type: 'info' | 'success' | 'error' | 'warning', message: string, nodeId?: string, nodeName?: string) => {
+    const log = {
+      id: `${Date.now()}-${Math.random()}`,
+      timestamp: new Date(),
+      type,
+      nodeId,
+      nodeName,
+      message
+    };
+    setExecutionLogs(prev => [...prev, log]);
+  }, []);
+
+  // Function to download results as ZIP
+  const downloadResults = useCallback(async () => {
+    // Get all generate nodes with results
+    const generateNodes = currentWorkflowNodes.filter(node => node.type === 'generate' && node.data.result);
+    
+    if (generateNodes.length === 0) {
+      toast.error('Aucun résultat de génération à télécharger');
+      return;
+    }
+
+    // Create ZIP file
+    const zip = new JSZip();
+    
+    generateNodes.forEach((node, index) => {
+      const nodeName = node.data.variableName || node.data.label || `AIGenerator${index + 1}`;
+      // Clean filename (remove special characters)
+      const cleanFileName = nodeName.replace(/[^a-zA-Z0-9]/g, '');
+      
+      // Create markdown content for this specific AI generator
+      let markdownContent = `# ${nodeName}\n\n`;
+      markdownContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
+      
+      if (node.data.systemPrompt) {
+        markdownContent += `## System Prompt\n\n${node.data.systemPrompt}\n\n`;
+      }
+      
+      if (node.data.userPrompt) {
+        markdownContent += `## User Prompt\n\n${node.data.userPrompt}\n\n`;
+      }
+      
+      markdownContent += `## Generated Result\n\n${node.data.result}\n\n`;
+      
+      // Add configuration info
+      markdownContent += `## Configuration\n\n`;
+      markdownContent += `- Model: ${node.data.selectedModel || 'chat-model-medium'}\n`;
+      markdownContent += `- Search Grounding: ${node.data.isSearchGroundingEnabled ? 'Enabled' : 'Disabled'}\n`;
+      markdownContent += `- Thinking Mode: ${node.data.isReasoningEnabled ? 'Enabled' : 'Disabled'}\n`;
+      
+      // Add to ZIP
+      zip.file(`${cleanFileName}.md`, markdownContent);
+    });
+
+    // Generate and download ZIP
+    try {
+      const content = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(content);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `workflow-results-${Date.now()}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success('Résultats téléchargés avec succès');
+    } catch (error) {
+      toast.error('Erreur lors de la création du fichier ZIP');
+    }
+  }, [currentWorkflowNodes]);
+
+  // Function to run workflow
+  const handleRunWorkflow = async (workflow: Workflow) => {
+    if (isRunning) return;
+    
+    setIsRunning(true);
+    setIsConsoleOpen(true);
+    setExecutionLogs([]);
+    
+    addExecutionLog('info', `Exécution du workflow "${workflow.title}" démarrée...`);
+    
+    try {
+      const workflowData = workflow.workflowData;
+      
+      if (!workflowData || !workflowData.nodes) {
+        addExecutionLog('error', 'Données de workflow invalides');
+        return;
+      }
+      
+      setCurrentWorkflowNodes(workflowData.nodes);
+      
+      // Find all generate nodes
+      const generateNodes = workflowData.nodes.filter((node: any) => node.type === 'generate');
+      
+      if (generateNodes.length === 0) {
+        addExecutionLog('warning', 'Aucun nœud de génération trouvé dans ce workflow');
+        return;
+      }
+      
+      addExecutionLog('info', `${generateNodes.length} nœud(s) de génération trouvé(s)`);
+      
+      // Execute each generate node
+      for (const node of generateNodes) {
+        const nodeName = node.data.variableName || node.data.label || 'AI Agent';
+        addExecutionLog('info', `Exécution du nœud "${nodeName}"...`, node.id, nodeName);
+        
+        try {
+          // Prepare the prompt data
+          const promptData = {
+            systemPrompt: node.data.systemPrompt || '',
+            userPrompt: node.data.userPrompt || '',
+            model: node.data.selectedModel || 'chat-model-medium',
+            isSearchGroundingEnabled: node.data.isSearchGroundingEnabled || false,
+            isReasoningEnabled: node.data.isReasoningEnabled || false,
+          };
+          
+          // Call the workflow API
+          const response = await fetch('/api/workflow/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(promptData),
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+          
+          const result = await response.text();
+          
+          // Update the node with the result
+          node.data.result = result;
+          
+          addExecutionLog('success', `Generation completed: ${nodeName}`, node.id, nodeName);
+        } catch (error: any) {
+          addExecutionLog('error', `Erreur lors de l'exécution du nœud "${nodeName}": ${error.message}`, node.id, nodeName);
+        }
+      }
+      
+      addExecutionLog('success', 'Exécution du workflow terminée');
+      
+      // Update the state to trigger React re-render
+      setCurrentWorkflowNodes([...workflowData.nodes]);
+      
+      // Check if we have results and propose download
+      const hasResults = generateNodes.some(node => node.data.result);
+      if (hasResults) {
+        addExecutionLog('info', 'Résultats disponibles ! Vous pouvez maintenant télécharger le fichier ZIP.');
+      }
+    } catch (error: any) {
+      addExecutionLog('error', `Erreur générale: ${error.message}`);
+    } finally {
+      setIsRunning(false);
+    }
+  };
 
   const handleDelete = async (workflowId: string) => {
     try {
@@ -227,11 +428,9 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
                 {/* Actions */}
                 <div className="mb-3 flex gap-2">
                   <button
-                    onClick={() => {
-                      // TODO: Implement run functionality
-                      console.log('Run workflow:', workflow.id);
-                    }}
-                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md bg-green-600 text-xs font-medium text-white transition-all hover:bg-green-700"
+                    onClick={() => handleRunWorkflow(workflow)}
+                    disabled={isRunning}
+                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md bg-green-600 text-xs font-medium text-white transition-all hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m6-10V4a2 2 0 00-2-2H5a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2V4z" />
@@ -256,10 +455,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
                     <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    {formatDistanceToNow(new Date(workflow.createdAt), { 
-                      addSuffix: true, 
-                      locale: fr 
-                    })}
+                    <TimeAgo date={new Date(workflow.createdAt)} />
                   </span>
                 </div>
               </div>
@@ -374,6 +570,19 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Workflow Console - positioned on page instead of sidebar */}
+      <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ease-out ${
+        isConsoleOpen ? 'h-80 w-[400px]' : 'h-12 w-36'
+      }`}>
+        <WorkflowConsole
+          isOpen={isConsoleOpen}
+          onToggle={() => setIsConsoleOpen(!isConsoleOpen)}
+          executionLogs={executionLogs}
+          variables={[]}
+          nodes={currentWorkflowNodes}
+        />
+      </div>
     </>
   );
 }
