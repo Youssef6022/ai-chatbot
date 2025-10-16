@@ -191,6 +191,32 @@ export default function WorkflowsPage() {
     });
   }, [nodes, edges]);
   
+  // Helper function to check if two nodes are in the same connected component
+  const areNodesConnected = useCallback((nodeId1: string, nodeId2: string) => {
+    const visited = new Set<string>();
+    const toVisit = [nodeId1];
+    
+    while (toVisit.length > 0) {
+      const currentId = toVisit.pop()!;
+      if (visited.has(currentId)) continue;
+      visited.add(currentId);
+      
+      if (currentId === nodeId2) return true;
+      
+      // Add all connected nodes (both incoming and outgoing edges)
+      edges.forEach(edge => {
+        if (edge.source === currentId && !visited.has(edge.target)) {
+          toVisit.push(edge.target);
+        }
+        if (edge.target === currentId && !visited.has(edge.source)) {
+          toVisit.push(edge.source);
+        }
+      });
+    }
+    
+    return false;
+  }, [edges]);
+
   // Get all available variables (global + AI Generator results)
   const getAllAvailableVariables = useCallback((currentNodeId?: string) => {
     const allVariables: Variable[] = [...variables];
@@ -209,9 +235,10 @@ export default function WorkflowsPage() {
       
       generateNodes.forEach(node => {
         const nodeIndex = executionOrder.indexOf(node.id);
-        // Only add variables from nodes that execute before the current node
-        // (nodeIndex < currentNodeIndex means it executes before)
-        if (nodeIndex !== -1 && currentNodeIndex !== -1 && nodeIndex < currentNodeIndex) {
+        // Only add variables from nodes that:
+        // 1. Execute before the current node (nodeIndex < currentNodeIndex)
+        // 2. Are connected to the current node in the same component
+        if (nodeIndex !== -1 && currentNodeIndex !== -1 && nodeIndex < currentNodeIndex && areNodesConnected(node.id, currentNodeId)) {
           allVariables.push({
             id: `ai-node-${node.id}`,
             name: node.data.variableName,
@@ -236,7 +263,7 @@ export default function WorkflowsPage() {
     }
     
     return allVariables;
-  }, [variables, nodes, edges, getExecutionOrder]);
+  }, [variables, nodes, edges, getExecutionOrder, areNodesConnected]);
   
   // Save state to history
   const saveToHistory = useCallback((newNodes: any[], newEdges: any[]) => {
