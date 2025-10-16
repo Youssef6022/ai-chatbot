@@ -1496,6 +1496,7 @@ export default function WorkflowsPage() {
                 position: { x: 0, y: 0 }
               });
               setIsEditPanelOpen(true); // Force open the panel
+              setShowResults(false); // Reset results view
             }}
             className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
           >
