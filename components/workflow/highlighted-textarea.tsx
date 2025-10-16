@@ -146,7 +146,7 @@ export function HighlightedTextarea({
       {/* Background highlight layer */}
       <div
         ref={highlightRef}
-        className='pointer-events-none absolute inset-0 z-10 overflow-hidden whitespace-pre-wrap break-words rounded-md border border-input bg-transparent px-3 py-2 text-sm text-transparent'
+        className='pointer-events-none absolute inset-0 z-10 overflow-hidden whitespace-pre-wrap break-words rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground'
         style={{
           fontFamily: 'inherit',
           fontSize: 'inherit',
