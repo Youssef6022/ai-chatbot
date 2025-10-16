@@ -161,13 +161,14 @@ export default function WorkflowsPage() {
   }, [historyIndex]);
   
   // Get all available variables (global + AI Generator results)
-  const getAllAvailableVariables = useCallback(() => {
+  const getAllAvailableVariables = useCallback((currentNodeId?: string) => {
     const allVariables: Variable[] = [...variables];
     
-    // Add AI Generator results as variables
+    // Add AI Generator results as variables, excluding current node
     const generateNodes = nodes.filter(node => 
       node.type === 'generate' && 
-      node.data.variableName
+      node.data.variableName &&
+      node.id !== currentNodeId  // Exclude current node
     );
     
     generateNodes.forEach(node => {
@@ -2032,7 +2033,7 @@ export default function WorkflowsPage() {
                       }}
                       placeholder="You are a helpful assistant."
                       className="min-h-[80px] resize-none text-sm"
-                      variables={getAllAvailableVariables()}
+                      variables={getAllAvailableVariables(editingNode.id)}
                       onVariableValidation={handleSystemPromptValidation}
                     />
                   </div>
@@ -2064,7 +2065,7 @@ export default function WorkflowsPage() {
                       }}
                       placeholder="Enter your prompt..."
                       className="min-h-[60px] resize-none text-sm"
-                      variables={getAllAvailableVariables()}
+                      variables={getAllAvailableVariables(editingNode.id)}
                       onVariableValidation={handleUserPromptValidation}
                     />
                   </div>
