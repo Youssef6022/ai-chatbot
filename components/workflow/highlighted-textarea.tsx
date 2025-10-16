@@ -10,6 +10,7 @@ interface HighlightedTextareaProps {
   className?: string;
   variables?: Array<{ name: string; value: string }>;
   onVariableValidation?: (hasInvalidVariables: boolean, invalidVariables: string[]) => void;
+  noBorder?: boolean;
 }
 
 export function HighlightedTextarea({
@@ -18,7 +19,8 @@ export function HighlightedTextarea({
   placeholder,
   className,
   variables = [],
-  onVariableValidation
+  onVariableValidation,
+  noBorder = false
 }: HighlightedTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
@@ -146,7 +148,10 @@ export function HighlightedTextarea({
       {/* Background highlight layer */}
       <div
         ref={highlightRef}
-        className='pointer-events-none absolute inset-0 z-10 overflow-hidden whitespace-pre-wrap break-words rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground'
+        className={cn(
+          'pointer-events-none absolute inset-0 z-10 overflow-hidden whitespace-pre-wrap break-words rounded-md bg-transparent px-3 py-2 text-sm text-foreground',
+          noBorder ? '' : 'border border-input'
+        )}
         style={{
           fontFamily: 'inherit',
           fontSize: 'inherit',
@@ -169,8 +174,9 @@ export function HighlightedTextarea({
         onScroll={handleScroll}
         placeholder={placeholder}
         className={cn(
-          "relative z-20 w-full resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "relative z-20 w-full resize-none rounded-md bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
           "text-transparent caret-black dark:caret-white",
+          noBorder ? 'focus-visible:outline-none' : 'border border-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           className
         )}
         style={{

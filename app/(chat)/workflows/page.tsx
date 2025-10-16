@@ -2687,6 +2687,7 @@ export default function WorkflowsPage() {
                     className='h-full text-sm'
                     placeholder={expandedField === 'userPrompt' ? 'Entrez votre prompt...' : 'Entrez les instructions...'}
                     variables={getAllAvailableVariables(editingNode?.id)}
+                    noBorder={true}
                   />
                 </div>
                 
