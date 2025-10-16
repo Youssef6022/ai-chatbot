@@ -152,6 +152,27 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
     }
   }, [currentWorkflowNodes]);
 
+  // Helper function to replace variables in text with actual values
+  const replaceVariables = useCallback((text: string, generateNodes: any[], currentNodeId: string) => {
+    let replacedText = text;
+    
+    // Replace variables from other AI generators
+    generateNodes.forEach(node => {
+      if (node.id !== currentNodeId && node.data.variableName && node.data.result) {
+        const variablePattern = new RegExp(`\\{\\{${node.data.variableName}\\}\\}`, 'g');
+        replacedText = replacedText.replace(variablePattern, node.data.result);
+      }
+    });
+    
+    // Replace global variables if any (for now we don't have global variables in library)
+    // variables.forEach(variable => {
+    //   const variablePattern = new RegExp(`\\{\\{${variable.name}\\}\\}`, 'g');
+    //   replacedText = replacedText.replace(variablePattern, variable.value);
+    // });
+    
+    return replacedText;
+  }, []);
+
   // Function to run workflow
   const handleRunWorkflow = async (workflow: Workflow) => {
     if (isRunning) return;
@@ -188,10 +209,14 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
         addExecutionLog('info', `Exécution du nœud "${nodeName}"...`, node.id, nodeName);
         
         try {
-          // Prepare the prompt data
+          // Replace variables in prompts before sending
+          const resolvedSystemPrompt = replaceVariables(node.data.systemPrompt || '', generateNodes, node.id);
+          const resolvedUserPrompt = replaceVariables(node.data.userPrompt || '', generateNodes, node.id);
+          
+          // Prepare the prompt data with resolved variables
           const promptData = {
-            systemPrompt: node.data.systemPrompt || '',
-            userPrompt: node.data.userPrompt || '',
+            systemPrompt: resolvedSystemPrompt,
+            userPrompt: resolvedUserPrompt,
             model: node.data.selectedModel || 'chat-model-medium',
             isSearchGroundingEnabled: node.data.isSearchGroundingEnabled || false,
             isReasoningEnabled: node.data.isReasoningEnabled || false,
