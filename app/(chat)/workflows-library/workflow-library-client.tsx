@@ -192,14 +192,28 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
                 </div>
 
                 {/* Actions */}
-                <div className="mb-3">
+                <div className="mb-3 flex gap-2">
                   <button
-                    className="flex h-7 w-full items-center justify-center gap-1.5 rounded-md bg-green-600 text-xs font-medium text-white transition-all hover:bg-green-700"
+                    onClick={() => {
+                      // TODO: Implement run functionality
+                      console.log('Run workflow:', workflow.id);
+                    }}
+                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md bg-green-600 text-xs font-medium text-white transition-all hover:bg-green-700"
                   >
                     <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m6-10V4a2 2 0 00-2-2H5a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2V4z" />
                     </svg>
                     Run
+                  </button>
+                  <button
+                    onClick={() => handleLoadToWorkflow(workflow)}
+                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 text-xs font-medium text-white transition-all hover:bg-blue-700"
+                  >
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    Edit
                   </button>
                 </div>
 
