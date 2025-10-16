@@ -32,8 +32,10 @@ interface WorkflowLibraryClientProps {
 export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowLibraryClientProps) {
   const [workflows, setWorkflows] = useState(initialWorkflows);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [newWorkflowTitle, setNewWorkflowTitle] = useState('');
   const [newWorkflowDescription, setNewWorkflowDescription] = useState('');
+  const [importedWorkflowData, setImportedWorkflowData] = useState<any>(null);
 
   const handleDelete = async (workflowId: string) => {
     try {
@@ -83,6 +85,46 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
     window.location.href = `/workflows?${params.toString()}`;
   };
 
+  const handleImportWorkflow = () => {
+    if (!newWorkflowTitle.trim()) {
+      toast.error('Le titre du workflow est requis');
+      return;
+    }
+
+    if (!importedWorkflowData) {
+      toast.error('Aucun workflow à importer');
+      return;
+    }
+
+    // Rediriger vers la page workflows avec les données du workflow importé et le nouveau nom/description
+    const params = new URLSearchParams({
+      import: JSON.stringify(importedWorkflowData),
+      title: newWorkflowTitle,
+      description: newWorkflowDescription
+    });
+    window.location.href = `/workflows?${params.toString()}`;
+  };
+
+  const handleFileImport = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const workflowData = JSON.parse(e.target?.result as string);
+        setImportedWorkflowData(workflowData);
+        
+        // Pré-remplir avec le nom existant s'il existe
+        const existingName = workflowData.metadata?.name || 'Workflow Importé';
+        setNewWorkflowTitle(existingName);
+        setNewWorkflowDescription('');
+        
+        setShowImportModal(true);
+      } catch (error) {
+        toast.error('Erreur lors de la lecture du fichier JSON');
+      }
+    };
+    reader.readAsText(file);
+  };
+
 
   return (
     <>
@@ -112,16 +154,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
               input.onchange = (e) => {
                 const file = (e.target as HTMLInputElement).files?.[0];
                 if (file) {
-                  const reader = new FileReader();
-                  reader.onload = (e) => {
-                    try {
-                      const workflowData = JSON.parse(e.target?.result as string);
-                      window.location.href = `/workflows?import=${encodeURIComponent(JSON.stringify(workflowData))}`;
-                    } catch (error) {
-                      alert('Erreur lors de la lecture du fichier JSON');
-                    }
-                  };
-                  reader.readAsText(file);
+                  handleFileImport(file);
                 }
               };
               input.click();
@@ -283,6 +316,60 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
             </Button>
             <Button onClick={handleCreateWorkflow}>
               Créer le workflow
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal d'import de workflow */}
+      <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Importer un workflow</DialogTitle>
+            <DialogDescription>
+              Donnez un nom et une description à votre workflow importé.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="import-title">Titre</Label>
+              <Input
+                id="import-title"
+                placeholder="Mon workflow importé"
+                value={newWorkflowTitle}
+                onChange={(e) => setNewWorkflowTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.metaKey) {
+                    handleImportWorkflow();
+                  }
+                }}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="import-description">Description (optionnel)</Label>
+              <Textarea
+                id="import-description"
+                placeholder="Description de votre workflow importé..."
+                value={newWorkflowDescription}
+                onChange={(e) => setNewWorkflowDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowImportModal(false);
+                setNewWorkflowTitle('');
+                setNewWorkflowDescription('');
+                setImportedWorkflowData(null);
+              }}
+            >
+              Annuler
+            </Button>
+            <Button onClick={handleImportWorkflow}>
+              Importer le workflow
             </Button>
           </div>
         </DialogContent>

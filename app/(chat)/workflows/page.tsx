@@ -429,7 +429,11 @@ export default function WorkflowsPage() {
     
     if (workflowId && workflowId !== currentWorkflowId) {
       loadWorkflowFromDatabase(workflowId);
+    } else if (importData && title) {
+      // Import avec nom/description spécifiés
+      loadImportedWorkflowWithTitle(importData, title, description || '');
     } else if (importData) {
+      // Import sans nom/description (ancien comportement)
       loadImportedWorkflow(importData);
     } else if (title) {
       handleNewWorkflowCreation(title, description || '');
@@ -570,6 +574,102 @@ export default function WorkflowsPage() {
     } catch (error) {
       console.error('Erreur lors de l\'importation du workflow:', error);
       toast.error('Erreur lors de l\'importation du workflow');
+    }
+  };
+
+  // Load imported workflow with title and description from URL parameters
+  const loadImportedWorkflowWithTitle = async (importData: string, title: string, description: string) => {
+    setIsLoading(true);
+    
+    try {
+      const workflowData = JSON.parse(decodeURIComponent(importData));
+      
+      if (workflowData?.nodes && workflowData.edges) {
+        // Restore nodes with proper callback functions
+        const importedNodes = workflowData.nodes.map((node: any) => ({
+          id: node.id,
+          type: node.type,
+          position: node.position,
+          data: {
+            ...node.data,
+            onTextChange: () => {},
+            onModelChange: () => {},
+            onVariableNameChange: () => {},
+            onFilesChange: () => {},
+            onDelete: () => {},
+            onSearchGroundingChange: () => {},
+            onReasoningChange: () => {},
+          }
+        }));
+        
+        // Restore edges
+        const importedEdges = workflowData.edges.map((edge: any) => ({
+          ...edge,
+          type: 'custom'
+        }));
+        
+        // Restore variables if they exist
+        const importedVariables = workflowData.variables || [];
+        
+        // Create workflow in database with provided title and description
+        const response = await fetch('/api/workflows', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            workflowData: {
+              nodes: importedNodes,
+              edges: importedEdges,
+              variables: importedVariables
+            },
+            isPublic: false,
+          }),
+        });
+        
+        if (response.ok) {
+          const savedWorkflow = await response.json();
+          setCurrentWorkflowId(savedWorkflow.id);
+          
+          setNodes(importedNodes);
+          setEdges(importedEdges);
+          setVariables(importedVariables);
+          
+          // Reset history with imported workflow
+          const newState = {
+            nodes: JSON.parse(JSON.stringify(importedNodes)),
+            edges: JSON.parse(JSON.stringify(importedEdges)),
+            timestamp: Date.now()
+          };
+          setHistory([newState]);
+          setHistoryIndex(0);
+          
+          // Set the provided title and description
+          setSaveTitle(title);
+          setWorkflowTitle(title);
+          setSaveDescription(description);
+          
+          toast.success(`Workflow "${title}" importé et sauvegardé avec succès`);
+          
+          // Clean up URL parameters
+          const url = new URL(window.location.href);
+          url.searchParams.delete('import');
+          url.searchParams.delete('title');
+          url.searchParams.delete('description');
+          window.history.replaceState({}, '', url.toString());
+        } else {
+          throw new Error('Erreur lors de la sauvegarde du workflow importé');
+        }
+      } else {
+        toast.error('Format de workflow invalide');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'importation du workflow:', error);
+      toast.error('Erreur lors de l\'importation du workflow');
+    } finally {
+      setIsLoading(false);
     }
   };
 
