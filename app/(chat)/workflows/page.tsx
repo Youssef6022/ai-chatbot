@@ -325,11 +325,19 @@ export default function WorkflowsPage() {
     }
   }, [nodes, edges]); // Depend on nodes and edges to capture loaded workflow
 
-  // Load workflow from database when URL has ID parameter
+  // Load workflow from database when URL has ID parameter or import workflow data
   useEffect(() => {
     const workflowId = searchParams.get('id');
+    const importData = searchParams.get('import');
+    const title = searchParams.get('title');
+    const description = searchParams.get('description');
+    
     if (workflowId && workflowId !== currentWorkflowId) {
       loadWorkflowFromDatabase(workflowId);
+    } else if (importData) {
+      loadImportedWorkflow(importData);
+    } else if (title) {
+      handleNewWorkflowCreation(title, description || '');
     }
   }, [searchParams]);
 
@@ -404,6 +412,139 @@ export default function WorkflowsPage() {
     }
   };
 
+  // Load imported workflow from URL parameter
+  const loadImportedWorkflow = (importData: string) => {
+    try {
+      const workflowData = JSON.parse(decodeURIComponent(importData));
+      
+      if (workflowData?.nodes && workflowData.edges) {
+        // Restore nodes with proper callback functions
+        const importedNodes = workflowData.nodes.map((node: any) => ({
+          id: node.id,
+          type: node.type,
+          position: node.position,
+          data: {
+            ...node.data,
+            onTextChange: () => {},
+            onModelChange: () => {},
+            onVariableNameChange: () => {},
+            onFilesChange: () => {},
+            onDelete: () => {},
+          }
+        }));
+        
+        // Restore edges
+        const importedEdges = workflowData.edges.map((edge: any) => ({
+          ...edge,
+          type: 'custom'
+        }));
+        
+        // Restore variables if they exist
+        const importedVariables = workflowData.variables || [];
+        
+        setNodes(importedNodes);
+        setEdges(importedEdges);
+        setVariables(importedVariables);
+        
+        // Reset history with imported workflow
+        const newState = {
+          nodes: JSON.parse(JSON.stringify(importedNodes)),
+          edges: JSON.parse(JSON.stringify(importedEdges)),
+          timestamp: Date.now()
+        };
+        setHistory([newState]);
+        setHistoryIndex(0);
+        
+        // Set imported workflow title
+        setSaveTitle(workflowData.title || 'Imported Workflow');
+        setWorkflowTitle(workflowData.title || 'Imported Workflow');
+        setSaveDescription(workflowData.description || '');
+        
+        // Clear current workflow ID since this is a new import
+        setCurrentWorkflowId(null);
+        
+        toast.success('Workflow importé avec succès');
+        
+        // Clear the import parameter from URL to avoid re-importing
+        const url = new URL(window.location.href);
+        url.searchParams.delete('import');
+        window.history.replaceState({}, '', url.toString());
+      } else {
+        toast.error('Format de workflow invalide');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'importation du workflow:', error);
+      toast.error('Erreur lors de l\'importation du workflow');
+    }
+  };
+
+  // Handle new workflow creation with title and description
+  const handleNewWorkflowCreation = async (title: string, description: string) => {
+    setIsLoading(true);
+    
+    try {
+      // Prepare initial workflow data
+      const workflowData = {
+        nodes: initialNodes,
+        edges: [],
+        variables: []
+      };
+      
+      // Create workflow in database
+      const response = await fetch('/api/workflows', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          workflowData,
+          isPublic: false,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création du workflow');
+      }
+      
+      const newWorkflow = await response.json();
+      
+      // Set workflow state
+      setCurrentWorkflowId(newWorkflow.id);
+      setSaveTitle(title);
+      setWorkflowTitle(title);
+      setSaveDescription(description);
+      
+      // Reset to initial state with default nodes
+      setNodes(initialNodes);
+      setEdges([]);
+      setVariables([]);
+      
+      // Reset history with new workflow
+      const newState = {
+        nodes: JSON.parse(JSON.stringify(initialNodes)),
+        edges: [],
+        timestamp: Date.now()
+      };
+      setHistory([newState]);
+      setHistoryIndex(0);
+      
+      toast.success(`Nouveau workflow "${title}" créé et sauvegardé`);
+      
+      // Clean up URL parameters
+      const url = new URL(window.location.href);
+      url.searchParams.delete('title');
+      url.searchParams.delete('description');
+      window.history.replaceState({}, '', url.toString());
+      
+    } catch (error) {
+      console.error('Erreur lors de la création du workflow:', error);
+      toast.error('Erreur lors de la création du workflow');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Update dots color based on theme
   useEffect(() => {

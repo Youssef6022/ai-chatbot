@@ -4,6 +4,16 @@ import { useState } from 'react';
 import type { Workflow } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -21,6 +31,9 @@ interface WorkflowLibraryClientProps {
 
 export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowLibraryClientProps) {
   const [workflows, setWorkflows] = useState(initialWorkflows);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newWorkflowTitle, setNewWorkflowTitle] = useState('');
+  const [newWorkflowDescription, setNewWorkflowDescription] = useState('');
 
   const handleDelete = async (workflowId: string) => {
     try {
@@ -56,25 +69,71 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
     window.location.href = `/workflows?id=${workflow.id}`;
   };
 
+  const handleCreateWorkflow = () => {
+    if (!newWorkflowTitle.trim()) {
+      toast.error('Le titre du workflow est requis');
+      return;
+    }
+
+    // Rediriger vers la page workflows avec les données du nouveau workflow
+    const params = new URLSearchParams({
+      title: newWorkflowTitle,
+      description: newWorkflowDescription
+    });
+    window.location.href = `/workflows?${params.toString()}`;
+  };
+
 
   return (
     <>
       {/* Hero Section */}
-      <div className="mb-12 text-center">
-        <h1 className="mb-4 text-3xl font-bold text-foreground">Create Workflow</h1>
-        <p className="mx-auto mb-8 max-w-md text-muted-foreground">
-          Build a chat agent workflow with custom logic and tools
+      <div className="mb-16 text-center">
+        <h1 className="mb-6 text-3xl font-bold text-foreground">Create Workflow</h1>
+        <p className="mx-auto mb-10 max-w-lg text-muted-foreground leading-relaxed">
+          Design intelligent chat workflows with AI nodes, custom logic, and powerful automation tools. Transform conversations into seamless experiences.
         </p>
         
-        <button
-          onClick={() => window.location.href = '/workflows'}
-          className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Create New Workflow
-        </button>
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm font-medium text-white shadow-md transition-all hover:scale-105 hover:shadow-lg"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create New
+          </button>
+          
+          <button
+            onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = '.json';
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    try {
+                      const workflowData = JSON.parse(e.target?.result as string);
+                      window.location.href = `/workflows?import=${encodeURIComponent(JSON.stringify(workflowData))}`;
+                    } catch (error) {
+                      alert('Erreur lors de la lecture du fichier JSON');
+                    }
+                  };
+                  reader.readAsText(file);
+                }
+              };
+              input.click();
+            }}
+            className="inline-flex items-center gap-2 rounded-lg border border-blue-300 bg-transparent px-6 py-3 text-sm font-medium text-blue-600 transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-950/20"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+            </svg>
+            Import Existing
+          </button>
+        </div>
       </div>
 
       {/* Workflows Section */}
@@ -161,6 +220,59 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
           </div>
         </>
       )}
+
+      {/* Modal de création de workflow */}
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Créer un nouveau workflow</DialogTitle>
+            <DialogDescription>
+              Donnez un titre et une description à votre nouveau workflow.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Titre</Label>
+              <Input
+                id="title"
+                placeholder="Mon nouveau workflow"
+                value={newWorkflowTitle}
+                onChange={(e) => setNewWorkflowTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.metaKey) {
+                    handleCreateWorkflow();
+                  }
+                }}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description (optionnel)</Label>
+              <Textarea
+                id="description"
+                placeholder="Description de votre workflow..."
+                value={newWorkflowDescription}
+                onChange={(e) => setNewWorkflowDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowCreateModal(false);
+                setNewWorkflowTitle('');
+                setNewWorkflowDescription('');
+              }}
+            >
+              Annuler
+            </Button>
+            <Button onClick={handleCreateWorkflow}>
+              Créer le workflow
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
