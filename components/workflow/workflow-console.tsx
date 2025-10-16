@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { ArrowUpIcon } from '@/components/icons';
+import { ArrowUpIcon, DownloadIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import type { Variable } from './variables-panel';
 import JSZip from 'jszip';
@@ -194,20 +194,7 @@ export function WorkflowConsole({
 
         {/* Console Content */}
         {isOpen && (
-          <div className="h-[calc(100%-3rem)] flex flex-col p-0">
-              {/* Download Button */}
-              {uniqueLogs.some(log => log.type === 'success' && log.message.includes('Generation completed')) && (
-                <div className='border-border/60 border-b p-3'>
-                  <Button
-                    onClick={downloadResults}
-                    size="sm"
-                    className='w-full bg-green-600 text-white hover:bg-green-700'
-                  >
-                    📦 Download Results (ZIP)
-                  </Button>
-                </div>
-              )}
-              
+          <div className="h-[calc(100%-3rem)] flex flex-col p-0 relative">
               {/* Logs Content */}
               <div className="flex-1 overflow-y-auto p-4">
                 {uniqueLogs.length === 0 ? (
@@ -236,6 +223,18 @@ export function WorkflowConsole({
                   </div>
                 )}
               </div>
+              
+              {/* Download Button - Floating Circle */}
+              {uniqueLogs.some(log => log.type === 'success' && log.message.includes('Generation completed')) && (
+                <Button
+                  onClick={downloadResults}
+                  size="sm"
+                  className='absolute bottom-3 right-3 h-8 w-8 rounded-full bg-green-600 p-0 text-white shadow-lg hover:bg-green-700'
+                  title="Download Results"
+                >
+                  <DownloadIcon size={14} />
+                </Button>
+              )}
           </div>
       )}
       </div>
