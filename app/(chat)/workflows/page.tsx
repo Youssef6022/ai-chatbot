@@ -696,6 +696,8 @@ export default function WorkflowsPage() {
           userPrompt: node.data.userPrompt || '',
           result: node.data.result || '',
           selectedFiles: node.data.selectedFiles || [],
+          isSearchGroundingEnabled: node.data.isSearchGroundingEnabled || false,
+          isReasoningEnabled: node.data.isReasoningEnabled || false,
         }
       })),
       edges: edges.map(edge => ({
