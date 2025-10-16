@@ -2665,36 +2665,29 @@ export default function WorkflowsPage() {
             ) : (
               <div className='relative h-full w-full flex'>
                 {/* Left side - Text Editor */}
-                <div className='flex-1 p-6 pr-3'>
-                  <div className='h-full flex flex-col'>
-                    <h3 className='text-lg font-semibold mb-4'>
-                      {expandedField === 'userPrompt' ? 'User Prompt' : 'System Prompt'}
-                    </h3>
-                    <div className='flex-1'>
-                      <HighlightedTextarea
-                        value={expandedContent}
-                        onChange={(value) => {
-                          setExpandedContent(value);
-                          if (expandedField === 'userPrompt') {
-                            updateNodeData(editingNode.id, { userPrompt: value });
-                            setEditingNode({
-                              ...editingNode,
-                              data: { ...editingNode.data, userPrompt: value }
-                            });
-                          } else if (expandedField === 'systemPrompt') {
-                            updateNodeData(editingNode.id, { systemPrompt: value });
-                            setEditingNode({
-                              ...editingNode,
-                              data: { ...editingNode.data, systemPrompt: value }
-                            });
-                          }
-                        }}
-                        className='h-full text-sm'
-                        placeholder={expandedField === 'userPrompt' ? 'Entrez votre prompt...' : 'Entrez les instructions...'}
-                        variables={getAllAvailableVariables(editingNode?.id)}
-                      />
-                    </div>
-                  </div>
+                <div className='flex-1 p-4 pr-2'>
+                  <HighlightedTextarea
+                    value={expandedContent}
+                    onChange={(value) => {
+                      setExpandedContent(value);
+                      if (expandedField === 'userPrompt') {
+                        updateNodeData(editingNode.id, { userPrompt: value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, userPrompt: value }
+                        });
+                      } else if (expandedField === 'systemPrompt') {
+                        updateNodeData(editingNode.id, { systemPrompt: value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, systemPrompt: value }
+                        });
+                      }
+                    }}
+                    className='h-full text-sm'
+                    placeholder={expandedField === 'userPrompt' ? 'Entrez votre prompt...' : 'Entrez les instructions...'}
+                    variables={getAllAvailableVariables(editingNode?.id)}
+                  />
                 </div>
                 
                 {/* Right side - Variables Panel */}
