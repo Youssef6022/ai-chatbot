@@ -1270,31 +1270,35 @@ export default function WorkflowsPage() {
 
   return (
     <div className='fixed inset-0 z-50 bg-background'>
-      {/* Header with back arrow and title */}
-      <div className='flex items-center justify-between border-b px-4 py-3'>
-        <div className='flex items-center gap-3'>
+      {/* Floating Header - Transparent with floating elements */}
+      <div className='absolute top-0 left-0 right-0 z-60 flex items-center justify-between px-6 py-4'>
+        {/* Left side - Title and back button floating */}
+        <div className='flex items-center gap-4'>
           <Button
             variant="ghost"
             size="sm"
-            className='h-8 w-8 p-0'
+            className='h-10 w-10 p-0 rounded-full bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200'
             onClick={() => window.history.back()}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
           </Button>
-          <h1 className='font-semibold text-lg'>
-            {workflowTitle || 'New Workflow'}
-          </h1>
+          <div className='flex items-center bg-background/60 backdrop-blur-sm border-2 border-border/60 rounded-full px-4 py-2 shadow-lg'>
+            <h1 className='font-semibold text-lg'>
+              {workflowTitle || 'New Workflow'}
+            </h1>
+          </div>
         </div>
 
-        <div className='flex items-center gap-2'>
+        {/* Right side - Action buttons floating */}
+        <div className='flex items-center gap-3'>
           {/* Variables Button */}
           <Button
             variant="outline"
             size="sm"
             onClick={() => setIsConsoleOpen(!isConsoleOpen)}
-            className='flex items-center gap-2'
+            className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
@@ -1307,7 +1311,7 @@ export default function WorkflowsPage() {
             variant="outline"
             size="sm"
             onClick={() => document.getElementById('import-file')?.click()}
-            className='flex items-center gap-2'
+            className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
           >
             <UploadIcon size={14} />
             Import
@@ -1318,7 +1322,7 @@ export default function WorkflowsPage() {
             variant="outline"
             size="sm"
             onClick={() => exportWorkflow()}
-            className='flex items-center gap-2'
+            className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
           >
             <DownloadIcon size={14} />
             Export
@@ -1329,7 +1333,7 @@ export default function WorkflowsPage() {
             variant="outline"
             size="sm"
             onClick={() => setShowSaveModal(true)}
-            className='flex items-center gap-2'
+            className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
@@ -1344,7 +1348,7 @@ export default function WorkflowsPage() {
             onClick={handleRun}
             disabled={isRunning || nodes.length === 0}
             size="sm"
-            className='flex items-center gap-2 bg-green-600 hover:bg-green-700'
+            className='flex items-center gap-2 h-10 px-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 border-2 border-green-500/60 backdrop-blur-sm shadow-lg shadow-green-500/20 transition-all duration-200 hover:shadow-green-500/30 rounded-full'
           >
             {isRunning ? (
               <div className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -1358,7 +1362,7 @@ export default function WorkflowsPage() {
         </div>
       </div>
       
-      <div className='h-[calc(100vh-60px)] relative'>
+      <div className='h-full relative'>
       
       {/* Hidden file input for import */}
       <input
