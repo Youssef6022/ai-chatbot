@@ -105,6 +105,23 @@ export function WorkflowConsole({
       zip.file(`${cleanFileName}.md`, markdownContent);
     });
 
+    // Add execution logs file
+    let logsContent = `# Execution Logs\n\n`;
+    logsContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
+    
+    if (uniqueLogs.length > 0) {
+      uniqueLogs.forEach(log => {
+        const time = formatLogTime(log.timestamp);
+        const type = log.type.toUpperCase();
+        const nodeName = log.nodeName ? ` [${log.nodeName}]` : '';
+        logsContent += `**${time}** ${type}${nodeName}: ${log.message}\n\n`;
+      });
+    } else {
+      logsContent += `No execution logs recorded.\n`;
+    }
+    
+    zip.file('execution-logs.md', logsContent);
+
     try {
       // Generate ZIP and download
       const zipBlob = await zip.generateAsync({ type: 'blob' });
@@ -132,10 +149,10 @@ export function WorkflowConsole({
 
   const getLogColor = (type: string) => {
     switch (type) {
-      case 'success': return 'text-green-600 bg-green-100 dark:bg-green-900/20';
-      case 'error': return 'text-red-600 bg-red-100 dark:bg-red-900/20';
-      case 'warning': return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20';
-      default: return 'text-blue-600 bg-blue-100 dark:bg-blue-900/20';
+      case 'success': return 'bg-green-500';
+      case 'error': return 'bg-red-500';
+      case 'warning': return 'bg-yellow-500';
+      default: return 'bg-blue-500';
     }
   };
 
@@ -151,19 +168,8 @@ export function WorkflowConsole({
              onClick={!isOpen ? onToggle : undefined}>
           {isOpen ? (
             <>
-              <div className='flex flex-1 items-center gap-3'>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onToggle}
-                  className='group h-8 w-8 rounded-lg p-0 transition-all duration-300 hover:bg-background/20'
-                >
-                  <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-                    <ArrowUpIcon size={16} className='text-gray-700 group-hover:text-foreground dark:text-gray-300' />
-                  </div>
-                </Button>
-                
-<span className='text-gray-700 text-sm dark:text-gray-300'>Results</span>
+              <div className='flex flex-1 items-center'>
+<span className='text-gray-700 text-sm dark:text-gray-300'>Console</span>
               </div>
               
               {/* Close button when open */}
