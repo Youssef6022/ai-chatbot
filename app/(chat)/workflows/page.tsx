@@ -2001,53 +2001,60 @@ export default function WorkflowsPage() {
       </Dialog>
 
       {/* Expanded Field Modal */}
-      <Dialog open={expandedField !== null} onOpenChange={() => setExpandedField(null)}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
-          <DialogHeader>
-            <DialogTitle>
-              {expandedField === 'userPrompt' && 'User Prompt'}
-              {expandedField === 'systemPrompt' && 'Instructions (System Prompt)'}
-              {expandedField === 'result' && 'Generated Result'}
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="flex-1 overflow-hidden">
+      {expandedField !== null && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-8">
+          <div className="w-[70vw] h-[50vh] bg-background border border-border rounded-lg shadow-lg">
             {expandedField === 'result' ? (
-              <div className="h-full bg-muted/30 rounded-lg p-6 border border-border/40 overflow-y-auto max-h-[60vh]">
+              <div className="h-full p-6 overflow-y-auto">
                 <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                   {expandedContent}
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="relative w-full h-full">
                 <Textarea
                   value={expandedContent}
-                  onChange={(e) => setExpandedContent(e.target.value)}
-                  className="min-h-[400px] text-sm leading-relaxed resize-none"
-                  placeholder={expandedField === 'userPrompt' ? 'Enter your prompt...' : 'Enter system instructions...'}
-                />
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setExpandedField(null)}>
-                    Annuler
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      if (expandedField === 'userPrompt') {
-                        updateNodeData(editingNode.id, { userPrompt: expandedContent });
-                      } else if (expandedField === 'systemPrompt') {
-                        updateNodeData(editingNode.id, { systemPrompt: expandedContent });
-                      }
+                  onChange={(e) => {
+                    setExpandedContent(e.target.value);
+                    if (expandedField === 'userPrompt') {
+                      updateNodeData(editingNode.id, { userPrompt: e.target.value });
+                      setEditingNode({
+                        ...editingNode,
+                        data: { ...editingNode.data, userPrompt: e.target.value }
+                      });
+                    } else if (expandedField === 'systemPrompt') {
+                      updateNodeData(editingNode.id, { systemPrompt: e.target.value });
+                      setEditingNode({
+                        ...editingNode,
+                        data: { ...editingNode.data, systemPrompt: e.target.value }
+                      });
+                    }
+                  }}
+                  className="w-full h-full border-0 resize-none text-sm leading-relaxed p-6 focus:ring-0 focus:outline-none rounded-lg"
+                  placeholder={expandedField === 'userPrompt' ? 'Entrez votre prompt...' : 'Entrez les instructions...'}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
                       setExpandedField(null);
-                    }}
-                  >
-                    Sauvegarder
-                  </Button>
-                </div>
+                    }
+                  }}
+                />
+                <Button 
+                  onClick={() => setExpandedField(null)}
+                  className="absolute bottom-4 right-4 px-4 py-2"
+                >
+                  Sauvegarder
+                </Button>
               </div>
             )}
+            
+            {/* Close on click outside or ESC */}
+            <div 
+              className="fixed inset-0 -z-10" 
+              onClick={() => setExpandedField(null)}
+            />
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
       </div>
     </div>
   );
