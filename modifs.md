@@ -66,18 +66,18 @@ A voir comment on les améliore...
 
 ### 5.1 Corrections UX
 - **Position des nouveaux éléments** : 
-  - Les éléments "+ add" doivent apparaître sous la barre de création
-  - Non plus en bas de la toile
+  - Les éléments "+ add" doivent apparaître sous la barre de création ✅
+  - Non plus en bas de la toile ✅
 - **Console d'édition** : 
   - Considérer le placement sur le volet de droite (comme n8n et ChatGPT Workflow), ou revoir l'intégration en bas comme actuellement ✅
 - **Gestion des variables** : 
   - Notification rouge avec le nombre de variables non remplies 
-  - Détection automatique des variables dans les prompts
+  - Détection automatique des variables dans les prompts ✅
 
 ### 5.2 Nouvelles Fonctionnalités
 
 #### 5.2.1 Node Tools
-- **Google Search** : Ancrage pour recherche Google 
+- **Google Search** : Ancrage pour recherche Google ✅
 - **RAG (Retrieval-Augmented Generation)** :
   - Bibliothèque de RAG pré-classés par domaine
   - Exemple : Code Civil, Code du Commerce pour avocats

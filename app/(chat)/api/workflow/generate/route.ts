@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { streamText } from 'ai';
 import { myProvider } from '@/lib/ai/providers';
+import { google } from '@ai-sdk/google';
 
 export const maxDuration = 60;
 
@@ -75,17 +76,33 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Prepare tools configuration
+    const activeTools: string[] = [];
+    const tools: Record<string, any> = {};
+
+    // Add Google Search tool if search grounding is enabled
+    if (isSearchGroundingEnabled) {
+      activeTools.push('google_search');
+      tools.google_search = google.tools.googleSearch({});
+    }
+
     const result = await streamText({
       model: myProvider.languageModel(model),
       messages: messages,
       temperature: 0.7,
       maxTokens: 1000,
-      experimental_search: isSearchGroundingEnabled ? {
-        enabled: true,
-      } : undefined,
-      experimental_reasoning: isReasoningEnabled ? {
-        enabled: true,
-      } : undefined,
+      experimental_activeTools: activeTools.length > 0 ? activeTools : undefined,
+      tools: Object.keys(tools).length > 0 ? tools : undefined,
+      ...(isReasoningEnabled && {
+        providerOptions: {
+          google: {
+            thinkingConfig: {
+              thinkingBudget: 8192,
+              includeThoughts: true,
+            },
+          },
+        },
+      }),
     });
 
     // Get the full text from the stream
