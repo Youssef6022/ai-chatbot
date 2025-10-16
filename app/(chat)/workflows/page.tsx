@@ -254,6 +254,23 @@ export default function WorkflowsPage() {
     nodeName?: string;
     message: string;
   }>>([]);
+
+  // Notification state
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'error' | 'warning' | 'success' | 'info';
+    visible: boolean;
+  }>({ message: '', type: 'info', visible: false });
+
+  // Show notification helper
+  const showNotification = useCallback((message: string, type: 'error' | 'warning' | 'success' | 'info' = 'info') => {
+    setNotification({ message, type, visible: true });
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      setNotification(prev => ({ ...prev, visible: false }));
+    }, 5000);
+  }, []);
   
 
   // Track theme for dots color
@@ -857,6 +874,21 @@ export default function WorkflowsPage() {
   }, [setNodes, nodes, edges, saveToHistory]);
 
   const handleRun = useCallback(async () => {
+    // Validate that all AI Generators have User Prompts
+    const generateNodes = nodes.filter(node => node.type === 'generate');
+    const nodesWithoutUserPrompt = generateNodes.filter(node => 
+      !node.data.userPrompt || node.data.userPrompt.trim() === ''
+    );
+    
+    if (nodesWithoutUserPrompt.length > 0) {
+      const nodeNames = nodesWithoutUserPrompt.map(node => 
+        node.data.variableName || node.data.label || 'Unnamed AI Agent'
+      ).join(', ');
+      
+      showNotification(`Cannot run workflow: The following AI Generator(s) are missing User Prompts: ${nodeNames}`, 'error');
+      return;
+    }
+    
     setIsRunning(true);
     
     // Open console to show results
@@ -870,7 +902,6 @@ export default function WorkflowsPage() {
     
     try {
       // First, clear all previous results from Generate nodes before starting
-      const generateNodes = nodes.filter(node => node.type === 'generate');
       generateNodes.forEach(node => {
         updateNodeData(node.id, { result: '', isLoading: false, executionState: 'idle' });
       });
@@ -1270,6 +1301,61 @@ export default function WorkflowsPage() {
 
   return (
     <div className='fixed inset-0 z-50 bg-background'>
+      {/* Notification Toast */}
+      {notification.visible && (
+        <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] px-6 py-3 rounded-lg shadow-lg backdrop-blur-sm border-2 transition-all duration-300 ease-out animate-in slide-in-from-top-2 ${
+          notification.type === 'error' 
+            ? 'bg-red-500/90 border-red-400/60 text-white' 
+            : notification.type === 'warning'
+            ? 'bg-yellow-500/90 border-yellow-400/60 text-white'
+            : notification.type === 'success'
+            ? 'bg-green-500/90 border-green-400/60 text-white'
+            : 'bg-blue-500/90 border-blue-400/60 text-white'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              {notification.type === 'error' && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+              )}
+              {notification.type === 'warning' && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              )}
+              {notification.type === 'success' && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
+              )}
+              {notification.type === 'info' && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="16" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+              )}
+            </div>
+            <span className="text-sm font-medium">{notification.message}</span>
+            <button 
+              onClick={() => setNotification(prev => ({ ...prev, visible: false }))}
+              className="flex-shrink-0 ml-2 hover:bg-white/20 rounded-full p-1 transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Floating Header - Transparent with floating elements */}
       <div className='absolute top-0 left-0 right-0 z-60 flex items-center justify-between px-6 py-4'>
         {/* Left side - Title and back button floating */}
