@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbo -p 9627",
     "build": "tsx lib/db/migrate && next build",
-    "start": "next start",
+    "start": "next start -p 9627",
     "lint": "biome lint --write --unsafe",
     "lint:fix": "biome lint --write --unsafe && biome format --write",
     "format": "biome format --write",
