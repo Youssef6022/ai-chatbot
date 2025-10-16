@@ -271,10 +271,12 @@ export default function WorkflowsPage() {
       setNotification(prev => ({ ...prev, visible: false }));
     }, 5000);
   }, []);
+
   
 
   // Track theme for dots color
   const [dotsColor, setDotsColor] = useState('#e2e8f0');
+
   
   // Initialize history with current workflow state
   const isInitialized = useRef(false);
@@ -521,6 +523,35 @@ export default function WorkflowsPage() {
     setShowSaveModal(true);
   }, []);
 
+  // Auto-save function (silent, no toasts)
+  const autoSaveWorkflow = useCallback(async () => {
+    // Only auto-save if we have a currentWorkflowId (existing workflow)
+    if (!currentWorkflowId) return;
+
+    try {
+      const workflowData = prepareWorkflowData();
+      
+      const response = await fetch(`/api/workflows/${currentWorkflowId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: workflowTitle || 'Untitled Workflow',
+          description: '',
+          workflowData: workflowData,
+          isPublic: false,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Workflow auto-saved successfully');
+      }
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+    }
+  }, [currentWorkflowId, workflowTitle, prepareWorkflowData]);
+
   // Import workflow from JSON
   const importWorkflow = useCallback((file: File) => {
     if (!file) return;
@@ -584,6 +615,73 @@ export default function WorkflowsPage() {
     };
     reader.readAsText(file);
   }, [setNodes, setEdges]);
+
+  // Auto-save on page unload and visibility change
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Use fetch with keepalive for reliable auto-save on page unload
+      if (currentWorkflowId) {
+        try {
+          const workflowData = prepareWorkflowData();
+          
+          fetch(`/api/workflows/${currentWorkflowId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              title: workflowTitle || 'Untitled Workflow',
+              description: '',
+              workflowData: workflowData,
+              isPublic: false,
+            }),
+            keepalive: true // Ensures request completes even if page unloads
+          }).catch(error => {
+            console.error('Auto-save on unload failed:', error);
+          });
+        } catch (error) {
+          console.error('Auto-save on unload failed:', error);
+        }
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        autoSaveWorkflow();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [currentWorkflowId, workflowTitle, prepareWorkflowData, autoSaveWorkflow]);
+
+  // Auto-save periodically
+  useEffect(() => {
+    if (!currentWorkflowId) return;
+
+    // Auto-save every 30 seconds
+    const interval = setInterval(() => {
+      autoSaveWorkflow();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [currentWorkflowId, autoSaveWorkflow]);
+
+  // Auto-save when nodes or edges change (debounced)
+  useEffect(() => {
+    if (!currentWorkflowId) return;
+
+    const timeoutId = setTimeout(() => {
+      autoSaveWorkflow();
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [nodes, edges, variables, currentWorkflowId, autoSaveWorkflow]);
 
   // Handle connection start to highlight compatible handles
   const onConnectStart: OnConnectStart = useCallback((event, { nodeId, handleId, handleType }) => {
@@ -1414,20 +1512,6 @@ export default function WorkflowsPage() {
             Export
           </Button>
 
-          {/* Save Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowSaveModal(true)}
-            className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-              <polyline points="17,21 17,13 7,13 7,21"/>
-              <polyline points="7,3 7,8 15,8"/>
-            </svg>
-            {currentWorkflowId ? 'Update' : 'Save'}
-          </Button>
 
           {/* Run Button */}
           <Button
