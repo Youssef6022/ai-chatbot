@@ -120,7 +120,7 @@ export function WorkflowConsole({
       logsContent += `No execution logs recorded.\n`;
     }
     
-    zip.file('execution-logs.md', logsContent);
+    zip.file('console.log', logsContent);
 
     try {
       // Generate ZIP and download
