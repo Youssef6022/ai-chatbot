@@ -2098,16 +2098,13 @@ export default function WorkflowsPage() {
                           });
                         }}
                         className='cursor-pointer appearance-none bg-transparent pr-6 text-foreground text-sm focus:outline-none'
+                        style={{
+                          colorScheme: 'dark'
+                        }}
                       >
-                        {chatModels.map(model => (
-                          <option 
-                            key={model.id} 
-                            value={model.id}
-                            className="bg-background text-foreground"
-                          >
-                            {model.name}
-                          </option>
-                        ))}
+                        <option value="chat-model-small" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Small</option>
+                        <option value="chat-model-medium" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Medium</option>
+                        <option value="chat-model-large" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Large</option>
                       </select>
                       <svg 
                         width="12" 
