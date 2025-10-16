@@ -160,27 +160,82 @@ export default function WorkflowsPage() {
     return () => clearTimeout(timer);
   }, [historyIndex]);
   
+  // Get execution order for nodes
+  const getExecutionOrder = useCallback(() => {
+    const visited = new Set<string>();
+    const order: string[] = [];
+    
+    const visit = (nodeId: string) => {
+      if (visited.has(nodeId)) return;
+      visited.add(nodeId);
+      
+      // First visit all dependencies (nodes that this node depends on)
+      const incomingEdges = edges.filter(edge => edge.target === nodeId);
+      incomingEdges.forEach(edge => {
+        visit(edge.source);
+      });
+      
+      // Then add this node to execution order
+      order.push(nodeId);
+    };
+    
+    // Start with generate nodes
+    nodes.filter(node => node.type === 'generate').forEach(node => {
+      visit(node.id);
+    });
+    
+    return order.filter(nodeId => {
+      const node = nodes.find(n => n.id === nodeId);
+      return node?.type === 'generate';
+    });
+  }, [nodes, edges]);
+  
   // Get all available variables (global + AI Generator results)
   const getAllAvailableVariables = useCallback((currentNodeId?: string) => {
     const allVariables: Variable[] = [...variables];
     
-    // Add AI Generator results as variables, excluding current node
-    const generateNodes = nodes.filter(node => 
-      node.type === 'generate' && 
-      node.data.variableName &&
-      node.id !== currentNodeId  // Exclude current node
-    );
-    
-    generateNodes.forEach(node => {
-      allVariables.push({
-        id: `ai-node-${node.id}`,
-        name: node.data.variableName,
-        value: node.data.result || ''
+    if (currentNodeId) {
+      // Calculate execution order to validate which variables are available
+      const executionOrder = getExecutionOrder();
+      const currentNodeIndex = executionOrder.indexOf(currentNodeId);
+      
+      // Add AI Generator results as variables, but only from nodes that execute BEFORE the current node
+      const generateNodes = nodes.filter(node => 
+        node.type === 'generate' && 
+        node.data.variableName &&
+        node.id !== currentNodeId  // Exclude current node
+      );
+      
+      generateNodes.forEach(node => {
+        const nodeIndex = executionOrder.indexOf(node.id);
+        // Only add variables from nodes that execute before the current node
+        // (nodeIndex < currentNodeIndex means it executes before)
+        if (nodeIndex !== -1 && currentNodeIndex !== -1 && nodeIndex < currentNodeIndex) {
+          allVariables.push({
+            id: `ai-node-${node.id}`,
+            name: node.data.variableName,
+            value: node.data.result || ''
+          });
+        }
       });
-    });
+    } else {
+      // If no current node specified, include all generate nodes (for general validation)
+      const generateNodes = nodes.filter(node => 
+        node.type === 'generate' && 
+        node.data.variableName
+      );
+      
+      generateNodes.forEach(node => {
+        allVariables.push({
+          id: `ai-node-${node.id}`,
+          name: node.data.variableName,
+          value: node.data.result || ''
+        });
+      });
+    }
     
     return allVariables;
-  }, [variables, nodes]);
+  }, [variables, nodes, edges, getExecutionOrder]);
   
   // Save state to history
   const saveToHistory = useCallback((newNodes: any[], newEdges: any[]) => {
@@ -1336,35 +1391,6 @@ export default function WorkflowsPage() {
     });
     
     return processedText;
-  };
-  
-  const getExecutionOrder = () => {
-    const visited = new Set<string>();
-    const order: string[] = [];
-    
-    const visit = (nodeId: string) => {
-      if (visited.has(nodeId)) return;
-      visited.add(nodeId);
-      
-      // First visit all dependencies (nodes that this node depends on)
-      const incomingEdges = edges.filter(edge => edge.target === nodeId);
-      incomingEdges.forEach(edge => {
-        visit(edge.source);
-      });
-      
-      // Then add this node to execution order
-      order.push(nodeId);
-    };
-    
-    // Start with generate nodes
-    nodes.filter(node => node.type === 'generate').forEach(node => {
-      visit(node.id);
-    });
-    
-    return order.filter(nodeId => {
-      const node = nodes.find(n => n.id === nodeId);
-      return node?.type === 'generate';
-    });
   };
   
   const processGenerateNodeInOrder = async (generateNodeId: string) => {
