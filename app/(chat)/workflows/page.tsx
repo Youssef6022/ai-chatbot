@@ -262,6 +262,13 @@ export default function WorkflowsPage() {
     visible: boolean;
   }>({ message: '', type: 'info', visible: false });
 
+  // Variable modal state
+  const [variableModal, setVariableModal] = useState<{
+    isOpen: boolean;
+    mode: 'add' | 'edit';
+    variable?: { id: string; name: string; value: string };
+  }>({ isOpen: false, mode: 'add' });
+
   // Show notification helper
   const showNotification = useCallback((message: string, type: 'error' | 'warning' | 'success' | 'info' = 'info') => {
     setNotification({ message, type, visible: true });
@@ -1481,11 +1488,19 @@ export default function WorkflowsPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsConsoleOpen(!isConsoleOpen)}
+            onClick={() => {
+              setEditingNode({
+                id: 'variables-panel',
+                type: 'variables',
+                data: {},
+                position: { x: 0, y: 0 }
+              });
+              setIsEditPanelOpen(true); // Force open the panel
+            }}
             className='flex items-center gap-2 h-10 px-4 bg-background/60 backdrop-blur-sm border-2 border-border/60 hover:bg-background/80 hover:border-border/80 shadow-lg transition-all duration-200 rounded-full'
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
             </svg>
             Variables
           </Button>
@@ -1734,13 +1749,15 @@ export default function WorkflowsPage() {
                   ) : (
                     <h3 className="font-semibold text-base">
                       {editingNode.type === 'note' ? 'Note' : 
-                       editingNode.type === 'files' ? 'Files' : 'Node'}
+                       editingNode.type === 'files' ? 'Files' :
+                       editingNode.type === 'variables' ? 'Global Variables' : 'Node'}
                     </h3>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
                     {editingNode.type === 'generate' ? 'Call the model with your instructions and tools' :
                      editingNode.type === 'note' ? 'Add notes and documentation' :
-                     editingNode.type === 'files' ? 'Select and manage files' : 'Configure this node'}
+                     editingNode.type === 'files' ? 'Select and manage files' :
+                     editingNode.type === 'variables' ? 'Define variables to use in your prompts with {{variable_name}}' : 'Configure this node'}
                   </p>
                 </div>
               )}
@@ -2049,8 +2066,164 @@ export default function WorkflowsPage() {
                   </div>
                 </div>
               )}
+
+              {/* Variables Panel Content */}
+              {editingNode.type === 'variables' && (
+                <div className="space-y-3">
+                  {/* Add Button */}
+                  <Button 
+                    onClick={() => setVariableModal({ isOpen: true, mode: 'add' })}
+                    className="w-full h-8 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded-lg"
+                    size="sm"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-1.5">
+                      <line x1="12" y1="5" x2="12" y2="19"/>
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add Variable
+                  </Button>
+
+                  {/* Variables List */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <Label className='font-medium text-xs text-muted-foreground'>Variables</Label>
+                      <span className="text-xs text-muted-foreground/60">({variables.length})</span>
+                    </div>
+                    
+                    {variables.length === 0 ? (
+                      <div className="bg-muted/20 rounded-lg p-4 text-center">
+                        <div className="text-muted-foreground text-xs">No variables defined yet</div>
+                        <div className="text-muted-foreground/60 text-xs mt-1">Use {'{{variable_name}}'} in prompts</div>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        {variables.map((variable) => (
+                          <div key={variable.id} className="flex items-center justify-between bg-muted/20 rounded-lg p-2 hover:bg-muted/30 transition-colors group">
+                            <button
+                              onClick={() => setVariableModal({ 
+                                isOpen: true, 
+                                mode: 'edit', 
+                                variable: variable 
+                              })}
+                              className="flex-1 text-left text-xs font-medium text-foreground hover:text-orange-600 transition-colors"
+                            >
+                              {'{{' + variable.name + '}}'} 
+                            </button>
+                            <button
+                              onClick={() => {
+                                setVariables(variables.filter(v => v.id !== variable.id));
+                              }}
+                              className="opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-red-500 hover:bg-red-500/10 transition-all"
+                            >
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+      )}
+
+      {/* Variable Modal */}
+      {variableModal.isOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setVariableModal({ isOpen: false, mode: 'add' })}
+          />
+          
+          {/* Modal */}
+          <div className="relative bg-background/95 backdrop-blur-sm border-2 border-border/60 rounded-xl shadow-2xl p-6 w-96 max-w-[90vw] max-h-[80vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">
+                {variableModal.mode === 'add' ? 'Add Variable' : 'Edit Variable'}
+              </h3>
+              <button
+                onClick={() => setVariableModal({ isOpen: false, mode: 'add' })}
+                className="w-6 h-6 rounded-full hover:bg-muted/30 flex items-center justify-center transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Form */}
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground mb-2 block">Variable Name</Label>
+                <input
+                  id="modal-var-name"
+                  defaultValue={variableModal.variable?.name || ''}
+                  placeholder="Enter variable name (e.g., company_name)"
+                  className="w-full px-3 py-2.5 text-sm bg-background border-2 border-border/60 rounded-lg focus:outline-none focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/20 transition-all"
+                />
+                <div className="mt-1.5 text-xs text-muted-foreground">
+                  Use in prompts with: <span className="font-mono text-orange-600 bg-orange-50 dark:bg-orange-900/20 px-1 py-0.5 rounded">{'{{variable_name}}'}</span>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground mb-2 block">Variable Value</Label>
+                <textarea
+                  id="modal-var-value"
+                  defaultValue={variableModal.variable?.value || ''}
+                  placeholder="Enter the value for this variable..."
+                  rows={4}
+                  className="w-full px-3 py-2.5 text-sm bg-background border-2 border-border/60 rounded-lg focus:outline-none focus:border-orange-500/60 focus:ring-2 focus:ring-orange-500/20 transition-all resize-none"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setVariableModal({ isOpen: false, mode: 'add' })}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    const nameInput = document.getElementById('modal-var-name') as HTMLInputElement;
+                    const valueInput = document.getElementById('modal-var-value') as HTMLTextAreaElement;
+                    
+                    if (nameInput?.value.trim() && valueInput?.value.trim()) {
+                      if (variableModal.mode === 'add') {
+                        const newVariable = {
+                          id: `var-${Date.now()}`,
+                          name: nameInput.value.trim(),
+                          value: valueInput.value.trim(),
+                        };
+                        setVariables([...variables, newVariable]);
+                      } else if (variableModal.variable) {
+                        setVariables(variables.map(v => 
+                          v.id === variableModal.variable!.id 
+                            ? { ...v, name: nameInput.value.trim(), value: valueInput.value.trim() }
+                            : v
+                        ));
+                      }
+                      setVariableModal({ isOpen: false, mode: 'add' });
+                    }
+                  }}
+                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  {variableModal.mode === 'add' ? 'Add Variable' : 'Update Variable'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Floating Toolbar */}
