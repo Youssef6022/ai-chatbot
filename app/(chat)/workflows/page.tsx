@@ -2596,9 +2596,12 @@ export default function WorkflowsPage() {
       {variableModal.isOpen && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setVariableModal({ isOpen: false, mode: 'add' })}
+            onClick={() => {
+              setVariableModal({ isOpen: false, mode: 'add' });
+              setModalAskBeforeRun(false);
+            }}
           />
           
           {/* Modal */}
@@ -2609,7 +2612,10 @@ export default function WorkflowsPage() {
                 {variableModal.mode === 'add' ? 'Add Variable' : 'Edit Variable'}
               </h3>
               <button
-                onClick={() => setVariableModal({ isOpen: false, mode: 'add' })}
+                onClick={() => {
+                  setVariableModal({ isOpen: false, mode: 'add' });
+                  setModalAskBeforeRun(false);
+                }}
                 className='flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-muted/30'
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2667,7 +2673,10 @@ export default function WorkflowsPage() {
               <div className="flex gap-3 pt-2">
                 <Button
                   variant="outline"
-                  onClick={() => setVariableModal({ isOpen: false, mode: 'add' })}
+                  onClick={() => {
+                    setVariableModal({ isOpen: false, mode: 'add' });
+                    setModalAskBeforeRun(false);
+                  }}
                   className="flex-1"
                 >
                   Cancel
@@ -2699,6 +2708,7 @@ export default function WorkflowsPage() {
                         ));
                       }
                       setVariableModal({ isOpen: false, mode: 'add' });
+                      setModalAskBeforeRun(false);
                     }
                   }}
                   className='flex-1 bg-orange-600 text-white hover:bg-orange-700'
@@ -2930,11 +2940,12 @@ export default function WorkflowsPage() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setVariableModal({ 
-                                  isOpen: true, 
-                                  mode: 'edit', 
-                                  variable: variable 
+                                setVariableModal({
+                                  isOpen: true,
+                                  mode: 'edit',
+                                  variable: variable
                                 });
+                                setModalAskBeforeRun(variable.askBeforeRun || false);
                               }}
                               className='absolute top-1 right-1 h-5 w-5 flex items-center justify-center rounded bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-400 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-green-200 dark:hover:bg-green-700'
                             >
