@@ -13,7 +13,7 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 ### Core Development
 - **Development server**: `pnpm dev` (runs on port 9627 with Turbo)
 - **Build**: `pnpm build` (includes automatic database migration via `tsx lib/db/migrate`)
-- **Production server**: `pnpm start` (runs on port 3000 by default)
+- **Production server**: `pnpm start` (runs on port 9627)
 
 ### Code Quality
 - **Linting**: `pnpm run lint` (uses Biome linter)
@@ -53,6 +53,7 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Migrations**: `lib/db/migrations/` directory
 - **Core Tables**:
   - `User`: User accounts with email/password authentication
+  - `UserQuota`: Usage tracking and limits for AI model tiers (small/medium/large)
   - `Chat`: Chat sessions with visibility (public/private) and context tracking
   - `Message_v2`: Current message format with parts and attachments support
   - `Message` (deprecated): Legacy message format - migration guide available
@@ -60,6 +61,10 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
   - `Document`: Document management with different types (text, code, image, sheet)
   - `Suggestion`: Document editing suggestions with resolution tracking
   - `Stream`: Stream tracking for real-time chat functionality
+  - `user_files`: File metadata storage (name, MIME type, size, blob URL, tags, folder reference)
+  - `user_folders`: Folder structure for organizing user files (supports nested folders)
+  - `chat_file_attachments`: Many-to-many relationship between chats and attached files
+  - `Workflow`: Workflow persistence with JSON data, public/private visibility
 - **Database Queries**: Centralized in `lib/db/queries.ts`
 - **Migration Helper**: `lib/db/helpers/01-core-to-parts.ts` for message format migration
 
@@ -70,10 +75,15 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Guest Support**: Allows unauthenticated access with appropriate route protection
 - **Password Hashing**: Uses `bcrypt-ts` for secure password handling
 
-### File Storage
+### File Storage and Management
 - **Provider**: Vercel Blob Storage
 - **Configuration**: `BLOB_READ_WRITE_TOKEN` environment variable
-- **Supports**: File uploads in chat interface
+- **Features**:
+  - File uploads in chat interface with attachment support
+  - Folder-based organization system (nested folders supported)
+  - File metadata tracking (tags, MIME types, sizes)
+  - Chat-file associations via `chat_file_attachments` table
+  - JSZip for archive handling, PapaParse for CSV processing
 
 ### Application Structure
 - **Framework**: Next.js 15 with App Router and Turbopack for development
@@ -116,17 +126,28 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 
 ### Workflow Builder
 - Visual workflow designer using ReactFlow (`@xyflow/react`)
-- Two node types: Text Input (prompt) and Generate Text (AI generation)
-- Variable replacement system with global variables and connected node results
-- JSON export/import functionality for workflow persistence
-- Real-time execution with API integration at `/api/workflow/generate`
+- **Node Types**:
+  - Generate Node: AI text generation with model selection
+  - Files Node: File attachment and context management
+  - Note Node: Text annotations and documentation
+- **Variable System**:
+  - Global variables with pre-run configuration modal
+  - Variable highlighting in prompts with syntax: `{{variableName}}`
+  - Connected node results available as variables
+- **Features**:
+  - JSON export/import for workflow persistence
+  - Real-time execution with API integration at `/api/workflow/generate`
+  - Workflow console for execution logs and debugging
+  - Custom edge styling and connection validation
+  - Database persistence via `Workflow` table
 - Accessible via `/workflows` route
 
 ### Advanced AI Features
 - Multi-turn conversations with context preservation
 - Tool calling capabilities (weather via `get-weather.ts`, document management, suggestions)
 - Model migration system for backward compatibility (`migrateModelId` function)
-- AI entitlements system for usage control (`lib/ai/entitlements.ts`)
+- AI entitlements system for usage control with quota management (`lib/ai/entitlements.ts`)
+- Usage tracking via `UserQuota` table with limits per model tier (small: 5000, medium: 2000, large: 500)
 - Custom prompts and AI personas (`lib/ai/prompts.ts`)
 - Token usage tracking and analytics with `tokenlens` integration
 
@@ -181,9 +202,11 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 - Authentication supports both authenticated and guest users via Supabase
 - Redis is optional but recommended for production performance and caching
 - Message format migration: Legacy `Message` table is deprecated, use `Message_v2` for new code
+- Vote format migration: Legacy `Vote` table is deprecated, use `Vote_v2` for new code
 - React 19 RC is used (`react@19.0.0-rc-45804af1-20241021`)
 - File uploads support: JSZip for archive handling, PapaParse for CSV processing
 - Advanced dependencies: Data grids (`react-data-grid`), OpenTelemetry monitoring, token analytics (`tokenlens`)
+- Workflow system uses ReactFlow with custom node types and variable interpolation
 - For production deployments on Vercel, OIDC tokens are used automatically for AI Gateway authentication
 - When switching AI providers, modify `lib/ai/providers.ts` to configure model mappings
 

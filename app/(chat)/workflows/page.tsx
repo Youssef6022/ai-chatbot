@@ -22,7 +22,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { 
+import { Switch } from '@/components/ui/switch';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -36,6 +37,7 @@ import { CustomEdge } from '@/components/workflow/custom-edge';
 import type { Variable } from '@/components/workflow/variables-panel';
 import { WorkflowConsole } from '@/components/workflow/workflow-console';
 import { HighlightedTextarea } from '@/components/workflow/highlighted-textarea';
+import { PreRunVariablesModal } from '@/components/workflow/pre-run-variables-modal';
 import { GlobeIcon } from '@/components/icons';
 import { BrainIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -139,7 +141,16 @@ export default function WorkflowsPage() {
   
   // Toolbar state
   const [selectedTool, setSelectedTool] = useState<'select' | 'move'>('move');
-  
+
+  // Pre-run variables modal state
+  const [showPreRunModal, setShowPreRunModal] = useState(false);
+
+  // Flag to prevent double execution
+  const isExecutingRef = useRef(false);
+
+  // Set to track nodes currently being processed (prevents double execution)
+  const processingNodesRef = useRef(new Set<string>());
+
   // Undo/Redo system with refs to avoid circular dependencies
   const [history, setHistory] = useState<Array<{nodes: any[], edges: any[], timestamp: number}>>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -361,8 +372,11 @@ export default function WorkflowsPage() {
   const [variableModal, setVariableModal] = useState<{
     isOpen: boolean;
     mode: 'add' | 'edit';
-    variable?: { id: string; name: string; value: string };
+    variable?: Variable;
   }>({ isOpen: false, mode: 'add' });
+
+  // Local state for the modal's askBeforeRun toggle
+  const [modalAskBeforeRun, setModalAskBeforeRun] = useState(false);
 
   // Variable validation state
   const [invalidVariables, setInvalidVariables] = useState<{
@@ -1356,43 +1370,54 @@ export default function WorkflowsPage() {
     saveToHistory(newNodes, edges);
   }, [setNodes, nodes, edges, saveToHistory]);
 
-  const handleRun = useCallback(async () => {
+  // Function that actually executes the workflow
+  const executeWorkflow = useCallback(async () => {
+    // Prevent double execution
+    if (isExecutingRef.current) {
+      console.log('Workflow execution already in progress, skipping...');
+      return;
+    }
+
+    // Set execution flag
+    isExecutingRef.current = true;
+
     // Validate that all AI Generators have User Prompts
     const generateNodes = nodes.filter(node => node.type === 'generate');
-    const nodesWithoutUserPrompt = generateNodes.filter(node => 
+    const nodesWithoutUserPrompt = generateNodes.filter(node =>
       !node.data.userPrompt || node.data.userPrompt.trim() === ''
     );
-    
+
     if (nodesWithoutUserPrompt.length > 0) {
-      const nodeNames = nodesWithoutUserPrompt.map(node => 
+      const nodeNames = nodesWithoutUserPrompt.map(node =>
         node.data.variableName || node.data.label || 'Unnamed AI Agent'
       ).join(', ');
-      
+
       showNotification(`Cannot run workflow: The following AI Generator(s) are missing User Prompts: ${nodeNames}`, 'error');
+      isExecutingRef.current = false;
       return;
     }
 
     // Validate that all variables used in prompts exist
     const nodesWithInvalidVariables: Array<{node: any, invalidVars: string[]}> = [];
-    
+
     generateNodes.forEach(node => {
       const allInvalidVars: string[] = [];
-      
+
       // Check system prompt variables
       const systemValidation = invalidVariables[`${node.id}-system`];
       if (systemValidation?.hasInvalid) {
         allInvalidVars.push(...systemValidation.variables);
       }
-      
+
       // Check user prompt variables
       const userValidation = invalidVariables[`${node.id}-user`];
       if (userValidation?.hasInvalid) {
         allInvalidVars.push(...userValidation.variables);
       }
-      
+
       if (allInvalidVars.length > 0) {
-        nodesWithInvalidVariables.push({ 
-          node, 
+        nodesWithInvalidVariables.push({
+          node,
           invalidVars: [...new Set(allInvalidVars)] // Remove duplicates
         });
       }
@@ -1401,13 +1426,14 @@ export default function WorkflowsPage() {
     if (nodesWithInvalidVariables.length > 0) {
       const invalidVarsList = nodesWithInvalidVariables.map(({ node, invalidVars }) => {
         const nodeName = node.data.variableName || node.data.label || 'Unnamed AI Agent';
-        return `${nodeName}: {{${invalidVars.join('}}, {{')}}}`; 
+        return `${nodeName}: {{${invalidVars.join('}}, {{')}}}`;
       }).join('; ');
-      
+
       showNotification(`Cannot run workflow: The following variables are not defined: ${invalidVarsList}`, 'error');
+      isExecutingRef.current = false;
       return;
     }
-    
+
     setIsRunning(true);
     
     // Open console to show results
@@ -1450,8 +1476,39 @@ export default function WorkflowsPage() {
       console.error('Error running workflow:', error);
     } finally {
       setIsRunning(false);
+      // Reset execution flag
+      isExecutingRef.current = false;
+      // Clear processing nodes set
+      processingNodesRef.current.clear();
+      console.log('[executeWorkflow] Cleared processing nodes set');
     }
   }, [nodes, updateNodeData, setNodes, invalidVariables, showNotification]);
+
+  // Handler for Run button - checks if we need to show pre-run modal
+  const handleRun = useCallback(() => {
+    // Check if there are any variables that need to be asked before run
+    const variablesToAsk = variables.filter(v => v.askBeforeRun);
+
+    if (variablesToAsk.length > 0) {
+      // Show the pre-run modal
+      setShowPreRunModal(true);
+    } else {
+      // Execute directly
+      executeWorkflow();
+    }
+  }, [variables, executeWorkflow]);
+
+  // Handler for pre-run modal confirmation
+  const handlePreRunConfirm = useCallback((updatedVariables: Variable[]) => {
+    // Update variables with the new values from the modal
+    setVariables(updatedVariables);
+    // Close modal and execute workflow
+    setShowPreRunModal(false);
+    // Execute workflow after a small delay to ensure state is updated
+    setTimeout(() => {
+      executeWorkflow();
+    }, 100);
+  }, [executeWorkflow]);
   
   // Helper function to extract clean text from result (handles both string and JSON objects)
   const extractTextFromResult = (result: any): string => {
@@ -1514,43 +1571,72 @@ export default function WorkflowsPage() {
   };
   
   const processGenerateNodeInOrder = async (generateNodeId: string) => {
-    return new Promise<void>((resolve, reject) => {
-      setNodes(currentNodes => {
-        const generateNode = currentNodes.find(n => n.id === generateNodeId);
-        if (!generateNode) {
-          resolve();
-          return currentNodes;
-        }
-        
-        // Find connected input and files nodes
-        const inputEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'input');
-        const filesEdges = edges.filter(edge => edge.target === generateNodeId && edge.targetHandle === 'files');
-        
-        // Process in background
-        (async () => {
-          try {
-            await processGenerateNode(generateNode, currentNodes, inputEdge, filesEdges);
-            resolve();
-          } catch (error) {
-            reject(error);
+    // Check if already processing using ref (synchronous check)
+    if (processingNodesRef.current.has(generateNodeId)) {
+      console.log(`[processGenerateNodeInOrder] Node ${generateNodeId} is already being processed, skipping...`);
+      return;
+    }
+
+    // Mark as processing immediately
+    processingNodesRef.current.add(generateNodeId);
+    console.log(`[processGenerateNodeInOrder] Added node ${generateNodeId} to processing set`);
+
+    try {
+      // Get node data synchronously first
+      let generateNode: any = null;
+      let inputEdge: any = null;
+      let filesEdges: any[] = [];
+      let currentNodes: any[] = [];
+
+      await new Promise<void>((resolveSetNodes) => {
+        setNodes(nodes => {
+          currentNodes = nodes;
+          generateNode = nodes.find(n => n.id === generateNodeId);
+          if (generateNode) {
+            inputEdge = edges.find(edge => edge.target === generateNodeId && edge.targetHandle === 'input');
+            filesEdges = edges.filter(edge => edge.target === generateNodeId && edge.targetHandle === 'files');
           }
-        })();
-        
-        return currentNodes;
+          resolveSetNodes();
+          return nodes;
+        });
       });
-    });
+
+      if (!generateNode) {
+        console.log(`[processGenerateNodeInOrder] Node ${generateNodeId} not found`);
+        return;
+      }
+
+      // Process the node
+      await processGenerateNode(generateNode, currentNodes, inputEdge, filesEdges);
+
+    } catch (error) {
+      console.error(`[processGenerateNodeInOrder] Error processing node ${generateNodeId}:`, error);
+      throw error;
+    } finally {
+      // Remove from processing set
+      processingNodesRef.current.delete(generateNodeId);
+      console.log(`[processGenerateNodeInOrder] Removed node ${generateNodeId} from processing set`);
+    }
   };
   
   const processGenerateNode = async (generateNode: any, currentNodes: any[], inputEdge?: any, filesEdges?: any[]) => {
     try {
       const nodeName = generateNode.data.variableName || generateNode.data.label || 'AI Agent';
-      
+
+      console.log(`[processGenerateNode] Called for node ${generateNode.id} (${nodeName})`);
+
+      // Check if node is in processing set - CRITICAL CHECK
+      if (!processingNodesRef.current.has(generateNode.id)) {
+        console.log(`[processGenerateNode] Node ${generateNode.id} is NOT in processing set, aborting (likely duplicate call)`);
+        return;
+      }
+
       // Log start of processing
       addExecutionLog('info', `Starting generation...`, generateNode.id, nodeName);
-      
+
       // Set processing state (orange)
       updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true, executionState: 'processing' });
-      
+
       // Get the latest node state to ensure fresh data
       const latestNodes = await new Promise<any[]>(resolve => {
         setNodes(current => {
@@ -1558,20 +1644,20 @@ export default function WorkflowsPage() {
           return current;
         });
       });
-      
+
       // Get the current node data
       const currentGenerateNode = latestNodes.find(node => node.id === generateNode.id);
       let systemPrompt = currentGenerateNode?.data?.systemPrompt || '';
       let userPrompt = currentGenerateNode?.data?.userPrompt || '';
-      
+
       // Process variables in the prompts
       systemPrompt = processPromptText(systemPrompt, latestNodes);
       userPrompt = processPromptText(userPrompt, latestNodes);
-      
+
       // The input connection is only used for variable validation and replacement
       // Variables are already processed in processPromptText() above
       // No automatic injection of connected results
-      
+
       // Process files from connected Files nodes
       let allFiles: any[] = [];
       if (filesEdges && filesEdges.length > 0) {
@@ -1579,14 +1665,16 @@ export default function WorkflowsPage() {
           const filesNode = latestNodes.find(node => node.id === edge.source);
           if (filesNode && filesNode.type === 'files' && filesNode.data.selectedFiles) {
             // Ajouter tous les fichiers de ce nœud Files, en évitant les doublons
-            const newFiles = filesNode.data.selectedFiles.filter((newFile: any) => 
+            const newFiles = filesNode.data.selectedFiles.filter((newFile: any) =>
               !allFiles.some(existingFile => existingFile.url === newFile.url)
             );
             allFiles = [...allFiles, ...newFiles];
           }
         });
       }
-      
+
+      console.log(`[processGenerateNode] Making API call for node ${generateNode.id}`);
+
       // Call the AI API with system and user prompts and files
       const response = await fetch('/api/workflow/generate', {
         method: 'POST',
@@ -2428,8 +2516,11 @@ export default function WorkflowsPage() {
               {editingNode.type === 'variables' && (
                 <div className="space-y-3">
                   {/* Add Button */}
-                  <Button 
-                    onClick={() => setVariableModal({ isOpen: true, mode: 'add' })}
+                  <Button
+                    onClick={() => {
+                      setVariableModal({ isOpen: true, mode: 'add' });
+                      setModalAskBeforeRun(false);
+                    }}
                     className='h-8 w-full rounded-lg bg-orange-600 text-white text-xs hover:bg-orange-700'
                     size="sm"
                   >
@@ -2457,11 +2548,14 @@ export default function WorkflowsPage() {
                         {variables.map((variable) => (
                           <div key={variable.id} className='group flex items-center justify-between rounded-lg bg-muted/20 p-2 transition-colors hover:bg-muted/30'>
                             <button
-                              onClick={() => setVariableModal({ 
-                                isOpen: true, 
-                                mode: 'edit', 
-                                variable: variable 
-                              })}
+                              onClick={() => {
+                                setVariableModal({
+                                  isOpen: true,
+                                  mode: 'edit',
+                                  variable: variable
+                                });
+                                setModalAskBeforeRun(variable.askBeforeRun || false);
+                              }}
                               className='flex-1 text-left font-medium text-foreground text-xs transition-colors hover:text-orange-600'
                             >
                               {`{{${variable.name}}}`} 
@@ -2535,10 +2629,28 @@ export default function WorkflowsPage() {
                 <textarea
                   id="modal-var-value"
                   defaultValue={variableModal.variable?.value || ''}
-                  placeholder="Enter the value for this variable..."
+                  placeholder={modalAskBeforeRun ? "La valeur sera demandée au lancement..." : "Enter the value for this variable..."}
                   rows={4}
-                  className='w-full resize-none rounded-lg border-2 border-border/60 bg-background px-3 py-2.5 text-sm transition-all focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20'
+                  disabled={modalAskBeforeRun}
+                  className='w-full resize-none rounded-lg border-2 border-border/60 bg-background px-3 py-2.5 text-sm transition-all focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20 disabled:cursor-not-allowed disabled:opacity-50'
                 />
+                {modalAskBeforeRun && (
+                  <div className='mt-1.5 text-muted-foreground text-xs'>
+                    💡 La valeur sera demandée lors du lancement du workflow
+                  </div>
+                )}
+              </div>
+
+              {/* Ask before run toggle */}
+              <div className="flex items-center gap-3 rounded-lg border-2 border-border/60 bg-muted/20 p-3">
+                <Switch
+                  id="modal-var-ask-before-run"
+                  checked={modalAskBeforeRun}
+                  onCheckedChange={setModalAskBeforeRun}
+                />
+                <Label htmlFor="modal-var-ask-before-run" className="cursor-pointer text-sm">
+                  Demander avant le lancement
+                </Label>
               </div>
 
               {/* Actions */}
@@ -2554,19 +2666,25 @@ export default function WorkflowsPage() {
                   onClick={() => {
                     const nameInput = document.getElementById('modal-var-name') as HTMLInputElement;
                     const valueInput = document.getElementById('modal-var-value') as HTMLTextAreaElement;
-                    
-                    if (nameInput?.value.trim() && valueInput?.value.trim()) {
+
+                    if (nameInput?.value.trim() && (valueInput?.value.trim() || modalAskBeforeRun)) {
                       if (variableModal.mode === 'add') {
                         const newVariable = {
                           id: `var-${Date.now()}`,
                           name: nameInput.value.trim(),
-                          value: valueInput.value.trim(),
+                          value: modalAskBeforeRun ? '' : valueInput.value.trim(),
+                          askBeforeRun: modalAskBeforeRun,
                         };
                         setVariables([...variables, newVariable]);
                       } else if (variableModal.variable) {
-                        setVariables(variables.map(v => 
-                          v.id === variableModal.variable?.id 
-                            ? { ...v, name: nameInput.value.trim(), value: valueInput.value.trim() }
+                        setVariables(variables.map(v =>
+                          v.id === variableModal.variable?.id
+                            ? {
+                                ...v,
+                                name: nameInput.value.trim(),
+                                value: modalAskBeforeRun ? '' : valueInput.value.trim(),
+                                askBeforeRun: modalAskBeforeRun
+                              }
                             : v
                         ));
                       }
@@ -2901,13 +3019,21 @@ export default function WorkflowsPage() {
             )}
             
             {/* Close on click outside or ESC */}
-            <div 
-              className='-z-10 fixed inset-0' 
+            <div
+              className='-z-10 fixed inset-0'
               onClick={() => setExpandedField(null)}
             />
           </div>
         </div>
       )}
+
+      {/* Pre-run Variables Modal */}
+      <PreRunVariablesModal
+        isOpen={showPreRunModal}
+        onClose={() => setShowPreRunModal(false)}
+        variables={variables}
+        onConfirm={handlePreRunConfirm}
+      />
       </div>
     </div>
   );

@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 import { PlusIcon, TrashIcon } from '@/components/icons';
 
 export interface Variable {
   id: string;
   name: string;
   value: string;
+  askBeforeRun?: boolean;
 }
 
 interface VariablesPanelProps {
@@ -22,6 +24,7 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
   const [isOpen, setIsOpen] = useState(false);
   const [newVarName, setNewVarName] = useState('');
   const [newVarValue, setNewVarValue] = useState('');
+  const [newVarAskBeforeRun, setNewVarAskBeforeRun] = useState(false);
 
   const addVariable = () => {
     if (newVarName.trim() && newVarValue.trim()) {
@@ -29,14 +32,16 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
         id: `var-${Date.now()}`,
         name: newVarName.trim(),
         value: newVarValue.trim(),
+        askBeforeRun: newVarAskBeforeRun,
       };
       onVariablesChange([...variables, newVariable]);
       setNewVarName('');
       setNewVarValue('');
+      setNewVarAskBeforeRun(false);
     }
   };
 
-  const updateVariable = (id: string, field: 'name' | 'value', newValue: string) => {
+  const updateVariable = (id: string, field: 'name' | 'value' | 'askBeforeRun', newValue: string | boolean) => {
     onVariablesChange(
       variables.map(variable =>
         variable.id === id
@@ -98,8 +103,18 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
                   />
                 </div>
               </div>
-              <Button 
-                onClick={addVariable} 
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="new-var-ask-before-run"
+                  checked={newVarAskBeforeRun}
+                  onCheckedChange={setNewVarAskBeforeRun}
+                />
+                <Label htmlFor="new-var-ask-before-run" className="text-xs cursor-pointer">
+                  Demander avant le lancement
+                </Label>
+              </div>
+              <Button
+                onClick={addVariable}
                 disabled={!newVarName.trim() || !newVarValue.trim()}
                 className="w-full"
                 size="sm"
@@ -123,36 +138,48 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
               variables.map((variable) => (
                 <Card key={variable.id}>
                   <CardContent className="p-3">
-                    <div className="flex items-center gap-3">
-                      <div className='grid flex-1 grid-cols-2 gap-3'>
-                        <div>
-                          <Label className="text-xs">Name</Label>
-                          <Input
-                            value={variable.name}
-                            onChange={(e) => updateVariable(variable.id, 'name', e.target.value)}
-                            className="h-8"
-                          />
-                          <div className='mt-1 text-muted-foreground text-xs'>
-                            Use: {`{${variable.name}}`}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className='grid flex-1 grid-cols-2 gap-3'>
+                          <div>
+                            <Label className="text-xs">Name</Label>
+                            <Input
+                              value={variable.name}
+                              onChange={(e) => updateVariable(variable.id, 'name', e.target.value)}
+                              className="h-8"
+                            />
+                            <div className='mt-1 text-muted-foreground text-xs'>
+                              Use: {`{${variable.name}}`}
+                            </div>
+                          </div>
+                          <div>
+                            <Label className="text-xs">Value</Label>
+                            <Input
+                              value={variable.value}
+                              onChange={(e) => updateVariable(variable.id, 'value', e.target.value)}
+                              className="h-8"
+                            />
                           </div>
                         </div>
-                        <div>
-                          <Label className="text-xs">Value</Label>
-                          <Input
-                            value={variable.value}
-                            onChange={(e) => updateVariable(variable.id, 'value', e.target.value)}
-                            className="h-8"
-                          />
-                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deleteVariable(variable.id)}
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                        >
+                          <TrashIcon size={14} />
+                        </Button>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => deleteVariable(variable.id)}
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                      >
-                        <TrashIcon size={14} />
-                      </Button>
+                      <div className="flex items-center gap-2 border-t pt-2">
+                        <Switch
+                          id={`ask-before-run-${variable.id}`}
+                          checked={variable.askBeforeRun || false}
+                          onCheckedChange={(checked) => updateVariable(variable.id, 'askBeforeRun', checked)}
+                        />
+                        <Label htmlFor={`ask-before-run-${variable.id}`} className="text-xs cursor-pointer">
+                          Demander avant le lancement
+                        </Label>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
