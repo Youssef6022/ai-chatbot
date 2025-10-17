@@ -151,6 +151,9 @@ export default function WorkflowsPage() {
   // Set to track nodes currently being processed (prevents double execution)
   const processingNodesRef = useRef(new Set<string>());
 
+  // Ref to store current variables (updated before workflow execution)
+  const currentVariablesRef = useRef<Variable[]>(variables);
+
   // Undo/Redo system with refs to avoid circular dependencies
   const [history, setHistory] = useState<Array<{nodes: any[], edges: any[], timestamp: number}>>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -1371,7 +1374,7 @@ export default function WorkflowsPage() {
   }, [setNodes, nodes, edges, saveToHistory]);
 
   // Function that actually executes the workflow
-  const executeWorkflow = useCallback(async () => {
+  const executeWorkflow = useCallback(async (variablesToUse?: Variable[]) => {
     // Prevent double execution
     if (isExecutingRef.current) {
       console.log('Workflow execution already in progress, skipping...');
@@ -1380,6 +1383,13 @@ export default function WorkflowsPage() {
 
     // Set execution flag
     isExecutingRef.current = true;
+
+    // Use provided variables or fall back to state variables
+    const currentVariables = variablesToUse || variables;
+
+    // Update the ref so processPromptText uses the latest values
+    currentVariablesRef.current = currentVariables;
+    console.log('[executeWorkflow] Using variables:', currentVariables);
 
     // Validate that all AI Generators have User Prompts
     const generateNodes = nodes.filter(node => node.type === 'generate');
@@ -1502,12 +1512,10 @@ export default function WorkflowsPage() {
   const handlePreRunConfirm = useCallback((updatedVariables: Variable[]) => {
     // Update variables with the new values from the modal
     setVariables(updatedVariables);
-    // Close modal and execute workflow
+    // Close modal
     setShowPreRunModal(false);
-    // Execute workflow after a small delay to ensure state is updated
-    setTimeout(() => {
-      executeWorkflow();
-    }, 100);
+    // Execute workflow immediately with the updated variables (no need to wait)
+    executeWorkflow(updatedVariables);
   }, [executeWorkflow]);
   
   // Helper function to extract clean text from result (handles both string and JSON objects)
@@ -1545,9 +1553,11 @@ export default function WorkflowsPage() {
   // Helper function to process prompt text with variables
   const processPromptText = (text: string, latestNodes: any[]) => {
     let processedText = text;
-    
-    // Replace global variables (double braces)
-    variables.forEach(variable => {
+
+    // Replace global variables (double braces) - use ref to get latest values
+    const currentVars = currentVariablesRef.current;
+    console.log('[processPromptText] Using variables from ref:', currentVars);
+    currentVars.forEach(variable => {
       const placeholder = `{{${variable.name}}}`;
       processedText = processedText.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), variable.value);
     });
