@@ -102,13 +102,13 @@ export function AppSidebar() {
                     }}
                     title={isClient && state === 'collapsed' ? "New Chat" : undefined}
                   >
-                    <div 
-                      className='mx-auto flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-blue-primary text-white'
-                      style={{ 
-                        backgroundColor: 'var(--blue-primary)', 
-                        color: 'white',
-                        marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
-                        marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
+                    <div
+                      className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-blue-primary text-white ${
+                        isClient && state === 'collapsed' ? 'mx-auto' : 'mr-0.5'
+                      }`}
+                      style={{
+                        backgroundColor: 'var(--blue-primary)',
+                        color: 'white'
                       }}
                     >
                       <PlusIcon size={12} />
@@ -128,12 +128,10 @@ export function AppSidebar() {
                     className='flex min-h-[32px] items-center rounded-md px-2 transition-colors hover:bg-accent'
                     title={isClient && state === 'collapsed' ? "Workflows" : undefined}
                   >
-                    <div 
-                      className='flex h-5 w-5 flex-shrink-0 items-center justify-center'
-                      style={{
-                        marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
-                        marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
-                      }}
+                    <div
+                      className={`flex h-5 w-5 flex-shrink-0 items-center justify-center ${
+                        isClient && state === 'collapsed' ? 'mx-auto' : 'mr-0.5'
+                      }`}
                     >
                       <WorkflowIcon size={14} />
                     </div>
@@ -152,12 +150,10 @@ export function AppSidebar() {
                     className='flex min-h-[32px] items-center rounded-md px-2 transition-colors hover:bg-accent'
                     title={isClient && state === 'collapsed' ? "Library" : undefined}
                   >
-                    <div 
-                      className='flex h-5 w-5 flex-shrink-0 items-center justify-center'
-                      style={{
-                        marginLeft: isClient && state === 'collapsed' ? 'auto' : '0',
-                        marginRight: isClient && state === 'collapsed' ? 'auto' : '8px'
-                      }}
+                    <div
+                      className={`flex h-5 w-5 flex-shrink-0 items-center justify-center ${
+                        isClient && state === 'collapsed' ? 'mx-auto' : 'mr-0.5'
+                      }`}
                     >
                       <FileIcon size={14} />
                     </div>
@@ -173,7 +169,7 @@ export function AppSidebar() {
         
         {/* Section défilante - Historique */}
         {(!isClient || state !== 'collapsed') && (
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-border/80">
             <SidebarHistory user={user} isCollapsed={isClient && state === 'collapsed'} />
           </div>
         )}
