@@ -4,6 +4,7 @@ import { ChevronUp } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { useSupabase } from '@/components/supabase-provider';
+import { sha256 } from 'js-sha256';
 
 import {
   DropdownMenu,
@@ -20,6 +21,19 @@ import {
 import { useRouter } from 'next/navigation';
 import { toast } from './toast';
 import { LoaderIcon } from './icons';
+
+function getGravatarURL(email: string) {
+  // Trim leading and trailing whitespace from
+  // an email address and force all characters
+  // to lower case
+  const address = String(email).trim().toLowerCase();
+
+  // Create a SHA256 hash of the final string
+  const hash = sha256(address);
+
+  // Grab the actual image URL
+  return `https://gravatar.com/avatar/${hash}`;
+}
 
 export function SidebarUserNav({ isCollapsed }: { isCollapsed?: boolean }) {
   const router = useRouter();
@@ -46,6 +60,11 @@ export function SidebarUserNav({ isCollapsed }: { isCollapsed?: boolean }) {
   // Déterminer l'affichage utilisateur
   const displayEmail = currentUser?.email || 'Guest';
   const isGuest = !currentUser;
+
+  // Get Gravatar URL if user is authenticated
+  const avatarUrl = !isGuest && currentUser?.email
+    ? getGravatarURL(currentUser.email)
+    : `https://avatar.vercel.sh/${displayEmail}`;
 
   return (
     <SidebarMenu>
@@ -77,7 +96,7 @@ export function SidebarUserNav({ isCollapsed }: { isCollapsed?: boolean }) {
                 title={isCollapsed ? (isGuest ? 'Guest' : displayEmail) : undefined}
               >
                 <Image
-                  src={`https://avatar.vercel.sh/${displayEmail}`}
+                  src={avatarUrl}
                   alt={displayEmail}
                   width={24}
                   height={24}

@@ -48,22 +48,21 @@ export function AppSidebar() {
     <Sidebar className='transition-all duration-300 ease-in-out group-data-[side=left]:border-r-0' collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
-          <div className='flex min-h-[48px] items-center px-2'>
+          <div className='flex min-h-[48px] items-center px-2 gap-2'>
             <button
               onClick={toggleSidebar}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
-              className='flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground'
+              className='flex h-5 w-5 flex-shrink-0 items-center justify-center transition-colors hover:opacity-70'
               title={isClient && state === 'collapsed' ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {isClient && state === 'collapsed' ? (
-                <PanelLeft size={16} />
+                <PanelLeft size={14} />
               ) : (
-                // Sidebar ouverte : PanelLeft par défaut, ChevronLeft au hover
                 isHovered ? (
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={14} />
                 ) : (
-                  <PanelLeft size={16} />
+                  <PanelLeft size={14} />
                 )
               )}
             </button>
@@ -73,9 +72,9 @@ export function AppSidebar() {
                 onClick={() => {
                   setOpenMobile(false);
                 }}
-                className='ml-3 flex-1'
+                className='flex-1'
               >
-                <span className='cursor-pointer rounded-md px-2 py-1 font-semibold text-lg transition-colors hover:bg-muted'>
+                <span className='cursor-pointer rounded-md px-2 py-1 font-semibold text-lg transition-colors hover:bg-muted' style={{ fontFamily: 'WixMadeforDisplay, sans-serif' }}>
                   Magistral
                 </span>
               </Link>
@@ -97,7 +96,7 @@ export function AppSidebar() {
                       router.refresh();
                     }}
                     className='flex min-h-[32px] items-center rounded-md px-2 text-blue-primary transition-colors hover:bg-blue-primary/10'
-                    style={{ 
+                    style={{
                       color: 'var(--blue-primary)'
                     }}
                     title={isClient && state === 'collapsed' ? "New Chat" : undefined}
@@ -119,7 +118,7 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link
@@ -141,7 +140,7 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link

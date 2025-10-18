@@ -28,6 +28,9 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
 });
 
+// No need to import WixMadeforDisplay as a font variable
+// We'll load it via CSS @import in globals.css
+
 const LIGHT_THEME_COLOR = 'hsl(0 0% 100%)';
 const DARK_THEME_COLOR = 'hsl(240deg 10% 3.92%)';
 const THEME_COLOR_SCRIPT = `\

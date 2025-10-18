@@ -1,3 +1,6 @@
+/* Import Google Font - WixMadeforDisplay */
+@import url('https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400;500;600;700&display=swap');
+
 /* set base path to root directory to include utility classes from app, components, pages, etc. */
 @import "tailwindcss" source("..");
 

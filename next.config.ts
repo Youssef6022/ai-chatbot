@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
       {
         hostname: '*.public.blob.vercel-storage.com',
       },
+      {
+        hostname: 'gravatar.com',
+      },
     ],
   },
   webpack: (config, { isServer }) => {
