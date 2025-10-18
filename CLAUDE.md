@@ -36,10 +36,15 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 ## Architecture Overview
 
 ### AI Integration
-- **Primary Framework**: Vercel AI SDK with multiple provider support
-- **Default Provider**: Google Gemini direct integration via `@ai-sdk/google`
+- **Dual SDK Support**: Application supports two AI integration paths:
+  - **Vercel AI SDK** (default): Google Gemini via `@ai-sdk/google` with streaming support
+  - **Google GenAI SDK**: Native `@google/genai` client enabling Google Maps and Search features
+- **SDK Selection**: Controlled via `NEXT_PUBLIC_USE_GENAI_SDK` environment variable in `lib/config.ts`
+- **Chat Routes**:
+  - `/api/chat/` - Vercel AI SDK streaming endpoint
+  - `/api/chat-genai/` - Google GenAI SDK endpoint with Maps/Search support
 - **Models Configuration**: `lib/ai/providers.ts` defines model mappings with environment-based switching
-- **Available Models**: 
+- **Available Models**:
   - `chat-model-small`: `gemini-2.5-flash-lite`
   - `chat-model-medium`: `gemini-2.5-flash`
   - `chat-model-large`: `gemini-2.5-pro`
@@ -106,6 +111,7 @@ BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token
 POSTGRES_URL=**** # PostgreSQL database connection string (supports Neon/Vercel Postgres)
 REDIS_URL=**** # Optional Redis for caching/performance
 GOOGLE_GENERATIVE_AI_API_KEY=**** # Google AI API key for Gemini models
+NEXT_PUBLIC_USE_GENAI_SDK=false # Set to 'true' to use @google/genai (enables Maps/Search), 'false' for Vercel AI SDK
 PLAYWRIGHT=True # Set to enable test environment with mock AI models
 ```
 
@@ -124,6 +130,24 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 - Document creation and editing tools
 - Integration with AI for document generation
 
+### File Library System
+- **Library Interface**: Dedicated file management UI at `/library` route
+- **Folder Organization**: Hierarchical folder structure with nested folders support
+- **File Operations**:
+  - Upload files with drag-and-drop support
+  - Create/rename/delete folders
+  - Move files between folders
+  - Tag-based file organization
+  - File metadata tracking (MIME type, size, upload date)
+- **Library API Routes**:
+  - `/api/library/upload` - File upload endpoint
+  - `/api/library/files` - List and manage files
+  - `/api/library/folders` - Folder CRUD operations
+  - `/api/library/folders/[id]/files` - Files within specific folder
+  - `/api/library/move` - Move files between folders
+  - `/api/library/delete` - Delete files and folders
+- **Integration**: Files can be attached to chats via `chat_file_attachments` table
+
 ### Workflow Builder
 - Visual workflow designer using ReactFlow (`@xyflow/react`)
 - **Node Types**:
@@ -139,8 +163,12 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
   - Real-time execution with API integration at `/api/workflow/generate`
   - Workflow console for execution logs and debugging
   - Custom edge styling and connection validation
-  - Database persistence via `Workflow` table
-- Accessible via `/workflows` route
+  - Database persistence via `Workflow` table with public/private visibility
+- **Routes**:
+  - `/workflows` - Workflow builder and editor interface
+  - `/workflows-library` - Browse and manage saved workflows
+  - `/api/workflows` - List all workflows
+  - `/api/workflows/[id]` - Get/update/delete specific workflow
 
 ### Advanced AI Features
 - Multi-turn conversations with context preservation
@@ -175,11 +203,18 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 ## Key Architectural Patterns
 
 ### API Route Structure
-- **Chat API**: `/api/chat/` with streaming support and individual chat endpoints
-- **File Upload**: `/api/files/upload/` for Vercel Blob storage integration
+- **Chat API**:
+  - `/api/chat/` - Vercel AI SDK streaming endpoint with individual chat management
+  - `/api/chat-genai/` - Google GenAI SDK endpoint (when `NEXT_PUBLIC_USE_GENAI_SDK=true`)
+- **File Management**:
+  - `/api/files/upload/` - Vercel Blob storage integration for chat attachments
+  - `/api/library/*` - Complete file library system (upload, folders, move, delete)
 - **Documents**: `/api/document/` for document CRUD operations
 - **History**: `/api/history/` for chat history management
-- **Workflow**: `/api/workflow/generate` for workflow execution
+- **Workflows**:
+  - `/api/workflow/generate` - Workflow execution endpoint
+  - `/api/workflows` - Workflow persistence and listing
+  - `/api/workflows/[id]` - Individual workflow operations
 - **Voting**: `/api/vote/` for message voting functionality
 - **Suggestions**: `/api/suggestions/` for document editing suggestions
 
@@ -210,22 +245,37 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 - For production deployments on Vercel, OIDC tokens are used automatically for AI Gateway authentication
 - When switching AI providers, modify `lib/ai/providers.ts` to configure model mappings
 
+### Switching Between AI SDKs
+The application supports two AI integration approaches:
+- **Vercel AI SDK** (default, `NEXT_PUBLIC_USE_GENAI_SDK=false`): Best for standard chat with streaming and multi-provider support
+- **Google GenAI SDK** (`NEXT_PUBLIC_USE_GENAI_SDK=true`): Required for Google Maps integration and Google Search features
+- Configuration is centralized in `lib/config.ts`
+- Chat routes automatically switch based on configuration (`/api/chat/` vs `/api/chat-genai/`)
+- Artifacts and some tools may not be fully supported with GenAI SDK (see deprecation warnings in `lib/ai/providers.ts`)
+
 ## Application Routes Structure
 
 ### Public Routes
 - `/` - Main chat interface (supports guest access)
+- `/chat/[id]` - Individual chat view
 - `/login` - User authentication
-- `/register` - User registration  
+- `/register` - User registration
 - `/auth/callback` - Authentication callback
-- `/workflows` - Visual workflow builder interface
+- `/library` - File library management interface
+- `/workflows` - Visual workflow builder and editor
+- `/workflows-library` - Browse and manage saved workflows
 - `/share/[id]` - Shared chat views
 
 ### API Routes
 - `/api/auth/signout` - Sign out endpoint
-- `/api/chat/` - Chat streaming and management
-- `/api/files/upload/` - File upload to Vercel Blob
+- `/api/chat/` - Vercel AI SDK chat streaming and management
+- `/api/chat-genai/` - Google GenAI SDK chat endpoint (Maps/Search support)
+- `/api/files/upload/` - File upload to Vercel Blob for chat attachments
+- `/api/library/*` - File library system (upload, folders, move, delete)
 - `/api/document/` - Document CRUD operations
 - `/api/workflow/generate` - Workflow execution
+- `/api/workflows` - Workflow persistence and listing
 - `/api/vote/` - Message voting
 - `/api/suggestions/` - Document editing suggestions
+- `/api/history/` - Chat history management
 - `/ping` - Health check for Playwright tests

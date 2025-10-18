@@ -38,8 +38,6 @@ import type { Variable } from '@/components/workflow/variables-panel';
 import { WorkflowConsole } from '@/components/workflow/workflow-console';
 import { HighlightedTextarea } from '@/components/workflow/highlighted-textarea';
 import { PreRunVariablesModal } from '@/components/workflow/pre-run-variables-modal';
-import { GlobeIcon } from '@/components/icons';
-import { BrainIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { chatModels } from '@/lib/ai/models';
 
@@ -73,6 +71,47 @@ const SettingsIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+// Google Search Icon (same as in chat)
+const GoogleSearchIcon = ({ size = 14, enabled = false }: { size?: number; enabled?: boolean }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="-3 0 262 262"
+    width={size}
+    height={size}
+    style={{
+      filter: enabled ? 'none' : 'grayscale(100%)',
+      opacity: enabled ? 1 : 0.5,
+      transition: 'filter 0.2s ease, opacity 0.2s ease'
+    }}
+  >
+    <path fill="#4285f4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"/>
+    <path fill="#34a853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"/>
+    <path fill="#fbbc05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z"/>
+    <path fill="#eb4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"/>
+  </svg>
+);
+
+// Google Maps Icon (same as in chat)
+const GoogleMapsIcon = ({ size = 14, enabled = false }: { size?: number; enabled?: boolean }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="-55.5 0 367 367"
+    width={size}
+    height={size}
+    style={{
+      filter: enabled ? 'none' : 'grayscale(100%)',
+      opacity: enabled ? 1 : 0.5,
+      transition: 'filter 0.2s ease, opacity 0.2s ease'
+    }}
+  >
+    <path fill="#34a853" d="M70.585 271.865a371 371 0 0 1 28.911 42.642c7.374 13.982 10.448 23.463 15.837 40.31c3.305 9.308 6.292 12.086 12.714 12.086c6.998 0 10.173-4.726 12.626-12.035c5.094-15.91 9.091-28.052 15.397-39.525c12.374-22.15 27.75-41.833 42.858-60.75c4.09-5.354 30.534-36.545 42.439-61.156c0 0 14.632-27.035 14.632-64.792c0-35.318-14.43-59.813-14.43-59.813l-41.545 11.126l-25.23 66.451l-6.242 9.163l-1.248 1.66l-1.66 2.078l-2.914 3.319l-4.164 4.163l-22.467 18.304l-56.17 32.432z"/>
+    <path fill="#fbbc04" d="M12.612 188.892c13.709 31.313 40.145 58.839 58.031 82.995l95.001-112.534s-13.384 17.504-37.662 17.504c-27.043 0-48.89-21.595-48.89-48.825c0-18.673 11.234-31.501 11.234-31.501l-64.489 17.28z"/>
+    <path fill="#4285f4" d="M166.705 5.787c31.552 10.173 58.558 31.53 74.893 63.023l-75.925 90.478s11.234-13.06 11.234-31.617c0-27.864-23.463-48.68-48.81-48.68c-23.969 0-37.735 17.475-37.735 17.475v-57z"/>
+    <path fill="#1a73e8" d="M30.015 45.765C48.86 23.218 82.02 0 127.736 0c22.18 0 38.89 5.823 38.89 5.823L90.29 96.516H36.205z"/>
+    <path fill="#ea4335" d="M12.612 188.892S0 164.194 0 128.414c0-33.817 13.146-63.377 30.015-82.649l60.318 50.759z"/>
+  </svg>
+);
+
 const nodeTypes = {
   generate: GenerateNode,
   files: FilesNode,
@@ -96,7 +135,7 @@ const initialNodes = [
       systemPrompt: '',
       userPrompt: '',
       isSearchGroundingEnabled: false,
-      isReasoningEnabled: false,
+      isMapsGroundingEnabled: false,
       onModelChange: () => {},
       onVariableNameChange: () => {},
       onSystemPromptChange: () => {},
@@ -814,7 +853,7 @@ export default function WorkflowsPage() {
           result: node.data.result || '',
           selectedFiles: node.data.selectedFiles || [],
           isSearchGroundingEnabled: node.data.isSearchGroundingEnabled || false,
-          isReasoningEnabled: node.data.isReasoningEnabled || false,
+          isMapsGroundingEnabled: node.data.isMapsGroundingEnabled || false,
         }
       })),
       edges: edges.map(edge => ({
@@ -1326,7 +1365,7 @@ export default function WorkflowsPage() {
         systemPrompt: '',
         userPrompt: '',
         isSearchGroundingEnabled: false,
-        isReasoningEnabled: false,
+        isMapsGroundingEnabled: false,
         onModelChange: () => {},
         onVariableNameChange: () => {},
         onSystemPromptChange: () => {},
@@ -1697,7 +1736,7 @@ export default function WorkflowsPage() {
           model: generateNode.data.selectedModel,
           files: allFiles.length > 0 ? allFiles : undefined,
           isSearchGroundingEnabled: generateNode.data.isSearchGroundingEnabled || false,
-          isReasoningEnabled: generateNode.data.isReasoningEnabled || false,
+          isMapsGroundingEnabled: generateNode.data.isMapsGroundingEnabled || false,
         }),
       });
       
@@ -1891,7 +1930,7 @@ export default function WorkflowsPage() {
           ? (enabled: boolean) => updateNodeData(node.id, { isSearchGroundingEnabled: enabled })
           : undefined,
         onReasoningChange: node.type === 'generate'
-          ? (enabled: boolean) => updateNodeData(node.id, { isReasoningEnabled: enabled })
+          ? (enabled: boolean) => updateNodeData(node.id, { isMapsGroundingEnabled: enabled })
           : undefined,
         onFilesChange: node.type === 'files'
           ? (files: any[]) => updateNodeData(node.id, { selectedFiles: files })
@@ -2318,21 +2357,25 @@ export default function WorkflowsPage() {
                   {/* Search Grounding Toggle */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <GlobeIcon size={14} />
-                      <span className='font-medium text-muted-foreground text-xs'>Search Grounding</span>
+                      <GoogleSearchIcon size={14} enabled={editingNode.data.isSearchGroundingEnabled} />
+                      <span className='font-medium text-muted-foreground text-xs'>Google Search</span>
                     </div>
                     <button
                         onClick={() => {
                           const newValue = !editingNode.data.isSearchGroundingEnabled;
-                          updateNodeData(editingNode.id, { isSearchGroundingEnabled: newValue });
+                          // Si on active Google Search, on désactive Google Maps
+                          const updates = newValue
+                            ? { isSearchGroundingEnabled: true, isMapsGroundingEnabled: false }
+                            : { isSearchGroundingEnabled: false };
+                          updateNodeData(editingNode.id, updates);
                           setEditingNode({
                             ...editingNode,
-                            data: { ...editingNode.data, isSearchGroundingEnabled: newValue }
+                            data: { ...editingNode.data, ...updates }
                           });
                         }}
                         className={`relative h-5 w-10 rounded-full border transition-colors ${
-                          editingNode.data.isSearchGroundingEnabled 
-                            ? 'border-blue-500 bg-blue-500' 
+                          editingNode.data.isSearchGroundingEnabled
+                            ? 'border-blue-500 bg-blue-500'
                             : 'border-border bg-muted'
                         }`}
                       >
@@ -2342,29 +2385,33 @@ export default function WorkflowsPage() {
                       </button>
                     </div>
 
-                    {/* Reasoning Toggle */}
+                    {/* Google Maps Toggle */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <BrainIcon size={14} />
-                        <span className='font-medium text-muted-foreground text-xs'>Thinking Mode</span>
+                        <GoogleMapsIcon size={14} enabled={editingNode.data.isMapsGroundingEnabled} />
+                        <span className='font-medium text-muted-foreground text-xs'>Google Maps</span>
                       </div>
                       <button
                         onClick={() => {
-                          const newValue = !editingNode.data.isReasoningEnabled;
-                          updateNodeData(editingNode.id, { isReasoningEnabled: newValue });
+                          const newValue = !editingNode.data.isMapsGroundingEnabled;
+                          // Si on active Google Maps, on désactive Google Search
+                          const updates = newValue
+                            ? { isMapsGroundingEnabled: true, isSearchGroundingEnabled: false }
+                            : { isMapsGroundingEnabled: false };
+                          updateNodeData(editingNode.id, updates);
                           setEditingNode({
                             ...editingNode,
-                            data: { ...editingNode.data, isReasoningEnabled: newValue }
+                            data: { ...editingNode.data, ...updates }
                           });
                         }}
                         className={`relative h-5 w-10 rounded-full border transition-colors ${
-                          editingNode.data.isReasoningEnabled 
-                            ? 'border-purple-500 bg-purple-500' 
+                          editingNode.data.isMapsGroundingEnabled
+                            ? 'border-green-500 bg-green-500'
                             : 'border-border bg-muted'
                         }`}
                       >
                         <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                          editingNode.data.isReasoningEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                          editingNode.data.isMapsGroundingEnabled ? 'translate-x-5' : 'translate-x-0.5'
                         }`} />
                       </button>
                     </div>
@@ -2510,12 +2557,12 @@ export default function WorkflowsPage() {
                         <span>{editingNode.data.result.split(' ').length} words</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Search Grounding:</span>
+                        <span>Google Search:</span>
                         <span>{editingNode.data.isSearchGroundingEnabled ? 'Enabled' : 'Disabled'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Thinking Mode:</span>
-                        <span>{editingNode.data.isReasoningEnabled ? 'Enabled' : 'Disabled'}</span>
+                        <span>Google Maps:</span>
+                        <span>{editingNode.data.isMapsGroundingEnabled ? 'Enabled' : 'Disabled'}</span>
                       </div>
                     </div>
                   </div>
