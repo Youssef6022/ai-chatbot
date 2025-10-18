@@ -252,34 +252,52 @@ export async function POST(request: Request) {
           for await (const chunk of response) {
             chunkCount++;
 
-            // Log first few chunks and tool calls (non-blocking)
-            if (chunkCount <= 3 || chunk.functionCalls || chunk.thinkingText) {
+            // Log first few chunks to debug structure (non-blocking)
+            if (chunkCount <= 5) {
               logToFile(`📦 Chunk #${chunkCount}`, {
+                chunkKeys: Object.keys(chunk),
                 hasText: !!chunk.text,
                 textPreview: chunk.text?.substring(0, 100),
-                hasThinkingText: !!chunk.thinkingText,
-                thinkingPreview: chunk.thinkingText?.substring(0, 100),
                 hasFunctionCalls: !!chunk.functionCalls,
                 functionCalls: chunk.functionCalls,
+                // Check if chunk has raw parts/candidates structure
+                hasCandidates: !!(chunk as any).candidates,
+                candidatesLength: (chunk as any).candidates?.length,
+                firstCandidate: (chunk as any).candidates?.[0] ? {
+                  hasContent: !!(chunk as any).candidates[0].content,
+                  partsCount: (chunk as any).candidates[0].content?.parts?.length,
+                  parts: (chunk as any).candidates[0].content?.parts?.map((p: any) => ({
+                    hasText: !!p.text,
+                    textPreview: p.text?.substring(0, 50),
+                    hasThought: !!p.thought,
+                    thought: p.thought,
+                  })),
+                } : undefined,
               }).catch(err => console.error('Log error:', err));
+            }
 
-              if (chunk.functionCalls) {
-                hasToolCalls = true;
+            if (chunk.functionCalls) {
+              hasToolCalls = true;
+            }
+
+            // Check for thinking in parts (according to Google docs)
+            const rawChunk = chunk as any;
+            if (rawChunk.candidates?.[0]?.content?.parts) {
+              for (const part of rawChunk.candidates[0].content.parts) {
+                // If this part is marked as a thought, stream it separately
+                if (part.thought && part.text) {
+                  fullThinkingText += part.text;
+
+                  const thinkingData = {
+                    type: 'thinking-delta',
+                    thinkingDelta: part.text,
+                  };
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(thinkingData)}\n\n`));
+                }
               }
             }
 
-            // Stream thinking text (reasoning)
-            if (chunk.thinkingText) {
-              fullThinkingText += chunk.thinkingText;
-
-              const thinkingData = {
-                type: 'thinking-delta',
-                thinkingDelta: chunk.thinkingText,
-              };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(thinkingData)}\n\n`));
-            }
-
-            // Stream response text
+            // Stream response text (non-thought text)
             if (chunk.text) {
               fullText += chunk.text;
 

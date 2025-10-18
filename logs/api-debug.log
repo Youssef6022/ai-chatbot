@@ -69,3 +69,1089 @@
   "textPreview": "La notion de \"vie indigène\" soulève des questions éthiques profondes et complexes. Il est crucial de préciser que, dans ce contexte, \"vie indigène\" fait généralement référence aux **peuples autochtone"
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:06.844Z] 📥 INCOMING REQUEST
+{
+  "chatId": "969da854-19af-476e-8729-83a24e718fe1",
+  "model": "chat-model-small",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "ca va ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:07.737Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:07.738Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:07.740Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:07.742Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:07.744Z] 📤 SENDING MESSAGE
+{
+  "message": "ca va ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:08.958Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:08.962Z] 📦 Chunk #1
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:10.174Z] 📦 Chunk #2
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:10.679Z] 📦 Chunk #3
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:10.691Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 4,
+  "totalTextLength": 29,
+  "hadToolCalls": false,
+  "textPreview": "Ça va bien, merci ! Et vous ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:24.861Z] 📥 INCOMING REQUEST
+{
+  "chatId": "969da854-19af-476e-8729-83a24e718fe1",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:25.189Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:25.191Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:25.192Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:25.194Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:25.196Z] 📤 SENDING MESSAGE
+{
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:26.335Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:26.338Z] 📦 Chunk #1
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:27.910Z] 📦 Chunk #2
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:29.954Z] 📦 Chunk #3
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:35.828Z] 📥 INCOMING REQUEST
+{
+  "chatId": "468775e0-60bc-4743-b258-e2305c35b35b",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:36.891Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:36.893Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:36.894Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:36.896Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:36.899Z] 📤 SENDING MESSAGE
+{
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:38.117Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:38.120Z] 📦 Chunk #1
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:40.286Z] 📦 Chunk #2
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:41.391Z] 📦 Chunk #3
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:44.670Z] 📥 INCOMING REQUEST
+{
+  "chatId": "468775e0-60bc-4743-b258-e2305c35b35b",
+  "model": "chat-model-large",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:45.035Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:45.037Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:45.038Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:45.040Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:45.043Z] 📤 SENDING MESSAGE
+{
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:47.244Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:47.247Z] 📦 Chunk #1
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:48.737Z] 📦 Chunk #2
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:31:50.531Z] 📦 Chunk #3
+{
+  "hasText": false,
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:02.910Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 61,
+  "totalTextLength": 10156,
+  "hadToolCalls": false,
+  "textPreview": "La question de la définition du statut moral et des droits d'une vie indigène, ainsi que des principes éthiques guidant notre interaction avec elle, est l'une des plus profondes et complexes que l'hum"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:21.639Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 104,
+  "totalTextLength": 9418,
+  "hadToolCalls": false,
+  "textPreview": "Excellente question, qui se situe au carrefour de l'astrobiologie, de la philosophie, de l'éthique et du droit. La découverte d'une vie indigène extraterrestre serait sans doute l'événement le plus ma"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.225Z] 📥 INCOMING REQUEST
+{
+  "chatId": "468775e0-60bc-4743-b258-e2305c35b35b",
+  "model": "chat-model-small",
+  "groundingType": "none",
+  "isReasoningEnabled": false,
+  "message": "ca va"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.589Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.591Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.593Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.596Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 4
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.601Z] 📤 SENDING MESSAGE
+{
+  "message": "ca va"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.895Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.898Z] 📦 Chunk #1
+{
+  "hasText": true,
+  "textPreview": "C",
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:33.900Z] 📦 Chunk #2
+{
+  "hasText": true,
+  "textPreview": "'est une réponse courte et un peu énigmatique !\n\nPourriez-vous me dire ce",
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:34.032Z] 📦 Chunk #3
+{
+  "hasText": true,
+  "textPreview": " que vous entendez par \"ça va\" dans ce contexte ?\n\n*   **Est-ce que vous me demandez si je vais bien",
+  "hasThinkingText": false,
+  "hasFunctionCalls": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:32:34.399Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 6,
+  "totalTextLength": 668,
+  "hadToolCalls": false,
+  "textPreview": "C'est une réponse courte et un peu énigmatique !\n\nPourriez-vous me dire ce que vous entendez par \"ça va\" dans ce contexte ?\n\n*   **Est-ce que vous me demandez si je vais bien ?** (En tant qu'IA, je n'"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:48.842Z] 📥 INCOMING REQUEST
+{
+  "chatId": "c172832f-fda7-446e-bbc2-1b8d12d5f2e7",
+  "model": "chat-model-small",
+  "groundingType": "none",
+  "isReasoningEnabled": false,
+  "message": "salut "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.507Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.508Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.510Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.512Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.514Z] 📤 SENDING MESSAGE
+{
+  "message": "salut "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.702Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.719Z] 📦 Chunk #1
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Salut",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "Salut",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.721Z] 📦 Chunk #2
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " ! Comment puis-je vous aider aujourd'hui ?",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": " ! Comment puis-je vous aider aujourd'hui ?",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:49.725Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 2,
+  "totalTextLength": 48,
+  "hadToolCalls": false,
+  "textPreview": "Salut ! Comment puis-je vous aider aujourd'hui ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:59.359Z] 📥 INCOMING REQUEST
+{
+  "chatId": "c172832f-fda7-446e-bbc2-1b8d12d5f2e7",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "comment va ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:59.681Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:59.683Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:59.684Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:59.686Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:40:59.688Z] 📤 SENDING MESSAGE
+{
+  "message": "comment va ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:00.834Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:00.837Z] 📦 Chunk #1
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Reflecting Social Norms**\n\nI've been examining t",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:01.271Z] 📦 Chunk #2
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Answering the Inquiry**\n\nI'm now formulating a r",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:01.283Z] 📦 Chunk #3
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Je n'ai pas de sentiments ni de corps, donc je ne \"vais\" pas vraiment comme un être humain. Mais je ",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "Je n'ai pas de sentiments ni de corps, donc je ne ",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:01.286Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 190,
+  "hadToolCalls": false,
+  "textPreview": "Je n'ai pas de sentiments ni de corps, donc je ne \"vais\" pas vraiment comme un être humain. Mais je fonctionne parfaitement bien et je suis prêt à vous aider !\n\nEt vous, comment allez-vous ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:24.271Z] 📥 INCOMING REQUEST
+{
+  "chatId": "c172832f-fda7-446e-bbc2-1b8d12d5f2e7",
+  "model": "chat-model-large",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "8728 +19331"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:24.598Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:24.599Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:24.600Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:24.601Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 4
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:24.603Z] 📤 SENDING MESSAGE
+{
+  "message": "8728 +19331"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:26.794Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:26.796Z] 📦 Chunk #1
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Pinpointing the Computation**\n\nI've zeroed in on",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:29.322Z] 📦 Chunk #2
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Resolving the Arithmetic**\n\nI've successfully co",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:29.480Z] 📦 Chunk #3
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "8728 + 19331 = **28 059**",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "8728 + 19331 = **28 059**",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:41:29.481Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 25,
+  "hadToolCalls": false,
+  "textPreview": "8728 + 19331 = **28 059**"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:12.368Z] 📥 INCOMING REQUEST
+{
+  "chatId": "d375ff4c-c5cb-47f2-b92f-1e397223a6ea",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": false,
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:13.227Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:13.229Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:13.230Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:13.232Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:13.234Z] 📤 SENDING MESSAGE
+{
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:23.453Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:23.456Z] 📦 Chunk #1
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "La question de définir le statut moral et les droits d'une \"vie indigène\" (qu'il s'agisse de micro-o",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "La question de définir le statut moral et les droi",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:23.603Z] 📦 Chunk #2
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " hypothétique) est complexe et dépend largement de la nature de cette vie, notamment de sa capacité ",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": " hypothétique) est complexe et dépend largement de",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:23.930Z] 📦 Chunk #3
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " de cette Vie Indigène\n\nLe statut moral et les droits attribués à cette vie indigène peuvent être en",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": " de cette Vie Indigène\n\nLe statut moral et les dro",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:24.205Z] 📦 Chunk #4
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "*   **Vie non-sentiente (micro-organismes, plantes, champignons) :**\n    *   **Statut Moral :** Leur",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "*   **Vie non-sentiente (micro-organismes, plantes",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:24.572Z] 📦 Chunk #5
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "eur instrumentale) et pour leur contribution à la biodiversité. Cependant, de nombreuses philosophie",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "eur instrumentale) et pour leur contribution à la ",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:42:35.963Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 50,
+  "totalTextLength": 9922,
+  "hadToolCalls": false,
+  "textPreview": "La question de définir le statut moral et les droits d'une \"vie indigène\" (qu'il s'agisse de micro-organismes, de flore, de faune, ou d'une forme de vie extraterrestre hypothétique) est complexe et dé"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:39.774Z] 📥 INCOMING REQUEST
+{
+  "chatId": "0887c93f-f9ad-4f21-b55e-9e31e781e0b1",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:40.824Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:40.826Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:40.827Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:40.829Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:40.830Z] 📤 SENDING MESSAGE
+{
+  "message": "Comment définir le statut moral et les droits de cette vie indigène ? Quels principes éthiques doivent guider notre interaction avec elle (observation, étude, coexistence, ou potentiellement, expansion humaine qui pourrait la menacer) ? Comment prévenir la contamination biologique (dans les deux sens) et minimiser l'impact écologique de la présence humaine ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:42.056Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:42.058Z] 📦 Chunk #1
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Exploring Moral Frameworks**\n\nI'm currently diss",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:43.105Z] 📦 Chunk #2
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Analyzing Ethical Principles**\n\nI'm now focusing",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:44.383Z] 📦 Chunk #3
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Formulating Moral Considerations**\n\nI'm now zero",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:45.667Z] 📦 Chunk #4
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Prioritizing Ethical Principles**\n\nI'm now prior",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:43:47.534Z] 📦 Chunk #5
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "**Synthesizing Ethical Frameworks**\n\nI'm now integ",
+        "hasThought": true,
+        "thought": true
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:44:03.517Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 57,
+  "totalTextLength": 9691,
+  "hadToolCalls": false,
+  "textPreview": "La question du statut moral et des droits de la vie indigène (qu'il s'agisse d'une nouvelle forme de vie microbienne, végétale, animale ou d'un écosystème entier) est fondamentale et complexe, particu"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
