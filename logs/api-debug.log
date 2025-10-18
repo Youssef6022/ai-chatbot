@@ -3394,3 +3394,1426 @@
   "textPreview": "C'est une excellente chose de commencer par l'alimentation !\n\nEn utilisant les données cartographiques pour la zone autour de la **Rue de Maulévrier à Cholet**, voici les **Supermarchés/Hypermarchés**"
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:40.295Z] 📥 INCOMING REQUEST
+{
+  "chatId": "04bc7b3b-b084-46c3-b1d1-52cdd2ba1f22",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "salut"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:41.132Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:41.133Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:41.134Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:41.135Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-latest",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:41.136Z] 📤 SENDING MESSAGE
+{
+  "message": "salut"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:42.296Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:42.300Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 302,
+      "textPreview": "**Considering Greetings**\n\nI'm currently dissecting the input, which is \"salut,\" to grasp its conver",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:43.558Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 393,
+      "textPreview": "**Defining Response Strategy**\n\nI've refined the approach. I've analyzed \"salut\" and identified it a",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:43.564Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Salut !",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 7,
+      "textPreview": "Salut !",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:09:43.569Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 7,
+  "hadToolCalls": false,
+  "textPreview": "Salut !"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:05.568Z] 📥 INCOMING REQUEST
+{
+  "chatId": "04bc7b3b-b084-46c3-b1d1-52cdd2ba1f22",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "tu vas bien ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:05.910Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:05.911Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:05.913Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:05.914Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-latest",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:05.916Z] 📤 SENDING MESSAGE
+{
+  "message": "tu vas bien ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:07.073Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:07.078Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 352,
+      "textPreview": "**Processing the Input**\n\nI've just received the user's input, \"tu vas bien ?\" and I'm currently wor",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:08.488Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 420,
+      "textPreview": "**Refining the Response**\n\nI've crafted a response that balances politeness and information, acknowl",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:08.991Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 414,
+      "textPreview": "**Composing the Reply**\n\nI've formulated a response that I find quite satisfactory. It reflects both",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:09.004Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Très bien, merci ! Je fonctionne de manière optimale.\n\nEt vous, comment allez-vous ?",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 84,
+      "textPreview": "Très bien, merci ! Je fonctionne de manière optimale.\n\nEt vous, comment allez-vous ?",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:12:09.012Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 4,
+  "totalTextLength": 84,
+  "hadToolCalls": false,
+  "textPreview": "Très bien, merci ! Je fonctionne de manière optimale.\n\nEt vous, comment allez-vous ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:35.065Z] 📥 INCOMING REQUEST
+{
+  "chatId": "04bc7b3b-b084-46c3-b1d1-52cdd2ba1f22",
+  "model": "chat-model-medium",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "entre le coraw woluwe et clos de sdiablotins 2 y'a combien de km ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:35.410Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.8503,
+      "longitude": 4.3517
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:35.412Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:35.413Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    },
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.8503,
+        "longitude": 4.3517
+      }
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:35.415Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:35.417Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-latest",
+  "historyLength": 4
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:35.418Z] 📤 SENDING MESSAGE
+{
+  "message": "entre le coraw woluwe et clos de sdiablotins 2 y'a combien de km ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:36.632Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:36.636Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 350,
+      "textPreview": "**Examining Location Details**\n\nI'm currently focused on the specific locations mentioned. It appear",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:38.317Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 369,
+      "textPreview": "**Analyzing Spatial Proximity**\n\nI'm now zeroing in on the distance calculations. Initial simulation",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:39.667Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 430,
+      "textPreview": "**Pinpointing Route Optimization**\n\nI'm now assessing potential routes, considering traffic and road",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:40.390Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 430,
+      "textPreview": "**Confirming Precise Measurement**\n\nI'm now zeroing in on the final distance calculation. I've verif",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:40.407Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "C'est une distance très courte, car ces deux lieux se trouvent dans la même commune (Woluwe-Saint-La",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 189,
+      "textPreview": "C'est une distance très courte, car ces deux lieux se trouvent dans la même commune (Woluwe-Saint-La",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:13:40.432Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 6,
+  "totalTextLength": 283,
+  "hadToolCalls": false,
+  "textPreview": "C'est une distance très courte, car ces deux lieux se trouvent dans la même commune (Woluwe-Saint-Lambert à Bruxelles).\n\nEn fonction de l'itinéraire exact :\n\n1.  **Distance par la route (en voiture) :"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:30.197Z] 📥 INCOMING REQUEST
+{
+  "chatId": "6a5ecd42-8e08-4d82-85d1-754f4d8e4207",
+  "model": "chat-model-large",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "fais moi la liste des commerce a moins de 500m de la route de maulévrier à cholet"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:31.025Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.8503,
+      "longitude": 4.3517
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:31.027Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:31.029Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    },
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.8503,
+        "longitude": 4.3517
+      }
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:31.030Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:31.031Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:31.033Z] 📤 SENDING MESSAGE
+{
+  "message": "fais moi la liste des commerce a moins de 500m de la route de maulévrier à cholet"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:33.044Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:33.048Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 401,
+      "textPreview": "**Analyzing User Intent**\n\nI've successfully identified the user's intent. They're seeking a listing",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:35.880Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 432,
+      "textPreview": "**Refining the Google Query**\n\nI've explored Google Maps' documentation, noting the absence of expli",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:38.518Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 420,
+      "textPreview": "**Crafting a Precise Response**\n\nI've tested the query and analyzed the results. The output provides",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:40.440Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 329,
+      "textPreview": "**Delivering a Final Response**\n\nI've formulated a clear French response, acknowledging the radius l",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:41.263Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 554,
+      "textPreview": "**Generating the Final Answer**\n\nI'm now putting together the final response, ensuring clarity and c",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:41.413Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 10,
+  "totalTextLength": 516,
+  "hadToolCalls": false,
+  "textPreview": "Voici une liste de commerces situés sur ou à proximité de la route de Maulévrier à Cholet :\n\nPour faire les courses, vous trouverez un supermarché E.Leclerc et un E.Leclerc Drive. Il y a aussi une sta"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:56.269Z] 📥 INCOMING REQUEST
+{
+  "chatId": "04bc7b3b-b084-46c3-b1d1-52cdd2ba1f22",
+  "model": "chat-model-small",
+  "groundingType": "maps",
+  "isReasoningEnabled": false,
+  "message": "ca va ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:56.624Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.8503,
+      "longitude": 4.3517
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:56.625Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:56.626Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    },
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.8503,
+        "longitude": 4.3517
+      }
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:56.627Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:56.628Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-lite-latest",
+  "historyLength": 6
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:56.630Z] 📤 SENDING MESSAGE
+{
+  "message": "ca va ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:57.019Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:14:57.247Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 143,
+  "hadToolCalls": false,
+  "textPreview": "Oui, ça va très bien, merci de demander ! Je suis prêt à vous aider avec toutes vos questions.\n\nEt vous, comment vous sentez-vous aujourd'hui ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:08.720Z] 📥 INCOMING REQUEST
+{
+  "chatId": "04bc7b3b-b084-46c3-b1d1-52cdd2ba1f22",
+  "model": "chat-model-medium",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "bien bien "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:09.056Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.8503,
+      "longitude": 4.3517
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:09.057Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:09.058Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    },
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.8503,
+        "longitude": 4.3517
+      }
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:09.059Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:09.061Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-latest",
+  "historyLength": 8
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:09.063Z] 📤 SENDING MESSAGE
+{
+  "message": "bien bien "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:10.174Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:10.178Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 316,
+      "textPreview": "**Assessing User Feedback**\n\nI've successfully identified the user's brief but positive input. My fo",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:10.234Z] 📥 INCOMING REQUEST
+{
+  "chatId": "b3c749c6-2184-4d65-9aa8-2fb61271cc45",
+  "model": "chat-model-medium",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "fais moi la liste des commerce a moins de 500m de la route de maulévrier à cholet"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.026Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.8503,
+      "longitude": 4.3517
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.028Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.029Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    },
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.8503,
+        "longitude": 4.3517
+      }
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.030Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.031Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-latest",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.033Z] 📤 SENDING MESSAGE
+{
+  "message": "fais moi la liste des commerce a moins de 500m de la route de maulévrier à cholet"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.372Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 365,
+      "textPreview": "**Refining the Response**\n\nI've crafted a concise, affirmative response in French, acknowledging the",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.380Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "C'est parfait ! Ravi de l'entendre.\n\nY a-t-il autre chose que je puisse faire pour vous aider aujour",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 107,
+      "textPreview": "C'est parfait ! Ravi de l'entendre.\n\nY a-t-il autre chose que je puisse faire pour vous aider aujour",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:11.387Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 107,
+  "hadToolCalls": false,
+  "textPreview": "C'est parfait ! Ravi de l'entendre.\n\nY a-t-il autre chose que je puisse faire pour vous aider aujourd'hui ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:12.097Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:12.100Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 382,
+      "textPreview": "**Pinpointing Commercial Locations**\n\nOkay, I've got a grasp of the task. Identifying businesses wit",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:13.903Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 537,
+      "textPreview": "**Focusing on Cholet's Side**\n\nI'm now zeroing in on the Cholet side of the route, as it will likely",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:15.121Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 374,
+      "textPreview": "**Prioritizing Cholet Entry**\n\nI'm now focusing on the Cholet entrance, as it's the commercial heart",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:15.949Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 427,
+      "textPreview": "**Estimating Business Types**\n\nI'm estimating that the Cholet area, at the intersection with the D96",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:15.977Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "C'est une excellente question, mais la liste des commerces dépend de la précision de la cartographie",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 242,
+      "textPreview": "C'est une excellente question, mais la liste des commerces dépend de la précision de la cartographie",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:20.852Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 27,
+  "totalTextLength": 4026,
+  "hadToolCalls": false,
+  "textPreview": "C'est une excellente question, mais la liste des commerces dépend de la précision de la cartographie en temps réel. En tant qu'intelligence artificielle, je ne peux pas accéder à une base de données c"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:26.317Z] 📥 INCOMING REQUEST
+{
+  "chatId": "6b65f51d-0789-4926-9bbd-038c7a56ecda",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "comment vas tu ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:27.173Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:27.174Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:27.175Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:27.177Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-latest",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:27.179Z] 📤 SENDING MESSAGE
+{
+  "message": "comment vas tu ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:28.282Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:28.285Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 271,
+      "textPreview": "**Assessing a Question**\n\nI'm currently breaking down the input question, \"comment vas tu?\" My goal ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:29.703Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 330,
+      "textPreview": "**Defining the Optimal Answer**\n\nI've decided on \"Je vais bien, merci. Et toi?\" as the best response",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:29.708Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Je vais bien, merci. Et toi ?",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 29,
+      "textPreview": "Je vais bien, merci. Et toi ?",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:15:29.716Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 29,
+  "hadToolCalls": false,
+  "textPreview": "Je vais bien, merci. Et toi ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
