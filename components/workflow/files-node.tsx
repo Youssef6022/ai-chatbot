@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useCallback } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { FileIcon } from '@/components/icons';
-import { FileSelectionModal } from '@/components/library/file-selection-modal';
 
 interface SelectedFile {
   url: string;
@@ -22,30 +21,6 @@ interface FilesNodeData {
 }
 
 export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFilesSelected = (files: SelectedFile[]) => {
-    // Éviter les doublons en utilisant l'URL comme clé unique
-    const existingUrls = new Set(data.selectedFiles.map(f => f.url));
-    const newFiles = files.filter(f => !existingUrls.has(f.url));
-    const allFiles = [...data.selectedFiles, ...newFiles];
-    data.onFilesChange?.(allFiles);
-  };
-
-  const handleRemoveFile = (url: string) => {
-    const updatedFiles = data.selectedFiles.filter(f => f.url !== url);
-    data.onFilesChange?.(updatedFiles);
-  };
-
-  const getFileIcon = (contentType: string) => {
-    if (contentType.startsWith('image/')) return '🖼️';
-    if (contentType === 'application/pdf') return '📄';
-    if (contentType.startsWith('text/') || contentType === 'application/json') return '📝';
-    if (contentType.startsWith('video/')) return '🎥';
-    if (contentType.startsWith('audio/')) return '🎵';
-    return '📎';
-  };
 
   // Helper function to get handle CSS classes based on highlighting state
   const getHandleClassName = useCallback((handleId: string, handleType: 'source' | 'target') => {
@@ -78,24 +53,23 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
         )}
         
         {/* Circular Files Node */}
-        <div 
-          className={`flex h-16 w-16 cursor-pointer items-center justify-center rounded-full transition-all duration-300 ${getExecutionStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
-          onDoubleClick={() => setIsModalOpen(true)}
+        <div
+          className={`flex h-16 w-16 items-center justify-center rounded-full transition-all duration-300 ${getExecutionStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
         >
           <FileIcon size={24} className="text-gray-600 dark:text-gray-300" />
-          
+
           {/* Output Handle */}
           <Handle
             type="source"
             position={Position.Bottom}
             id="files"
             className={getHandleClassName('files', 'source')}
-            style={{ 
+            style={{
               bottom: '-8px',
               left: '50%',
-              width: '16px', 
-              height: '16px', 
-              backgroundColor: '#6b7280', 
+              width: '16px',
+              height: '16px',
+              backgroundColor: '#6b7280',
               border: '2px solid #ffffff',
               boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
               transform: 'translateX(-50%)',
@@ -105,23 +79,6 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
         </div>
 
       </div>
-
-      {/* File Selection Modal */}
-      <FileSelectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onFilesSelected={handleFilesSelected}
-        fileInputRef={fileInputRef}
-      />
-      
-      {/* Hidden file input for file upload functionality */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        style={{ display: 'none' }}
-        onChange={() => {}} // Handled by the modal
-      />
     </>
   );
 }

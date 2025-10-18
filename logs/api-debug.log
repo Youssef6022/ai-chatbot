@@ -6490,3 +6490,1299 @@
   "textPreview": "Clos des Diablotins 2 se trouve à l'adresse Clos des Diablotins 2, 1140 Evere, Belgique. Vous pouvez consulter son emplacement sur Google Maps ici : https://maps.google.com/?cid=9306725218048776280."
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:16.304Z] 📥 INCOMING REQUEST
+{
+  "chatId": "9fb471af-672e-421a-b00d-11484f2e3fa2",
+  "model": "chat-model-large",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "Réalise une landing page pour un boulanger. Fait une landing page de haut en bas avec les sections habituelles pour ce type de commerce en mode one page.\n\nÉgalement, je te donne une API que tu vas consulter pour pouvoir intégrer à l'intérieur des images. Tout est indiqué dans l'API comment ça fonctionne.\n\nTu vas pouvoir commencer, tu pourras inventer un nom d'entreprise etc. pour faire réaliste.\n\n# image.photo - AI & LLM Integration Guide\n\n## Generate AI Images and Placeholders\n\n### 1. AI-Generated Images\nCreate real images using AI with simple keywords:\n\n```html\n<!-- Use KEYWORDS, not sentences -->\n<img src=\"https://image.photo/ai/sunset-beach-palm-trees.jpg\" alt=\"AI Sunset\">\n\n<!-- Change aspect ratio (default: 4:3) -->\n<img src=\"https://image.photo/ai/modern-office.jpg?ratio=16:9\" alt=\"Widescreen Office\">\n<img src=\"https://image.photo/ai/cute-robot.jpg?ratio=1:1\" alt=\"Square Robot\">\n\n<!-- Different ratios for different needs -->\n<img src=\"https://image.photo/ai/forest-morning.jpg?ratio=9:16\" alt=\"Portrait Forest\">\n```\n\n**2 Parameters:**\n- **prompt**: Keywords separated by dashes (not sentences!)\n- **ratio**: 1:1, 3:4, 4:3 (default), 16:9, 9:16\n\n**Tips for AI Generation:**\n- Use 3-5 keywords, not full sentences\n- AI automatically enhances your keywords\n- Good: \"sunset-beach-waves\"\n- Bad: \"a-beautiful-sunset-on-the-beach\""
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:17.823Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [],
+  "toolsCount": 0,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:17.826Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": false,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:17.829Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:17.833Z] 📤 SENDING MESSAGE
+{
+  "message": "Réalise une landing page pour un boulanger. Fait une landing page de haut en bas avec les sections habituelles pour ce type de commerce en mode one page.\n\nÉgalement, je te donne une API que tu vas consulter pour pouvoir intégrer à l'intérieur des images. Tout est indiqué dans l'API comment ça fonctionne.\n\nTu vas pouvoir commencer, tu pourras inventer un nom d'entreprise etc. pour faire réaliste.\n\n# image.photo - AI & LLM Integration Guide\n\n## Generate AI Images and Placeholders\n\n### 1. AI-Generated Images\nCreate real images using AI with simple keywords:\n\n```html\n<!-- Use KEYWORDS, not sentences -->\n<img src=\"https://image.photo/ai/sunset-beach-palm-trees.jpg\" alt=\"AI Sunset\">\n\n<!-- Change aspect ratio (default: 4:3) -->\n<img src=\"https://image.photo/ai/modern-office.jpg?ratio=16:9\" alt=\"Widescreen Office\">\n<img src=\"https://image.photo/ai/cute-robot.jpg?ratio=1:1\" alt=\"Square Robot\">\n\n<!-- Different ratios for different needs -->\n<img src=\"https://image.photo/ai/forest-morning.jpg?ratio=9:16\" alt=\"Portrait Forest\">\n```\n\n**2 Parameters:**\n- **prompt**: Keywords separated by dashes (not sentences!)\n- **ratio**: 1:1, 3:4, 4:3 (default), 16:9, 9:16\n\n**Tips for AI Generation:**\n- Use 3-5 keywords, not full sentences\n- AI automatically enhances your keywords\n- Good: \"sunset-beach-waves\"\n- Bad: \"a-beautiful-sunset-on-the-beach\""
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:19.549Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:19.559Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 277,
+      "textPreview": "**Examining the Core Task**\n\nI've been breaking down the request to create a single-page landing pag",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:22.149Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 401,
+      "textPreview": "**Analyzing Image Integration**\n\nI'm now diving deep into the image.photo API. The prompt format, `k",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:24.618Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 549,
+      "textPreview": "**Defining Image Parameters**\n\nI've been working on defining the image parameters for each section. ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:26.523Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 432,
+      "textPreview": "**Formulating the Section Layout**\n\nI've been planning the structure of the landing page, section by",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:35:28.578Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 296,
+      "textPreview": "**Refining Product Showcases**\n\nI'm now diving deep into the product showcases, aiming to create com",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T05:36:01.892Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 177,
+  "totalTextLength": 15347,
+  "hadToolCalls": false,
+  "textPreview": "Absolument ! Voici une proposition complète pour une landing page \"one page\" pour un artisan boulanger, en utilisant l'API `image.photo` que tu m'as fournie.\n\nJ'ai inventé le nom \"Le Fournil d'Or\" pou"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:26:16.205Z] 📥 INCOMING REQUEST
+{
+  "chatId": "44ef5b1a-c367-4916-a9fe-45bd8c649caa",
+  "model": "chat-model-small",
+  "groundingType": "search",
+  "isReasoningEnabled": false,
+  "message": "quel est le rpix du btc"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:26:16.964Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:26:16.966Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:26:16.969Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:26:16.973Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:26:16.977Z] 📤 SENDING MESSAGE
+{
+  "message": "quel est le rpix du btc"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:26:18.106Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:26:18.681Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 7,
+  "totalTextLength": 519,
+  "hadToolCalls": false,
+  "textPreview": "Le prix actuel du Bitcoin (BTC) se situe autour de 107 001 $US. Il a connu une légère hausse de 0,57% au cours des dernières 24 heures. Cependant, sur les 7 derniers jours, le prix a diminué de 4,49%."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:15.390Z] 📥 INCOMING REQUEST
+{
+  "chatId": "906c47bb-f254-4eb8-bb75-3f303b2ebff3",
+  "model": "chat-model-medium",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "Pouvez-vous m'indiquer le garage le plus proche de l'adresse 42 rue de Maulévrier à Cholet ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:16.318Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:16.320Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:16.321Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:16.323Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:16.325Z] 📤 SENDING MESSAGE
+{
+  "message": "Pouvez-vous m'indiquer le garage le plus proche de l'adresse 42 rue de Maulévrier à Cholet ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:17.859Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:17.862Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 303,
+      "textPreview": "**Formulating a French Query**\n\nI'm now focused on constructing the precise French query. It's imper",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:20.491Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 387,
+      "textPreview": "**Determining Nearest Garage**\n\nI'm currently focused on pinpointing the closest garage to \"42 rue d",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:22.624Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 443,
+      "textPreview": "**Identifying Closest Option**\n\nI've examined the \"Distance & Travel Time\" data for each garage in C",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:24.380Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 482,
+      "textPreview": "**Evaluating Proximity Results**\n\nI'm now analyzing the \"Distance & Travel Time\" data to determine t",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:25.209Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 383,
+      "textPreview": "**Determining Relative Proximity**\n\nI've examined the \"Distance & Travel Time\" data for the suggeste",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:32:25.334Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 8,
+  "totalTextLength": 407,
+  "hadToolCalls": false,
+  "textPreview": "Le garage le plus proche de l'adresse 42 rue de Maulévrier à Cholet est Feu Vert, situé au Centre Commercial Carrefour, 9 Rue du Layon, 49300 Cholet. Il a une note de 3,7 étoiles sur 585 avis.\n\nVeuill"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:14.601Z] 📥 INCOMING REQUEST
+{
+  "chatId": "bf0e07aa-66dc-44df-8b2a-2c29128656c6",
+  "model": "chat-model-large",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "Pouvez-vous m'indiquer le garage le plus proche de l'adresse 42 rue de Maulévrier à Cholet ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:15.563Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:15.565Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:15.566Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:15.569Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:15.571Z] 📤 SENDING MESSAGE
+{
+  "message": "Pouvez-vous m'indiquer le garage le plus proche de l'adresse 42 rue de Maulévrier à Cholet ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:17.613Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:17.617Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 342,
+      "textPreview": "**Locating Nearby Garages**\n\nI've successfully identified the user's core intent: finding a nearby g",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:20.400Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 429,
+      "textPreview": "**Developing a Response Strategy**\n\nI've formulated a Google Maps query in French: \"garage proche de",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:22.521Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 391,
+      "textPreview": "**Formulating the Google Query**\n\nI've crafted a French query, \"garage proche de 42 rue de Maulévrie",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:23.069Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 457,
+      "textPreview": "**Constructing a Comprehensive Response**\n\nI've determined that the user is essentially looking for ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:25.339Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Le",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 2,
+      "textPreview": "Le",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:26.340Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 10,
+  "totalTextLength": 293,
+  "hadToolCalls": false,
+  "textPreview": "Le garage le plus proche de cette adresse est SAS SIBILEAU, situé au 22 Rue de Maulévrier. Voici quelques autres options à proximité :\n\n*   **Garage du Bocage** : 13 Rue du Bocage.\n*   **GARAGE ON AUT"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:57.316Z] 📥 INCOMING REQUEST
+{
+  "chatId": "bf0e07aa-66dc-44df-8b2a-2c29128656c6",
+  "model": "chat-model-large",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "as tu les horaire d'ouverture de sibileau ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:57.644Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:57.645Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:57.646Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:57.647Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:57.648Z] 📤 SENDING MESSAGE
+{
+  "message": "as tu les horaire d'ouverture de sibileau ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:59.923Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:33:59.925Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 247,
+      "textPreview": "**Locating Sibileau's Hours**\n\nI'm now zeroing in on retrieving Sibileau's operational schedule. My ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:02.845Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 427,
+      "textPreview": "**Determining Sibileau's Schedule**\n\nI've successfully retrieved the operational hours for \"Garage S",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:03.759Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 355,
+      "textPreview": "**Extracting Operational Data**\n\nI've taken the hours I retrieved and translated them into French. I",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:07.315Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Voici",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 5,
+      "textPreview": "Voici",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:07.465Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " les horaires d'ouverture du garage SAS SIBILEAU.\n\n",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 51,
+      "textPreview": " les horaires d'ouverture du garage SAS SIBILEAU.\n\n",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:08.145Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 9,
+  "totalTextLength": 194,
+  "hadToolCalls": false,
+  "textPreview": "Voici les horaires d'ouverture du garage SAS SIBILEAU.\n\n*   **Lundi - Jeudi** : 07:30 – 12:00, 13:30 – 18:30.\n*   **Vendredi** : 07:30 – 12:00, 13:30 – 17:00.\n*   **Samedi et Dimanche** : Fermé."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:37.562Z] 📥 INCOMING REQUEST
+{
+  "chatId": "bf0e07aa-66dc-44df-8b2a-2c29128656c6",
+  "model": "chat-model-large",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "Je cherche aussi un bureau de tabac, Le Paradis, qui est rue du Paradis à Cholet. \n\nEst-ce que tu peux me dire les horaires d'ouverture ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:37.910Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:37.911Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:37.912Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:37.913Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 4
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:37.914Z] 📤 SENDING MESSAGE
+{
+  "message": "Je cherche aussi un bureau de tabac, Le Paradis, qui est rue du Paradis à Cholet. \n\nEst-ce que tu peux me dire les horaires d'ouverture ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:40.193Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:40.196Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 322,
+      "textPreview": "**Defining the User's Query**\n\nI'm now zeroing in on the core of the user's need, confirming they ar",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:42.271Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 371,
+      "textPreview": "**Querying Google Maps Effectively**\n\nI have successfully formulated the query in French, using \"Le ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:44.128Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 315,
+      "textPreview": "**Refining the Response Format**\n\nI've checked the opening hours, noting how Google Maps presents th",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:48.918Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 297,
+      "textPreview": "**Initiating the Search**\n\nI've zeroed in on the user's request: opening hours for \"Le Paradis\" toba",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:51.581Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 484,
+      "textPreview": "**Targeting the Business**\n\nI've hit a snag. The initial search on \"Le Paradis, rue du Paradis, Chol",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T20:34:55.168Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 12,
+  "totalTextLength": 230,
+  "hadToolCalls": false,
+  "textPreview": "Le bureau de tabac situé au 116 Rue du Paradis est un Mag Presse. Voici ses horaires d'ouverture :\n\n*   **Lundi** : 06:30 – 19:30.\n*   **Mardi - Vendredi** : 06:45 – 19:30.\n*   **Samedi** : 07:00 – 19"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:23.221Z] 📥 INCOMING REQUEST
+{
+  "chatId": "ffabfdb1-5af7-4e4f-851f-400292a151e9",
+  "model": "chat-model-small",
+  "groundingType": "none",
+  "isReasoningEnabled": false,
+  "message": "ca va ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:24.160Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [],
+  "toolsCount": 0,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:24.162Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": false,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:24.163Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:24.165Z] 📤 SENDING MESSAGE
+{
+  "message": "ca va ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:24.375Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:24.379Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 2,
+  "totalTextLength": 28,
+  "hadToolCalls": false,
+  "textPreview": "Ça va bien, merci ! Et toi ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:31.720Z] 📥 INCOMING REQUEST
+{
+  "chatId": "ffabfdb1-5af7-4e4f-851f-400292a151e9",
+  "model": "chat-model-small",
+  "groundingType": "search",
+  "isReasoningEnabled": false,
+  "message": "ca dit quoi ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:32.045Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:32.046Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:32.047Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:32.048Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:32.049Z] 📤 SENDING MESSAGE
+{
+  "message": "ca dit quoi ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:33.634Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T21:09:33.939Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 4,
+  "totalTextLength": 462,
+  "hadToolCalls": false,
+  "textPreview": "\"Ça dit quoi ?\" is a very informal French slang phrase, especially popular among young people. It's similar to asking \"What's up?\" or \"What's new?\" You might also use it to ask \"What are you up to?\" o"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

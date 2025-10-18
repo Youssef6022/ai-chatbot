@@ -24,8 +24,5 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "chat_file_attachments" ADD CONSTRAINT "chat_file_attachments_chat_id_Chat_id_fk" FOREIGN KEY ("chat_id") REFERENCES "public"."Chat"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
+-- Foreign key constraint removed: chat_id is varchar but Chat.id is uuid (incompatible types)
+-- Relationship managed at application level

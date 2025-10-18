@@ -39,6 +39,168 @@ import { WorkflowConsole } from '@/components/workflow/workflow-console';
 import { HighlightedTextarea } from '@/components/workflow/highlighted-textarea';
 import { PreRunVariablesModal } from '@/components/workflow/pre-run-variables-modal';
 import { toast } from 'sonner';
+import { chatModels } from '@/lib/ai/models';
+import { Loader2 } from 'lucide-react';
+
+// Files Selector Component
+interface FilesSelectorProps {
+  selectedFiles: Array<{ url: string; name: string; contentType: string }>;
+  onFilesChange: (files: Array<{ url: string; name: string; contentType: string }>) => void;
+}
+
+interface UserFile {
+  id: string;
+  filename: string;
+  original_name: string;
+  mime_type: string;
+  size_bytes: number;
+  blob_url: string;
+  folder_id: string | null;
+  created_at: string;
+}
+
+function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
+  const [libraryFiles, setLibraryFiles] = useState<UserFile[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    loadLibraryFiles();
+  }, []);
+
+  const loadLibraryFiles = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/library/folders');
+      if (response.ok) {
+        const data = await response.json();
+        setLibraryFiles(data.files || []);
+      }
+    } catch (error) {
+      console.error('Error loading files:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredFiles = libraryFiles.filter(file =>
+    file.original_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const isFileSelected = (fileUrl: string) => {
+    return selectedFiles.some(f => f.url === fileUrl);
+  };
+
+  const toggleFile = (file: UserFile) => {
+    if (isFileSelected(file.blob_url)) {
+      onFilesChange(selectedFiles.filter(f => f.url !== file.blob_url));
+    } else {
+      onFilesChange([
+        ...selectedFiles,
+        {
+          url: file.blob_url,
+          name: file.original_name,
+          contentType: file.mime_type,
+        },
+      ]);
+    }
+  };
+
+  const getFileIcon = (mimeType: string) => {
+    if (mimeType.startsWith('image/')) return '🖼️';
+    if (mimeType === 'application/pdf') return '📄';
+    if (mimeType.startsWith('text/') || mimeType === 'application/json') return '📝';
+    if (mimeType.startsWith('video/')) return '🎥';
+    if (mimeType.startsWith('audio/')) return '🎵';
+    return '📎';
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Search Bar */}
+      <div className="space-y-1">
+        <Label className='font-medium text-muted-foreground text-xs'>Rechercher des fichiers</Label>
+        <Input
+          type="text"
+          placeholder="Rechercher dans votre bibliothèque..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="text-sm"
+        />
+      </div>
+
+      {/* Selected Files */}
+      {selectedFiles.length > 0 && (
+        <div className="space-y-1">
+          <Label className='font-medium text-muted-foreground text-xs'>
+            Fichiers sélectionnés ({selectedFiles.length})
+          </Label>
+          <div className='max-h-[120px] space-y-1 overflow-y-auto rounded-md border border-border p-2'>
+            {selectedFiles.map((file, index) => (
+              <div key={index} className='flex items-center justify-between rounded bg-muted p-2 text-xs'>
+                <span className="truncate">{file.name}</span>
+                <button
+                  onClick={() => onFilesChange(selectedFiles.filter((_, i) => i !== index))}
+                  className='flex h-4 w-4 items-center justify-center rounded bg-red-500 text-white hover:bg-red-600'
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Available Files */}
+      <div className="space-y-1">
+        <Label className='font-medium text-muted-foreground text-xs'>
+          Fichiers disponibles ({filteredFiles.length})
+        </Label>
+        <div className='max-h-[300px] overflow-y-auto rounded-md border border-border'>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="animate-spin" size={20} />
+              <span className='ml-2 text-muted-foreground text-sm'>Chargement...</span>
+            </div>
+          ) : filteredFiles.length === 0 ? (
+            <div className='py-8 text-center text-muted-foreground text-xs'>
+              {searchQuery ? 'Aucun fichier trouvé' : 'Aucun fichier dans votre bibliothèque'}
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {filteredFiles.map((file) => (
+                <div
+                  key={file.id}
+                  onClick={() => toggleFile(file)}
+                  className={`flex cursor-pointer items-center gap-2 p-2 transition-colors hover:bg-muted/50 ${
+                    isFileSelected(file.blob_url) ? 'bg-blue-50 dark:bg-blue-950/20' : ''
+                  }`}
+                >
+                  <div className='flex h-5 w-5 items-center justify-center'>
+                    <input
+                      type="checkbox"
+                      checked={isFileSelected(file.blob_url)}
+                      onChange={() => toggleFile(file)}
+                      className="cursor-pointer rounded"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  <span className='text-base'>{getFileIcon(file.mime_type)}</span>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-xs'>{file.original_name}</p>
+                    <p className='text-muted-foreground text-[10px]'>
+                      {new Date(file.created_at).toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Settings Icon
 const SettingsIcon = ({ size = 16 }: { size?: number }) => (
@@ -2436,37 +2598,16 @@ export default function WorkflowsPage() {
               )}
 
               {editingNode.type === 'files' && (
-                <div className="space-y-1">
-                  <Label className='font-medium text-muted-foreground text-xs'>Selected Files</Label>
-                  <div className='min-h-[80px] rounded-md border border-border p-2'>
-                    {editingNode.data.selectedFiles?.length > 0 ? (
-                      <div className="space-y-1">
-                        {editingNode.data.selectedFiles.map((file: any, index: number) => (
-                          <div key={index} className='flex items-center justify-between rounded bg-muted p-2 text-xs'>
-                            <span className="truncate">{file.name}</span>
-                            <button
-                              onClick={() => {
-                                const updatedFiles = editingNode.data.selectedFiles.filter((_: any, i: number) => i !== index);
-                                updateNodeData(editingNode.id, { selectedFiles: updatedFiles });
-                                setEditingNode({
-                                  ...editingNode,
-                                  data: { ...editingNode.data, selectedFiles: updatedFiles }
-                                });
-                              }}
-                              className='flex h-4 w-4 items-center justify-center rounded bg-red-500 text-white hover:bg-red-600'
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center text-muted-foreground text-xs">
-                        No files selected
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <FilesSelector
+                  selectedFiles={editingNode.data.selectedFiles || []}
+                  onFilesChange={(files) => {
+                    updateNodeData(editingNode.id, { selectedFiles: files });
+                    setEditingNode({
+                      ...editingNode,
+                      data: { ...editingNode.data, selectedFiles: files }
+                    });
+                  }}
+                />
               )}
               
               {/* Show Results Section */}

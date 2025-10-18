@@ -1,1 +1,2 @@
-ALTER TABLE "chat_file_attachments" DROP CONSTRAINT "chat_file_attachments_chat_id_Chat_id_fk";
+-- Migration no longer needed: constraint was never created (incompatible types)
+-- chat_id is varchar but Chat.id is uuid
