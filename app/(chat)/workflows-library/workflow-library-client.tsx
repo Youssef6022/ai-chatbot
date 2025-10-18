@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { Workflow } from '@/lib/db/schema';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -356,7 +355,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
     <>
       {/* Hero Section */}
       <div className="mb-16 text-center">
-        <h1 className="mb-6 text-3xl font-bold text-foreground">Create Workflow</h1>
+        <h1 className='mb-6 font-bold text-3xl text-foreground'>Create Workflow</h1>
         <p className="mx-auto mb-10 max-w-lg text-muted-foreground leading-relaxed">
           Design intelligent chat workflows with AI nodes, custom logic, and powerful automation tools. Transform conversations into seamless experiences.
         </p>
@@ -364,7 +363,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white shadow-md transition-all hover:scale-105 hover:shadow-lg hover:bg-blue-700"
+            className='inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-sm text-white shadow-md transition-all hover:scale-105 hover:bg-blue-700 hover:shadow-lg'
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -385,7 +384,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
               };
               input.click();
             }}
-            className="inline-flex items-center gap-2 rounded-lg border border-blue-300 bg-transparent px-6 py-3 text-sm font-medium text-blue-600 transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-950/20"
+            className='inline-flex items-center gap-2 rounded-lg border border-blue-300 bg-transparent px-6 py-3 font-medium text-blue-600 text-sm transition-all hover:border-blue-500 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-950/20'
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
@@ -400,8 +399,8 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
         <>
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-semibold text-foreground">Your Workflows</h2>
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+              <h2 className='font-semibold text-foreground text-xl'>Your Workflows</h2>
+              <div className='flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 font-medium text-blue-600 text-xs dark:bg-blue-900/30 dark:text-blue-400'>
                 {workflows.length}
               </div>
             </div>
@@ -416,10 +415,10 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
                 {/* Header */}
                 <div className="mb-3 flex items-start justify-between">
                   <div className="min-w-0 flex-1">
-                    <h3 className="mb-1 truncate text-sm font-medium text-foreground">
+                    <h3 className='mb-1 truncate font-medium text-foreground text-sm'>
                       {workflow.title}
                     </h3>
-                    <p className="line-clamp-2 text-xs text-muted-foreground">
+                    <p className='line-clamp-2 text-muted-foreground text-xs'>
                       {workflow.description || 'No description provided'}
                     </p>
                   </div>
@@ -441,7 +440,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => handleDelete(workflow.id)}
-                        className="cursor-pointer text-xs text-destructive"
+                        className='cursor-pointer text-destructive text-xs'
                       >
                         <Trash2 className="mr-2 h-3 w-3" />
                         Delete
@@ -455,7 +454,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
                   <button
                     onClick={() => handleRunWorkflow(workflow)}
                     disabled={isRunning}
-                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md bg-green-600 text-xs font-medium text-white transition-all hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className='flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md bg-green-600 font-medium text-white text-xs transition-all hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50'
                   >
                     <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m6-10V4a2 2 0 00-2-2H5a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2V4z" />
@@ -464,7 +463,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
                   </button>
                   <button
                     onClick={() => handleLoadToWorkflow(workflow)}
-                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 text-xs font-medium text-white transition-all hover:bg-blue-700"
+                    className='flex h-7 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 font-medium text-white text-xs transition-all hover:bg-blue-700'
                   >
                     <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -597,7 +596,7 @@ export function WorkflowLibraryClient({ workflows: initialWorkflows }: WorkflowL
       </Dialog>
 
       {/* Workflow Console - positioned on page instead of sidebar */}
-      <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ease-out ${
+      <div className={`-translate-x-1/2 fixed bottom-4 left-1/2 z-50 transform transition-all duration-500 ease-out ${
         isConsoleOpen ? 'h-80 w-[400px]' : 'h-12 w-36'
       }`}>
         <WorkflowConsole

@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { memo, useState } from 'react';
 import { DocumentToolResult } from './document';
-import { SparklesIcon, AnimatedSparklesIcon } from './icons';
+import { AnimatedSparklesIcon } from './icons';
 import { Response } from './elements/response';
 import { MessageContent } from './elements/message';
 import {

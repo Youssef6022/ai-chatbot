@@ -35,7 +35,7 @@ export function NoteNode({ data, selected }: NodeProps<NoteNodeData>) {
 
   return (
     <div 
-      className={`relative w-64 h-40 rounded-lg border-2 border-yellow-300 bg-yellow-50 shadow-lg transition-all duration-200 dark:border-yellow-400 dark:bg-yellow-100 ${selected ? 'ring-2 ring-blue-500' : ''}`}
+      className={`relative h-40 w-64 rounded-lg border-2 border-yellow-300 bg-yellow-50 shadow-lg transition-all duration-200 dark:border-yellow-400 dark:bg-yellow-100 ${selected ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleClick}
     >
       {/* Content area */}
@@ -48,7 +48,7 @@ export function NoteNode({ data, selected }: NodeProps<NoteNodeData>) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onMouseDown={(e) => e.stopPropagation()}
-          className='h-full w-full resize-none border-none bg-transparent text-gray-800 text-sm placeholder:text-yellow-600 focus:outline-none dark:text-gray-900 dark:placeholder:text-yellow-700 overflow-y-auto scrollbar-thin scrollbar-thumb-yellow-400 scrollbar-track-yellow-100'
+          className='scrollbar-thin scrollbar-thumb-yellow-400 scrollbar-track-yellow-100 h-full w-full resize-none overflow-y-auto border-none bg-transparent text-gray-800 text-sm placeholder:text-yellow-600 focus:outline-none dark:text-gray-900 dark:placeholder:text-yellow-700'
           placeholder="Tapez votre note..."
         />
       </div>

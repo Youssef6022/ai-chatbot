@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, use } from 'react';
+import { useState, useCallback, useRef, } from 'react';
 import { flushSync } from 'react-dom';
 import type { ChatMessage } from '@/lib/types';
 import { generateUUID } from '@/lib/utils';
@@ -85,7 +85,7 @@ export function useChatGenAI({
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.log('🌐 HTTP REQUEST TO API');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('📍 URL:', window.location.origin + '/api/chat');
+        console.log('📍 URL:', `${window.location.origin}/api/chat`);
         console.log('📋 Method:', 'POST');
         console.log('📦 Headers:', requestHeaders);
         console.log('📄 Body:', JSON.stringify(requestBody, null, 2));

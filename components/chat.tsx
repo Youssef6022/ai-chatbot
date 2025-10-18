@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useChatGenAI } from '@/hooks/use-chat-genai';
 import { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat-header';
-import { generateUUID } from '@/lib/utils';
 import { Artifact } from './artifact';
 import { MultimodalInput } from './multimodal-input';
 import { Messages } from './messages';

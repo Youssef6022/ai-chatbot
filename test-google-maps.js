@@ -7,7 +7,7 @@
 const BASE_URL = 'http://localhost:9627';
 
 function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
@@ -198,7 +198,7 @@ async function runTests() {
   // Test 2: Google Search
   await testGoogleSearch();
 
-  console.log('\n' + '='.repeat(60));
+  console.log(`\n${'='.repeat(60)}`);
   console.log('✅ Tests completed!');
   console.log('='.repeat(60));
 }

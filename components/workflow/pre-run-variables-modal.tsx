@@ -67,7 +67,7 @@ export function PreRunVariablesModal({
         />
 
         {/* Modal */}
-        <div className='zoom-in-95 relative w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto animate-in rounded-xl border-2 border-border/60 bg-background/95 p-6 shadow-2xl backdrop-blur-sm duration-200'>
+        <div className='zoom-in-95 relative max-h-[80vh] w-[500px] max-w-[90vw] animate-in overflow-y-auto rounded-xl border-2 border-border/60 bg-background/95 p-6 shadow-2xl backdrop-blur-sm duration-200'>
           {/* Header */}
           <div className='mb-4 flex items-center justify-between'>
             <h3 className='font-semibold text-lg'>Variables du workflow</h3>
@@ -85,8 +85,8 @@ export function PreRunVariablesModal({
           {/* Form */}
           <div className="space-y-3">
             {variablesToAsk.map((variable) => (
-              <div key={variable.id} className="flex items-center gap-2 min-w-0">
-                <Label className='w-24 flex-shrink-0 font-medium text-muted-foreground text-xs truncate'>
+              <div key={variable.id} className='flex min-w-0 items-center gap-2'>
+                <Label className='w-24 flex-shrink-0 truncate font-medium text-muted-foreground text-xs'>
                   {variable.name}
                 </Label>
                 <input
@@ -98,7 +98,7 @@ export function PreRunVariablesModal({
                     [variable.id]: e.target.value,
                   })}
                   placeholder={`Valeur...`}
-                  className='h-9 flex-1 min-w-0 rounded-lg border-2 border-border/60 bg-background px-3 text-sm transition-all focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20'
+                  className='h-9 min-w-0 flex-1 rounded-lg border-2 border-border/60 bg-background px-3 text-sm transition-all focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20'
                 />
                 {/* Expand button */}
                 <button
@@ -141,9 +141,9 @@ export function PreRunVariablesModal({
             onClick={() => setExpandedVariable(null)}
           />
 
-          <div className='zoom-in-95 relative w-[800px] max-w-[90vw] h-[600px] max-h-[90vh] animate-in rounded-xl border-2 border-border/60 bg-background shadow-2xl duration-200 flex flex-col'>
+          <div className='zoom-in-95 relative flex h-[600px] max-h-[90vh] w-[800px] max-w-[90vw] animate-in flex-col rounded-xl border-2 border-border/60 bg-background shadow-2xl duration-200'>
             {/* Header */}
-            <div className='flex items-center justify-between border-b border-border/60 px-6 py-4'>
+            <div className='flex items-center justify-between border-border/60 border-b px-6 py-4'>
               <h3 className='font-semibold text-lg'>
                 {variablesToAsk.find(v => v.id === expandedVariable)?.name}
               </h3>
@@ -173,7 +173,7 @@ export function PreRunVariablesModal({
             </div>
 
             {/* Footer */}
-            <div className="border-t border-border/60 px-6 py-4">
+            <div className='border-border/60 border-t px-6 py-4'>
               <Button
                 onClick={() => setExpandedVariable(null)}
                 className='w-full bg-orange-600 text-white hover:bg-orange-700'

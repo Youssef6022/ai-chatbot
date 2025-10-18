@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     } else {
       // New format - system and user prompts combined
       if (systemPrompt && typeof systemPrompt === 'string' && systemPrompt.trim()) {
-        currentMessage += systemPrompt + '\n\n';
+        currentMessage += `${systemPrompt}\n\n`;
       }
 
       // Process user prompt and files

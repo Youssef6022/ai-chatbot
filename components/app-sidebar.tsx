@@ -48,7 +48,7 @@ export function AppSidebar() {
     <Sidebar className='transition-all duration-300 ease-in-out group-data-[side=left]:border-r-0' collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
-          <div className='flex min-h-[48px] items-center px-2 gap-2'>
+          <div className='flex min-h-[48px] items-center gap-2 px-2'>
             <button
               onClick={toggleSidebar}
               onMouseEnter={() => setIsHovered(true)}
@@ -168,7 +168,7 @@ export function AppSidebar() {
         
         {/* Section défilante - Historique */}
         {(!isClient || state !== 'collapsed') && (
-          <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-zinc-700/80 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-500 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-zinc-400">
+          <div className='flex-1 overflow-y-auto [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-500 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-700/80 [&::-webkit-scrollbar]:w-2.5'>
             <SidebarHistory user={user} isCollapsed={isClient && state === 'collapsed'} />
           </div>
         )}

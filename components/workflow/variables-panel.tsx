@@ -109,7 +109,7 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
                   checked={newVarAskBeforeRun}
                   onCheckedChange={setNewVarAskBeforeRun}
                 />
-                <Label htmlFor="new-var-ask-before-run" className="text-xs cursor-pointer">
+                <Label htmlFor="new-var-ask-before-run" className='cursor-pointer text-xs'>
                   Demander avant le lancement
                 </Label>
               </div>
@@ -176,7 +176,7 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
                           checked={variable.askBeforeRun || false}
                           onCheckedChange={(checked) => updateVariable(variable.id, 'askBeforeRun', checked)}
                         />
-                        <Label htmlFor={`ask-before-run-${variable.id}`} className="text-xs cursor-pointer">
+                        <Label htmlFor={`ask-before-run-${variable.id}`} className='cursor-pointer text-xs'>
                           Demander avant le lancement
                         </Label>
                       </div>

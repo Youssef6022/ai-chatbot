@@ -3,7 +3,6 @@ import { useCopyToClipboard } from 'usehooks-ts';
 import { CopyIcon, PencilEditIcon } from './icons';
 import { Actions, Action } from './elements/actions';
 import { memo } from 'react';
-import equal from 'fast-deep-equal';
 import { toast } from 'sonner';
 import type { ChatMessage } from '@/lib/types';
 

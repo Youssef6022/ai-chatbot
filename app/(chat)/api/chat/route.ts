@@ -1,10 +1,8 @@
-import { GoogleGenAI } from '@google/genai';
-import type { types } from '@google/genai';
+
 import { createClient } from '@/lib/supabase/server';
 import type { UserType } from '@/lib/auth/types';
 import { getUserType } from '@/lib/auth/types';
 import {
-  createStreamId,
   deleteChatById,
   ensureSupabaseUserExists,
   getChatById,
@@ -16,16 +14,14 @@ import {
 } from '@/lib/db/queries';
 import { generateUUID } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
-import { getWeather } from '@/lib/ai/tools/get-weather';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
 import { postRequestBodySchema, type PostRequestBody } from '../chat/schema';
-import { after } from 'next/server';
 import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
 import type { VisibilityType } from '@/components/visibility-selector';
 import { genaiClient, getModelName, type ChatModelId } from '@/lib/ai/providers';
-import { logToFile, clearLogFile } from '@/lib/logger';
+import { logToFile, } from '@/lib/logger';
 
 export const maxDuration = 60;
 

@@ -149,7 +149,7 @@ export function HighlightedTextarea({
       <div
         ref={highlightRef}
         className={cn(
-          'pointer-events-none absolute inset-0 z-10 overflow-hidden whitespace-pre-wrap break-words rounded-md bg-transparent px-3 py-2 text-sm text-foreground',
+          'pointer-events-none absolute inset-0 z-10 overflow-hidden whitespace-pre-wrap break-words rounded-md bg-transparent px-3 py-2 text-foreground text-sm',
           noBorder ? '' : 'border border-input'
         )}
         style={{

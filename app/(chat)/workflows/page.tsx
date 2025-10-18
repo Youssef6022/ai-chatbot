@@ -39,7 +39,6 @@ import { WorkflowConsole } from '@/components/workflow/workflow-console';
 import { HighlightedTextarea } from '@/components/workflow/highlighted-textarea';
 import { PreRunVariablesModal } from '@/components/workflow/pre-run-variables-modal';
 import { toast } from 'sonner';
-import { chatModels } from '@/lib/ai/models';
 
 // Settings Icon
 const SettingsIcon = ({ size = 16 }: { size?: number }) => (
@@ -2915,7 +2914,7 @@ export default function WorkflowsPage() {
                 </div>
               </div>
             ) : (
-              <div className='relative h-full w-full flex'>
+              <div className='relative flex h-full w-full'>
                 {/* Left side - Text Editor */}
                 <div className='flex-1 p-4 pr-2'>
                   <HighlightedTextarea
@@ -2944,16 +2943,16 @@ export default function WorkflowsPage() {
                 </div>
                 
                 {/* Right side - Variables Panel */}
-                <div className='w-80 border-l border-border p-6 pl-3'>
-                  <div className='h-full flex flex-col'>
-                    <h3 className='text-lg font-semibold mb-4'>Variables disponibles</h3>
+                <div className='w-80 border-border border-l p-6 pl-3'>
+                  <div className='flex h-full flex-col'>
+                    <h3 className='mb-4 font-semibold text-lg'>Variables disponibles</h3>
                     
                     {/* Global Variables */}
                     <div className='mb-6'>
-                      <h4 className='text-sm font-medium text-muted-foreground mb-2'>Variables globales</h4>
+                      <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Variables globales</h4>
                       <div className='space-y-1'>
                         {variables.map((variable) => (
-                          <div key={variable.id} className='relative group'>
+                          <div key={variable.id} className='group relative'>
                             <button
                               onClick={() => {
                                 const placeholder = `{{${variable.name}}}`;
@@ -2974,12 +2973,12 @@ export default function WorkflowsPage() {
                                   });
                                 }
                               }}
-                              className='w-full text-left p-2 rounded border border-dashed border-green-300 bg-green-50 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/20 dark:hover:bg-green-900/30 transition-colors'
+                              className='w-full rounded border border-green-300 border-dashed bg-green-50 p-2 text-left transition-colors hover:bg-green-100 dark:border-green-600 dark:bg-green-900/20 dark:hover:bg-green-900/30'
                             >
-                              <div className='text-sm font-mono text-green-700 dark:text-green-300'>
+                              <div className='font-mono text-green-700 text-sm dark:text-green-300'>
                                 {`{{${variable.name}}}`}
                               </div>
-                              <div className='text-xs text-green-600 dark:text-green-400 truncate'>
+                              <div className='truncate text-green-600 text-xs dark:text-green-400'>
                                 {variable.value || 'Aucune valeur'}
                               </div>
                             </button>
@@ -2994,7 +2993,7 @@ export default function WorkflowsPage() {
                                 });
                                 setModalAskBeforeRun(variable.askBeforeRun || false);
                               }}
-                              className='absolute top-1 right-1 h-5 w-5 flex items-center justify-center rounded bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-400 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-green-200 dark:hover:bg-green-700'
+                              className='absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded bg-green-100 text-green-600 opacity-0 transition-opacity hover:bg-green-200 group-hover:opacity-100 dark:bg-green-800 dark:text-green-400 dark:hover:bg-green-700'
                             >
                               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -3007,13 +3006,13 @@ export default function WorkflowsPage() {
                         {/* Add Global Variable Button */}
                         <button
                           onClick={() => setVariableModal({ isOpen: true, mode: 'add' })}
-                          className='w-full text-left p-2 rounded border border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-900/20 dark:hover:bg-gray-900/30 transition-colors flex items-center justify-center gap-2'
+                          className='flex w-full items-center justify-center gap-2 rounded border border-gray-300 border-dashed bg-gray-50 p-2 text-left transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-900/20 dark:hover:bg-gray-900/30'
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="12" y1="5" x2="12" y2="19"/>
                             <line x1="5" y1="12" x2="19" y2="12"/>
                           </svg>
-                          <span className='text-sm text-muted-foreground'>Ajouter dans variable globale</span>
+                          <span className='text-muted-foreground text-sm'>Ajouter dans variable globale</span>
                         </button>
                       </div>
                     </div>
@@ -3026,7 +3025,7 @@ export default function WorkflowsPage() {
                       if (aiVariables.length > 0) {
                         return (
                           <div className='mb-6'>
-                            <h4 className='text-sm font-medium text-muted-foreground mb-2'>Réponses AI Agents</h4>
+                            <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Réponses AI Agents</h4>
                             <div className='space-y-1'>
                               {aiVariables.map((variable) => (
                                 <button
@@ -3050,12 +3049,12 @@ export default function WorkflowsPage() {
                                       });
                                     }
                                   }}
-                                  className='w-full text-left p-2 rounded border border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 dark:border-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 transition-colors'
+                                  className='w-full rounded border border-blue-300 border-dashed bg-blue-50 p-2 text-left transition-colors hover:bg-blue-100 dark:border-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-900/30'
                                 >
-                                  <div className='text-sm font-mono text-blue-700 dark:text-blue-300'>
+                                  <div className='font-mono text-blue-700 text-sm dark:text-blue-300'>
                                     {`{{${variable.name}}}`}
                                   </div>
-                                  <div className='text-xs text-blue-600 dark:text-blue-400 truncate'>
+                                  <div className='truncate text-blue-600 text-xs dark:text-blue-400'>
                                     {variable.value ? 'Réponse disponible' : 'Pas encore exécuté'}
                                   </div>
                                 </button>
@@ -3069,7 +3068,7 @@ export default function WorkflowsPage() {
                     
                     {/* No variables message */}
                     {variables.length === 0 && getAllAvailableVariables(editingNode?.id).filter(v => v.id?.startsWith('ai-node-')).length === 0 && (
-                      <div className='text-sm text-muted-foreground text-center py-8'>
+                      <div className='py-8 text-center text-muted-foreground text-sm'>
                         Aucune variable disponible.<br/>
                         Créez des variables globales ou connectez des AI Agents.
                       </div>

@@ -1,6 +1,6 @@
-import { writeFile, appendFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
+import { writeFile, appendFile, mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 
 const LOG_DIR = path.join(process.cwd(), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'api-debug.log');
@@ -23,10 +23,10 @@ export async function logToFile(message: string, data?: any) {
     let logLine = `[${timestamp}] ${message}`;
 
     if (data !== undefined) {
-      logLine += '\n' + JSON.stringify(data, null, 2);
+      logLine += `\n${JSON.stringify(data, null, 2)}`;
     }
 
-    logLine += '\n' + '━'.repeat(80) + '\n';
+    logLine += `\n${'━'.repeat(80)}\n`;
 
     await appendFile(LOG_FILE, logLine);
 
