@@ -46,19 +46,16 @@ function PureMessages({
 
   useDataStream();
 
+  // Auto-scroll when submitting a new message
   useEffect(() => {
-    if (status === 'submitted') {
-      requestAnimationFrame(() => {
-        const container = messagesContainerRef.current;
-        if (container) {
-          container.scrollTo({
-            top: container.scrollHeight,
-            behavior: 'smooth',
-          });
-        }
-      });
+    if (status === 'submitted' || status === 'streaming') {
+      const container = messagesContainerRef.current;
+      if (container) {
+        // Force scroll to bottom
+        container.scrollTop = container.scrollHeight;
+      }
     }
-  }, [status, messagesContainerRef]);
+  }, [status, messages.length, messagesContainerRef]);
 
   return (
     <div

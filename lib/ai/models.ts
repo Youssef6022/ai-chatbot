@@ -19,17 +19,17 @@ export interface ChatModel {
 export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model-small',
-    name: 'Magistral Small',
+    name: 'Small',
     description: 'Lightweight and fast model for simple conversations',
   },
   {
     id: 'chat-model-medium',
-    name: 'Magistral Medium',
+    name: 'Medium',
     description: 'Balanced model for everyday conversations',
   },
   {
     id: 'chat-model-large',
-    name: 'Magistral Large',
+    name: 'Large',
     description: 'Most advanced model for complex tasks and reasoning',
   },
 ];
