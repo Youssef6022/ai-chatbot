@@ -340,3 +340,15 @@
     opacity: 1;
   }
 }
+
+/* Sparkle animation for thinking state */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

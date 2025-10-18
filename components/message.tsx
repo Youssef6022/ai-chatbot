@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { memo, useState } from 'react';
 import { DocumentToolResult } from './document';
-import { SparklesIcon } from './icons';
+import { SparklesIcon, AnimatedSparklesIcon } from './icons';
 import { Response } from './elements/response';
 import { MessageContent } from './elements/message';
 import {
@@ -67,8 +67,14 @@ const PurePreviewMessage = ({
         })}
       >
         {message.role === 'assistant' && (
-          <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
-            <SparklesIcon size={14} />
+          <div className="-mt-1 flex size-8 shrink-0 items-center justify-center">
+            {isLoading && !message.parts?.some(p => (p.type === 'text' && p.text) || (p.type === 'reasoning' && p.text)) ? (
+              <AnimatedSparklesIcon size={16} />
+            ) : (
+              <div className="rounded-full bg-background ring-1 ring-border p-2">
+                <SparklesIcon size={14} />
+              </div>
+            )}
           </div>
         )}
 
@@ -88,16 +94,6 @@ const PurePreviewMessage = ({
               message.role === 'user' && mode !== 'edit',
           })}
         >
-          {/* Show "Thinking..." when assistant message has no content yet */}
-          {message.role === 'assistant' && isLoading && (
-            <>
-              {!message.parts?.some(p => (p.type === 'text' && p.text) || (p.type === 'reasoning' && p.text)) && (
-                <div className="py-1 text-muted-foreground text-sm">
-                  <span className="animate-pulse">Thinking...</span>
-                </div>
-              )}
-            </>
-          )}
           {attachmentsFromMessage.length > 0 && (
             <div
               data-testid={`message-attachments`}
@@ -145,7 +141,7 @@ const PurePreviewMessage = ({
                       })}
                       style={
                         message.role === 'user'
-                          ? { backgroundColor: '#006cff' }
+                          ? { backgroundColor: 'hsl(240 5.9% 18%)' }
                           : undefined
                       }
                     >
@@ -319,14 +315,12 @@ export const ThinkingMessage = () => {
       data-role={role}
     >
       <div className="flex items-start justify-start gap-3">
-        <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
-          <SparklesIcon size={14} />
+        <div className="-mt-1 flex size-8 shrink-0 items-center justify-center">
+          <AnimatedSparklesIcon size={16} />
         </div>
 
         <div className="flex w-full flex-col gap-2 md:gap-4">
-          <div className="p-0 text-muted-foreground text-sm">
-            <span className="animate-pulse">Thinking...</span>
-          </div>
+          {/* Empty space - icon shows thinking state */}
         </div>
       </div>
     </motion.div>
