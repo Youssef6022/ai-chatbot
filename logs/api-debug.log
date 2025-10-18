@@ -6081,3 +6081,412 @@
   "textPreview": "Le garage SAS SIBILEAU est situé au 22 Rue de Maulévrier, 49300 Cholet, ce qui est le plus proche de l'adresse que vous avez fournie.\n\nVoici ses horaires d'ouverture (heure locale) :\n*   Lundi: 07:30 "
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:30.488Z] 📥 INCOMING REQUEST
+{
+  "chatId": "c72338fa-8025-415e-98bc-9c57432f662f",
+  "model": "chat-model-medium",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "donne moi le lien google maps de clos des diablotins 2 "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:31.784Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:31.786Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:31.787Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:31.790Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:31.793Z] 📤 SENDING MESSAGE
+{
+  "message": "donne moi le lien google maps de clos des diablotins 2 "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:33.136Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:33.142Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 235,
+      "textPreview": "**Pinpointing the Location**\n\nI'm now zeroing in on the Google Maps query. The key is \"clos des diab",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:34.382Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Le",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 2,
+      "textPreview": "Le",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:34.473Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " lien Google Maps pour Clos des Diablotins 2 est le suivant :",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 61,
+      "textPreview": " lien Google Maps pour Clos des Diablotins 2 est le suivant :",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:34.605Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " https://maps.google.com/?cid=9306725218048776280.",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 50,
+      "textPreview": " https://maps.google.com/?cid=9306725218048776280.",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:34.615Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 4,
+  "totalTextLength": 113,
+  "hadToolCalls": false,
+  "textPreview": "Le lien Google Maps pour Clos des Diablotins 2 est le suivant : https://maps.google.com/?cid=9306725218048776280."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:46.738Z] 📥 INCOMING REQUEST
+{
+  "chatId": "eeed30d1-ec76-4d17-86ef-db19723188e0",
+  "model": "chat-model-small",
+  "groundingType": "maps",
+  "isReasoningEnabled": false,
+  "message": "donne moi le lien google maps de clos des diablotins 2"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:47.744Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:47.746Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:47.748Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:47.749Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:47.752Z] 📤 SENDING MESSAGE
+{
+  "message": "donne moi le lien google maps de clos des diablotins 2"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:49.270Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:49.433Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 171,
+  "hadToolCalls": false,
+  "textPreview": "Clos des Diablotins 2 se trouve à l'adresse Clos des Diablotins 2, 1140 Evere, Belgique. Il est situé à 33,2 kilomètres, ce qui prend environ 27,8 minutes pour s'y rendre."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:58.122Z] 📥 INCOMING REQUEST
+{
+  "chatId": "eeed30d1-ec76-4d17-86ef-db19723188e0",
+  "model": "chat-model-small",
+  "groundingType": "maps",
+  "isReasoningEnabled": false,
+  "message": "donne moi le lien google maps de clos des diablotins 2"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:58.455Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:58.457Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:58.459Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:58.461Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:52:58.463Z] 📤 SENDING MESSAGE
+{
+  "message": "donne moi le lien google maps de clos des diablotins 2"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:00.150Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:00.212Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 171,
+  "hadToolCalls": false,
+  "textPreview": "Clos des Diablotins 2 se trouve à l'adresse Clos des Diablotins 2, 1140 Evere, Belgique. Il est situé à 33,2 kilomètres, ce qui prend environ 27,8 minutes pour s'y rendre."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:11.059Z] 📥 INCOMING REQUEST
+{
+  "chatId": "eeed30d1-ec76-4d17-86ef-db19723188e0",
+  "model": "chat-model-small",
+  "groundingType": "maps",
+  "isReasoningEnabled": false,
+  "message": "oui mais donne le lien google maps "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:11.393Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:11.395Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:11.396Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:11.398Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash-lite",
+  "historyLength": 4
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:11.400Z] 📤 SENDING MESSAGE
+{
+  "message": "oui mais donne le lien google maps "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:12.913Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T04:53:13.188Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 4,
+  "totalTextLength": 198,
+  "hadToolCalls": false,
+  "textPreview": "Clos des Diablotins 2 se trouve à l'adresse Clos des Diablotins 2, 1140 Evere, Belgique. Vous pouvez consulter son emplacement sur Google Maps ici : https://maps.google.com/?cid=9306725218048776280."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

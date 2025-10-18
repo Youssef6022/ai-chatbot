@@ -3,10 +3,10 @@ import { isTestEnvironment } from '../constants';
 
 // Model ID mapping
 export const MODEL_IDS = {
-  'chat-model-small': 'gemini-2.0-flash-lite',  // Changed to support Google Maps
+  'chat-model-small': 'gemini-2.5-flash-lite',  // Use 2.5 for Google Maps support
   'chat-model-medium': 'gemini-2.5-flash',  // Explicitly use 2.5 for Maps support
   'chat-model-large': 'gemini-2.5-pro',
-  'title-model': 'gemini-2.0-flash-lite',
+  'title-model': 'gemini-2.5-flash-lite',
   'artifact-model': 'gemini-2.5-flash',
 } as const;
 
