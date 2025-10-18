@@ -143,6 +143,7 @@ const PurePreviewMessage = ({
                           message.role === 'user',
                         'bg-transparent px-0 py-0 text-left':
                           message.role === 'assistant',
+                        'streaming-text': message.role === 'assistant' && isLoading,
                       })}
                       style={
                         message.role === 'user'
@@ -150,7 +151,7 @@ const PurePreviewMessage = ({
                           : undefined
                       }
                     >
-                      <Response>{sanitizeText(part.text)}</Response>
+                      <Response isStreaming={isLoading}>{sanitizeText(part.text)}</Response>
                     </MessageContent>
                   </div>
                 );
