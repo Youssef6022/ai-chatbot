@@ -21,9 +21,7 @@ import {
   CpuIcon,
   StopIcon,
   ChevronDownIcon,
-  GlobeIcon,
 } from './icons';
-import { MapPinIcon } from 'lucide-react';
 import { PreviewAttachment } from './preview-attachment';
 import { Button } from './ui/button';
 import {
@@ -566,9 +564,7 @@ function PureGoogleSearchButton({
   return (
     <Button
       data-testid="google-search-button"
-      className={`aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent ${
-        isEnabled && isHydrated ? 'bg-blue-primary/10 text-blue-primary hover:bg-blue-primary/20' : ''
-      }`}
+      className="aspect-square h-8 w-8 rounded-lg p-1.5 transition-all hover:bg-accent"
       onClick={(event) => {
         event.preventDefault();
         console.log('🔍 Google Search clicked! Current:', isEnabled, '→ New:', !isEnabled);
@@ -578,7 +574,21 @@ function PureGoogleSearchButton({
       variant="ghost"
       title={title}
     >
-      <GlobeIcon size={14} style={{ width: 14, height: 14 }} />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="-3 0 262 262"
+        className="h-full w-full"
+        style={{
+          filter: isEnabled && isHydrated ? 'none' : 'grayscale(100%)',
+          opacity: isEnabled && isHydrated ? 1 : 0.5,
+          transition: 'filter 0.2s ease, opacity 0.2s ease'
+        }}
+      >
+        <path fill="#4285f4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"/>
+        <path fill="#34a853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"/>
+        <path fill="#fbbc05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z"/>
+        <path fill="#eb4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"/>
+      </svg>
     </Button>
   );
 }
@@ -603,9 +613,7 @@ function PureGoogleMapsButton({
   return (
     <Button
       data-testid="google-maps-button"
-      className={`aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent ${
-        isEnabled && isHydrated ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20' : ''
-      }`}
+      className="aspect-square h-8 w-8 rounded-lg p-1.5 transition-all hover:bg-accent"
       onClick={(event) => {
         event.preventDefault();
         console.log('📍 Google Maps clicked! Current:', isEnabled, '→ New:', !isEnabled);
@@ -615,7 +623,22 @@ function PureGoogleMapsButton({
       variant="ghost"
       title={title}
     >
-      <MapPinIcon size={14} style={{ width: 14, height: 14 }} />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="-55.5 0 367 367"
+        className="h-full w-full"
+        style={{
+          filter: isEnabled && isHydrated ? 'none' : 'grayscale(100%)',
+          opacity: isEnabled && isHydrated ? 1 : 0.5,
+          transition: 'filter 0.2s ease, opacity 0.2s ease'
+        }}
+      >
+        <path fill="#34a853" d="M70.585 271.865a371 371 0 0 1 28.911 42.642c7.374 13.982 10.448 23.463 15.837 40.31c3.305 9.308 6.292 12.086 12.714 12.086c6.998 0 10.173-4.726 12.626-12.035c5.094-15.91 9.091-28.052 15.397-39.525c12.374-22.15 27.75-41.833 42.858-60.75c4.09-5.354 30.534-36.545 42.439-61.156c0 0 14.632-27.035 14.632-64.792c0-35.318-14.43-59.813-14.43-59.813l-41.545 11.126l-25.23 66.451l-6.242 9.163l-1.248 1.66l-1.66 2.078l-2.914 3.319l-4.164 4.163l-22.467 18.304l-56.17 32.432z"/>
+        <path fill="#fbbc04" d="M12.612 188.892c13.709 31.313 40.145 58.839 58.031 82.995l95.001-112.534s-13.384 17.504-37.662 17.504c-27.043 0-48.89-21.595-48.89-48.825c0-18.673 11.234-31.501 11.234-31.501l-64.489 17.28z"/>
+        <path fill="#4285f4" d="M166.705 5.787c31.552 10.173 58.558 31.53 74.893 63.023l-75.925 90.478s11.234-13.06 11.234-31.617c0-27.864-23.463-48.68-48.81-48.68c-23.969 0-37.735 17.475-37.735 17.475v-57z"/>
+        <path fill="#1a73e8" d="M30.015 45.765C48.86 23.218 82.02 0 127.736 0c22.18 0 38.89 5.823 38.89 5.823L90.29 96.516H36.205z"/>
+        <path fill="#ea4335" d="M12.612 188.892S0 164.194 0 128.414c0-33.817 13.146-63.377 30.015-82.649l60.318 50.759z"/>
+      </svg>
     </Button>
   );
 }
