@@ -3,11 +3,11 @@ import { isTestEnvironment } from '../constants';
 
 // Model ID mapping
 export const MODEL_IDS = {
-  'chat-model-small': 'gemini-2.5-flash-lite',
-  'chat-model-medium': 'gemini-2.5-flash',
+  'chat-model-small': 'gemini-flash-lite-latest',
+  'chat-model-medium': 'gemini-flash-latest',
   'chat-model-large': 'gemini-2.5-pro',
-  'title-model': 'gemini-2.5-flash-lite',
-  'artifact-model': 'gemini-2.5-flash',
+  'title-model': 'gemini-flash-lite-latest',
+  'artifact-model': 'gemini-flash-latest',
 } as const;
 
 export type ChatModelId = keyof typeof MODEL_IDS;

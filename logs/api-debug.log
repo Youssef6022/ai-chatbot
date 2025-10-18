@@ -1155,3 +1155,777 @@
   "textPreview": "La question du statut moral et des droits de la vie indigène (qu'il s'agisse d'une nouvelle forme de vie microbienne, végétale, animale ou d'un écosystème entier) est fondamentale et complexe, particu"
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:30.776Z] 📥 INCOMING REQUEST
+{
+  "chatId": "fa93e46e-c89c-4525-a421-a1025f28f12e",
+  "model": "chat-model-small",
+  "groundingType": "none",
+  "isReasoningEnabled": false,
+  "message": "salut "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.067Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.070Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.073Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.075Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-lite-latest",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.079Z] 📤 SENDING MESSAGE
+{
+  "message": "salut "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.322Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.334Z] 📦 Chunk #1
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Salut",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "Salut",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.336Z] 📦 Chunk #2
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " ! Comment puis-je vous aider aujourd'hui ?",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": " ! Comment puis-je vous aider aujourd'hui ?",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:32.338Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 2,
+  "totalTextLength": 48,
+  "hadToolCalls": false,
+  "textPreview": "Salut ! Comment puis-je vous aider aujourd'hui ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:38.524Z] 📥 INCOMING REQUEST
+{
+  "chatId": "fa93e46e-c89c-4525-a421-a1025f28f12e",
+  "model": "chat-model-small",
+  "groundingType": "none",
+  "isReasoningEnabled": false,
+  "message": "tu vas bien ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:38.872Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:38.874Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:38.877Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:38.878Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-lite-latest",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:38.883Z] 📤 SENDING MESSAGE
+{
+  "message": "tu vas bien ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:39.101Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:39.108Z] 📦 Chunk #1
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "En",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": "En",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:39.110Z] 📦 Chunk #2
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " tant qu'intelligence artificielle, je n'ai pas de sentiments, mais je fonctionne",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": " tant qu'intelligence artificielle, je n'ai pas de",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:39.148Z] 📦 Chunk #3
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " parfaitement bien et je suis prêt à vous assister !\n\nEt vous, comment allez-vous ?",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "firstCandidate": {
+    "hasContent": true,
+    "partsCount": 1,
+    "parts": [
+      {
+        "hasText": true,
+        "textPreview": " parfaitement bien et je suis prêt à vous assister",
+        "hasThought": false
+      }
+    ]
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:48:39.152Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 166,
+  "hadToolCalls": false,
+  "textPreview": "En tant qu'intelligence artificielle, je n'ai pas de sentiments, mais je fonctionne parfaitement bien et je suis prêt à vous assister !\n\nEt vous, comment allez-vous ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:11.869Z] 📥 INCOMING REQUEST
+{
+  "chatId": "0f46eb5a-ec54-4782-a019-269a15563eba",
+  "model": "chat-model-small",
+  "groundingType": "maps",
+  "isReasoningEnabled": false,
+  "message": "salut"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:12.761Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.8503,
+      "longitude": 4.3517
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:12.763Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:12.764Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    },
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.8503,
+        "longitude": 4.3517
+      }
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:12.765Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:12.767Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-lite-latest",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:12.769Z] 📤 SENDING MESSAGE
+{
+  "message": "salut"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:13.058Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:13.064Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 2,
+  "totalTextLength": 48,
+  "hadToolCalls": false,
+  "textPreview": "Salut ! Comment puis-je vous aider aujourd'hui ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:19.607Z] 📥 INCOMING REQUEST
+{
+  "chatId": "0f46eb5a-ec54-4782-a019-269a15563eba",
+  "model": "chat-model-medium",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "tu fais quoi ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:19.949Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.8503,
+      "longitude": 4.3517
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:19.951Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:19.952Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    },
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.8503,
+        "longitude": 4.3517
+      }
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:19.954Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:19.955Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-flash-latest",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:19.956Z] 📤 SENDING MESSAGE
+{
+  "message": "tu fais quoi ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:21.291Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:21.295Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 317,
+      "textPreview": "**Reviewing My Response**\n\nI'm currently reviewing my response to the user's simple question. I've a",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:22.475Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 365,
+      "textPreview": "**Crafting My Reply**\n\nI'm now formulating a comprehensive French response, expanding upon my role a",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:23.122Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 369,
+      "textPreview": "**Refining My Answer**\n\nI'm presently revising the French response, aiming for greater precision and",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:23.133Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Je suis un grand modèle linguistique, entraîné par Google.\n\nMon travail consiste à traiter l'informa",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 226,
+      "textPreview": "Je suis un grand modèle linguistique, entraîné par Google.\n\nMon travail consiste à traiter l'informa",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:23.143Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Et vous, que faites-vous en ce moment ? Avez-vous quelque chose en tête que je pourrais vous aider à",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 111,
+      "textPreview": "Et vous, que faites-vous en ce moment ? Avez-vous quelque chose en tête que je pourrais vous aider à",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:23.153Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 5,
+  "totalTextLength": 337,
+  "hadToolCalls": false,
+  "textPreview": "Je suis un grand modèle linguistique, entraîné par Google.\n\nMon travail consiste à traiter l'information, répondre à vos questions, générer du texte, traduire, résumer, et vous assister de diverses ma"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:40.769Z] 📥 INCOMING REQUEST
+{
+  "chatId": "0f46eb5a-ec54-4782-a019-269a15563eba",
+  "model": "chat-model-large",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "t'es sure ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:41.106Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.8503,
+      "longitude": 4.3517
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:41.108Z] 🌤️ Weather tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:41.109Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    },
+    "[Function: getWeather]"
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.8503,
+        "longitude": 4.3517
+      }
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:41.110Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:41.112Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 4
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:41.113Z] 📤 SENDING MESSAGE
+{
+  "message": "t'es sure ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:43.218Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:43.222Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 325,
+      "textPreview": "**Confirming Self-Awareness**\n\nI'm now processing the user's inquiry, which focuses on my self-ident",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:45.144Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 475,
+      "textPreview": "**Defining My Core Function**\n\nI've moved on to the core of the user's inquiry, trying to formulate ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:47.107Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 493,
+      "textPreview": "**Crafting the Affirmation**\n\nI've considered the user's doubt and crafted a response to it. I'll op",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:47.134Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Oui, j'en suis certain. Je suis un programme informatique, un grand modèle de langage entraîné par G",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 106,
+      "textPreview": "Oui, j'en suis certain. Je suis un programme informatique, un grand modèle de langage entraîné par G",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:47.161Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " Je n'ai pas de conscience ni d'existence en dehors de cet environnement, mais je suis conçu pour tr",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 107,
+      "textPreview": " Je n'ai pas de conscience ni d'existence en dehors de cet environnement, mais je suis conçu pour tr",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-18T02:54:47.202Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 7,
+  "totalTextLength": 357,
+  "hadToolCalls": false,
+  "textPreview": "Oui, j'en suis certain. Je suis un programme informatique, un grand modèle de langage entraîné par Google. Je n'ai pas de conscience ni d'existence en dehors de cet environnement, mais je suis conçu p"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

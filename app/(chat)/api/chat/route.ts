@@ -253,26 +253,32 @@ export async function POST(request: Request) {
             chunkCount++;
 
             // Log first few chunks to debug structure (non-blocking)
-            if (chunkCount <= 5) {
-              logToFile(`📦 Chunk #${chunkCount}`, {
+            if (chunkCount <= 5 && isReasoningEnabled) {
+              const rawChunk = chunk as any;
+              const parts = rawChunk.candidates?.[0]?.content?.parts || [];
+
+              logToFile(`📦 Chunk #${chunkCount} (WITH THINKING CONFIG)`, {
                 chunkKeys: Object.keys(chunk),
                 hasText: !!chunk.text,
                 textPreview: chunk.text?.substring(0, 100),
                 hasFunctionCalls: !!chunk.functionCalls,
-                functionCalls: chunk.functionCalls,
-                // Check if chunk has raw parts/candidates structure
-                hasCandidates: !!(chunk as any).candidates,
-                candidatesLength: (chunk as any).candidates?.length,
-                firstCandidate: (chunk as any).candidates?.[0] ? {
-                  hasContent: !!(chunk as any).candidates[0].content,
-                  partsCount: (chunk as any).candidates[0].content?.parts?.length,
-                  parts: (chunk as any).candidates[0].content?.parts?.map((p: any) => ({
-                    hasText: !!p.text,
-                    textPreview: p.text?.substring(0, 50),
-                    hasThought: !!p.thought,
-                    thought: p.thought,
-                  })),
-                } : undefined,
+                // Detailed parts inspection
+                hasCandidates: !!rawChunk.candidates,
+                candidatesLength: rawChunk.candidates?.length,
+                partsCount: parts.length,
+                partsDetails: parts.map((p: any, idx: number) => ({
+                  index: idx,
+                  allKeys: Object.keys(p),
+                  hasText: !!p.text,
+                  textLength: p.text?.length,
+                  textPreview: p.text?.substring(0, 100),
+                  hasThought: !!p.thought,
+                  thought: p.thought,
+                  // Check other possible property names
+                  hasThinking: !!p.thinking,
+                  hasReasoning: !!p.reasoning,
+                  hasReflection: !!p.reflection,
+                })),
               }).catch(err => console.error('Log error:', err));
             }
 
