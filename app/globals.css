@@ -280,24 +280,25 @@
   @apply bg-blue-200 hover:bg-blue-300 dark:hover:bg-blue-400/50 dark:text-blue-50 dark:bg-blue-500/40;
 }
 
-/* minimal scrollbar styling */
+/* visible scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: hsl(240 3.7% 12%);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
+  background: hsl(240 5% 45%);
+  border-radius: 10px;
   transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: --alpha(var(--muted-foreground) / 0.5);
+  background: hsl(240 5% 55%);
 }
 
 ::-webkit-scrollbar-corner {
@@ -306,8 +307,8 @@
 
 /* firefox scrollbar styling */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  scrollbar-width: auto;
+  scrollbar-color: hsl(240 5% 45%) hsl(240 3.7% 12%);
 }
 
 /* Smooth streaming text animation */
