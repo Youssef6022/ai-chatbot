@@ -3,11 +3,11 @@ import { isTestEnvironment } from '../constants';
 
 // Model ID mapping
 export const MODEL_IDS = {
-  'chat-model-small': 'gemini-flash-lite-latest',
-  'chat-model-medium': 'gemini-flash-latest',
+  'chat-model-small': 'gemini-2.0-flash-lite',  // Changed to support Google Maps
+  'chat-model-medium': 'gemini-2.5-flash',  // Explicitly use 2.5 for Maps support
   'chat-model-large': 'gemini-2.5-pro',
-  'title-model': 'gemini-flash-lite-latest',
-  'artifact-model': 'gemini-flash-latest',
+  'title-model': 'gemini-2.0-flash-lite',
+  'artifact-model': 'gemini-2.5-flash',
 } as const;
 
 export type ChatModelId = keyof typeof MODEL_IDS;

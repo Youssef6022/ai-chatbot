@@ -157,23 +157,22 @@ export async function POST(request: Request) {
       tools.push({ googleMaps: {} });
 
       // For Google Maps, we need to provide toolConfig with location context
-      // You can optionally extract lat/lng from the message or use a default location
+      // Default location (Louvain-la-Neuve, Belgium)
       toolConfig = {
         retrievalConfig: {
-          // Default location (Brussels, Belgium - adjust as needed)
           latLng: {
-            latitude: 50.8503,
-            longitude: 4.3517,
+            latitude: 50.6686,
+            longitude: 4.6111,
           },
+          languageCode: 'fr-BE',
         },
       };
 
       await logToFile('📍 Google Maps tool added with toolConfig', toolConfig);
     }
 
-    // Add weather tool (using automatic function calling)
-    tools.push(getWeather);
-    await logToFile('🌤️ Weather tool added');
+    // Note: Weather tool removed - it conflicts with Google GenAI SDK tool format
+    // Only Google-provided tools (googleSearch, googleMaps) are supported
 
     await logToFile('🔧 TOOLS CONFIGURATION', {
       tools: tools.map(t => {
