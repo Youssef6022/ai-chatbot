@@ -25,7 +25,6 @@ import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
 import type { VisibilityType } from '@/components/visibility-selector';
 import { genaiClient, getModelName, type ChatModelId } from '@/lib/ai/providers';
-import { logToFile, clearLogFile } from '@/lib/logger';
 
 export const maxDuration = 60;
 
@@ -55,14 +54,6 @@ export async function POST(request: Request) {
       groundingType?: 'none' | 'search' | 'maps';
       isReasoningEnabled?: boolean;
     } = requestBody;
-
-    await logToFile('📥 INCOMING REQUEST', {
-      chatId: id,
-      model: selectedChatModel,
-      groundingType,
-      isReasoningEnabled,
-      message: message.parts.map(p => p.type === 'text' ? p.text : `[${p.type}]`).join(' '),
-    });
 
     if (!genaiClient) {
       return new Response('GenAI client not initialized', { status: 500 });
@@ -148,42 +139,15 @@ export async function POST(request: Request) {
 
     // Configure tools based on grounding type
     const tools: any[] = [];
-    let toolConfig: any = undefined;
 
     if (groundingType === 'search') {
       tools.push({ googleSearch: {} });
-      await logToFile('🔍 Google Search tool added');
     } else if (groundingType === 'maps') {
       tools.push({ googleMaps: {} });
-
-      // For Google Maps, we need to provide toolConfig with location context
-      // You can optionally extract lat/lng from the message or use a default location
-      toolConfig = {
-        retrievalConfig: {
-          // Default location (Brussels, Belgium - adjust as needed)
-          latLng: {
-            latitude: 50.8503,
-            longitude: 4.3517,
-          },
-        },
-      };
-
-      await logToFile('📍 Google Maps tool added with toolConfig', toolConfig);
     }
 
     // Add weather tool (using automatic function calling)
     tools.push(getWeather);
-    await logToFile('🌤️ Weather tool added');
-
-    await logToFile('🔧 TOOLS CONFIGURATION', {
-      tools: tools.map(t => {
-        if (typeof t === 'function') return `[Function: ${t.name}]`;
-        return t;
-      }),
-      toolsCount: tools.length,
-      hasToolConfig: !!toolConfig,
-      toolConfig,
-    });
 
     // Configure generation
     const config: any = {
@@ -195,10 +159,6 @@ export async function POST(request: Request) {
       config.tools = tools;
     }
 
-    if (toolConfig) {
-      config.toolConfig = toolConfig;
-    }
-
     if (isReasoningEnabled) {
       config.thinkingConfig = {
         thinkingBudget: 8192,
@@ -206,24 +166,11 @@ export async function POST(request: Request) {
       };
     }
 
-    await logToFile('⚙️ GENERATION CONFIG', {
-      temperature: config.temperature,
-      maxOutputTokens: config.maxOutputTokens,
-      hasTools: !!config.tools,
-      toolsCount: config.tools?.length,
-      hasThinkingConfig: !!config.thinkingConfig,
-    });
-
     // Create streaming response
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          await logToFile('🚀 CREATING CHAT SESSION', {
-            model: getModelName(selectedChatModel as ChatModelId),
-            historyLength: history.length,
-          });
-
           // Create chat with history
           const chat = genaiClient.chats.create({
             model: getModelName(selectedChatModel as ChatModelId),
@@ -231,58 +178,20 @@ export async function POST(request: Request) {
             config: config,
           });
 
-          await logToFile('📤 SENDING MESSAGE', {
-            message: currentMessageText,
-          });
-
           // Send message and stream response
           const response = await chat.sendMessageStream({
             message: currentMessageText,
           });
 
-          await logToFile('📡 STREAMING STARTED');
-
           let fullText = '';
-          let fullThinkingText = '';
           const assistantMessageId = generateUUID();
-          let chunkCount = 0;
-          let hasToolCalls = false;
 
           // Stream the response
           for await (const chunk of response) {
-            chunkCount++;
-
-            // Log first few chunks and tool calls (non-blocking)
-            if (chunkCount <= 3 || chunk.functionCalls || chunk.thinkingText) {
-              logToFile(`📦 Chunk #${chunkCount}`, {
-                hasText: !!chunk.text,
-                textPreview: chunk.text?.substring(0, 100),
-                hasThinkingText: !!chunk.thinkingText,
-                thinkingPreview: chunk.thinkingText?.substring(0, 100),
-                hasFunctionCalls: !!chunk.functionCalls,
-                functionCalls: chunk.functionCalls,
-              }).catch(err => console.error('Log error:', err));
-
-              if (chunk.functionCalls) {
-                hasToolCalls = true;
-              }
-            }
-
-            // Stream thinking text (reasoning)
-            if (chunk.thinkingText) {
-              fullThinkingText += chunk.thinkingText;
-
-              const thinkingData = {
-                type: 'thinking-delta',
-                thinkingDelta: chunk.thinkingText,
-              };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(thinkingData)}\n\n`));
-            }
-
-            // Stream response text
             if (chunk.text) {
               fullText += chunk.text;
 
+              // Send text delta
               const data = {
                 type: 'text-delta',
                 textDelta: chunk.text,
@@ -290,13 +199,6 @@ export async function POST(request: Request) {
               controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
             }
           }
-
-          await logToFile('✅ STREAMING COMPLETE', {
-            totalChunks: chunkCount,
-            totalTextLength: fullText.length,
-            hadToolCalls: hasToolCalls,
-            textPreview: fullText.substring(0, 200),
-          });
 
           // Save messages to database if user is authenticated
           if (user) {
@@ -306,7 +208,6 @@ export async function POST(request: Request) {
                 chatId: id,
                 role: 'user' as const,
                 parts: message.parts,
-                attachments: [], // Required field
                 createdAt: new Date(),
               },
               {
@@ -314,7 +215,6 @@ export async function POST(request: Request) {
                 chatId: id,
                 role: 'assistant' as const,
                 parts: [{ type: 'text' as const, text: fullText }],
-                attachments: [], // Required field
                 createdAt: new Date(),
               },
             ];
@@ -323,8 +223,8 @@ export async function POST(request: Request) {
 
             // Update last context
             await updateChatLastContextById({
-              chatId: id,
-              context: { modelId: selectedChatModel } as any,
+              id,
+              lastContext: { modelId: selectedChatModel },
             });
           }
 
@@ -351,10 +251,8 @@ export async function POST(request: Request) {
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
+        'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no', // Disable nginx buffering
-        'Transfer-Encoding': 'chunked', // Force chunked transfer
       },
     });
   } catch (error: any) {

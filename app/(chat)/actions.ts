@@ -1,6 +1,5 @@
 'use server';
 
-import { generateText, type UIMessage } from 'ai';
 import { cookies } from 'next/headers';
 import {
   deleteMessagesByChatIdAfterTimestamp,
@@ -8,7 +7,8 @@ import {
   updateChatVisiblityById,
 } from '@/lib/db/queries';
 import type { VisibilityType } from '@/components/visibility-selector';
-import { myProvider } from '@/lib/ai/providers';
+import { genaiClient, getModelName } from '@/lib/ai/providers';
+import type { ChatMessage } from '@/lib/types';
 
 export async function saveChatModelAsCookie(model: string) {
   const cookieStore = await cookies();
@@ -18,19 +18,25 @@ export async function saveChatModelAsCookie(model: string) {
 export async function generateTitleFromUserMessage({
   message,
 }: {
-  message: UIMessage;
+  message: ChatMessage;
 }) {
-  const { text: title } = await generateText({
-    model: myProvider.languageModel('title-model'),
-    system: `\n
-    - you will generate a short title based on the first message a user begins a conversation with
-    - ensure it is not more than 80 characters long
-    - the title should be a summary of the user's message
-    - do not use quotes or colons`,
-    prompt: JSON.stringify(message),
-  });
+  if (!genaiClient) {
+    return 'New Chat';
+  }
 
-  return title;
+  try {
+    const response = await genaiClient.models.generateContent({
+      model: getModelName('title-model'),
+      contents: `Generate a short title (max 80 characters) based on this message. Do not use quotes or colons. Just return the title text.
+
+Message: ${JSON.stringify(message)}`,
+    });
+
+    return response.text?.trim() || 'New Chat';
+  } catch (error) {
+    console.error('Failed to generate title:', error);
+    return 'New Chat';
+  }
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

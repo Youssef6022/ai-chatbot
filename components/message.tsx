@@ -90,6 +90,16 @@ const PurePreviewMessage = ({
               message.role === 'user' && mode !== 'edit',
           })}
         >
+          {/* Show "Thinking..." when assistant message has no content yet */}
+          {message.role === 'assistant' && isLoading && (
+            <>
+              {!message.parts?.some(p => (p.type === 'text' && p.text) || (p.type === 'reasoning' && p.text)) && (
+                <div className="py-1 text-muted-foreground text-sm">
+                  <span className="animate-pulse">Thinking...</span>
+                </div>
+              )}
+            </>
+          )}
           {attachmentsFromMessage.length > 0 && (
             <div
               data-testid={`message-attachments`}
@@ -270,7 +280,7 @@ const PurePreviewMessage = ({
             }
           })}
 
-          {!isReadonly && (
+          {!isReadonly && message.role === 'assistant' && message.parts?.some(p => p.type === 'text' && p.text?.trim()) && (
             <MessageActions
               key={`action-${message.id}`}
               chatId={chatId}

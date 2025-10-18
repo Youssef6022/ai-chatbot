@@ -23,7 +23,7 @@ import {
   ChevronDownIcon,
   GlobeIcon,
 } from './icons';
-import { BrainIcon } from 'lucide-react';
+import { BrainIcon, MapPinIcon } from 'lucide-react';
 import { PreviewAttachment } from './preview-attachment';
 import { Button } from './ui/button';
 import {
@@ -46,7 +46,6 @@ import { chatModels } from '@/lib/ai/models';
 import { saveChatModelAsCookie } from '@/app/(chat)/actions';
 import { startTransition } from 'react';
 import { Context } from './elements/context';
-import { myProvider } from '@/lib/ai/providers';
 import { FileSelectionModal } from './library/file-selection-modal';
 import { useQuota } from '@/lib/hooks/use-quota';
 
@@ -133,9 +132,9 @@ function PureMultimodalInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
-  const [isSearchGroundingEnabled, setIsSearchGroundingEnabled] = useLocalStorage(
-    'search-grounding-enabled',
-    false,
+  const [groundingType, setGroundingType] = useLocalStorage<'none' | 'search' | 'maps'>(
+    'grounding-type',
+    'none',
   );
   const [isReasoningEnabled, setIsReasoningEnabled] = useLocalStorage(
     'reasoning-enabled',
@@ -149,6 +148,8 @@ function PureMultimodalInput({
 
   const submitForm = useCallback(async () => {
     window.history.replaceState({}, '', `/chat/${chatId}`);
+
+    console.log('🚀 submitForm called with:', { groundingType, isReasoningEnabled });
 
     // Déterminer la taille du modèle à partir de l'ID
     let modelSize: 'small' | 'medium' | 'large' = 'small';
@@ -167,6 +168,13 @@ function PureMultimodalInput({
       return;
     }
 
+    const messageData = {
+      groundingType,
+      isReasoningEnabled,
+    };
+
+    console.log('📤 Sending message with data:', messageData);
+
     sendMessage({
       role: 'user',
       parts: [
@@ -181,10 +189,7 @@ function PureMultimodalInput({
           text: input,
         },
       ],
-      data: {
-        isSearchGroundingEnabled,
-        isReasoningEnabled,
-      },
+      data: messageData,
     });
 
     setAttachments([]);
@@ -206,6 +211,8 @@ function PureMultimodalInput({
     chatId,
     selectedModelId,
     updateQuota,
+    groundingType,
+    isReasoningEnabled,
   ]);
 
   const uploadFile = async (file: File) => {
@@ -235,9 +242,10 @@ function PureMultimodalInput({
     }
   };
 
-  const modelResolver = useMemo(() => {
-    return myProvider.languageModel(selectedModelId);
-  }, [selectedModelId]);
+  // Note: modelResolver not needed with GenAI SDK
+  // const modelResolver = useMemo(() => {
+  //   return myProvider.languageModel(selectedModelId);
+  // }, [selectedModelId]);
 
   const contextProps = useMemo(
     () => ({
@@ -364,9 +372,15 @@ function PureMultimodalInput({
               selectedModelId={selectedModelId}
               onFileModalOpen={() => setIsFileModalOpen(true)}
             />
-            <SearchGroundingButton
-              isEnabled={isSearchGroundingEnabled}
-              onToggle={setIsSearchGroundingEnabled}
+            <GoogleSearchButton
+              isEnabled={groundingType === 'search'}
+              onToggle={(enabled) => setGroundingType(enabled ? 'search' : 'none')}
+              status={status}
+              isHydrated={isHydrated}
+            />
+            <GoogleMapsButton
+              isEnabled={groundingType === 'maps'}
+              onToggle={(enabled) => setGroundingType(enabled ? 'maps' : 'none')}
               status={status}
               isHydrated={isHydrated}
             />
@@ -541,7 +555,7 @@ function PureStopButton({
 
 const StopButton = memo(PureStopButton);
 
-function PureSearchGroundingButton({
+function PureGoogleSearchButton({
   isEnabled,
   onToggle,
   status,
@@ -552,19 +566,19 @@ function PureSearchGroundingButton({
   status: UseChatHelpers<ChatMessage>['status'];
   isHydrated: boolean;
 }) {
-  // Éviter l'erreur d'hydratation en utilisant une valeur par défaut côté serveur
   const title = isHydrated
-    ? isEnabled ? 'Désactiver la recherche web' : 'Activer la recherche web'
-    : 'Recherche web';
+    ? isEnabled ? 'Désactiver Google Search' : 'Activer Google Search'
+    : 'Google Search';
 
   return (
     <Button
-      data-testid="search-grounding-button"
+      data-testid="google-search-button"
       className={`aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent ${
         isEnabled && isHydrated ? 'bg-blue-primary/10 text-blue-primary hover:bg-blue-primary/20' : ''
       }`}
       onClick={(event) => {
         event.preventDefault();
+        console.log('🔍 Google Search clicked! Current:', isEnabled, '→ New:', !isEnabled);
         onToggle(!isEnabled);
       }}
       disabled={status !== 'ready'}
@@ -576,7 +590,44 @@ function PureSearchGroundingButton({
   );
 }
 
-const SearchGroundingButton = memo(PureSearchGroundingButton);
+const GoogleSearchButton = memo(PureGoogleSearchButton);
+
+function PureGoogleMapsButton({
+  isEnabled,
+  onToggle,
+  status,
+  isHydrated,
+}: {
+  isEnabled: boolean;
+  onToggle: (enabled: boolean) => void;
+  status: UseChatHelpers<ChatMessage>['status'];
+  isHydrated: boolean;
+}) {
+  const title = isHydrated
+    ? isEnabled ? 'Désactiver Google Maps' : 'Activer Google Maps'
+    : 'Google Maps';
+
+  return (
+    <Button
+      data-testid="google-maps-button"
+      className={`aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent ${
+        isEnabled && isHydrated ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20' : ''
+      }`}
+      onClick={(event) => {
+        event.preventDefault();
+        console.log('📍 Google Maps clicked! Current:', isEnabled, '→ New:', !isEnabled);
+        onToggle(!isEnabled);
+      }}
+      disabled={status !== 'ready'}
+      variant="ghost"
+      title={title}
+    >
+      <MapPinIcon size={14} style={{ width: 14, height: 14 }} />
+    </Button>
+  );
+}
+
+const GoogleMapsButton = memo(PureGoogleMapsButton);
 
 function PureReasoningButton({
   isEnabled,

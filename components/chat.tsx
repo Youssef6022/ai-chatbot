@@ -1,8 +1,7 @@
 'use client';
 
-import { DefaultChatTransport } from 'ai';
-import { useChat } from '@ai-sdk/react';
 import { useEffect, useState, useRef } from 'react';
+import { useChatGenAI } from '@/hooks/use-chat-genai';
 import useSWR, { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
@@ -18,7 +17,6 @@ import { toast } from './toast';
 import type { AuthSession } from '@/lib/auth/types';
 import { useSearchParams } from 'next/navigation';
 import { useChatVisibility } from '@/hooks/use-chat-visibility';
-import { useAutoResume } from '@/hooks/use-auto-resume';
 import { ChatSDKError } from '@/lib/errors';
 import type { Attachment, ChatMessage } from '@/lib/types';
 import type { AppUsage } from '@/lib/usage';
@@ -86,40 +84,18 @@ export function Chat({
     status,
     stop,
     regenerate,
-    resumeStream,
-  } = useChat<ChatMessage>({
+  } = useChatGenAI({
     id,
-    messages: initialMessages,
-    experimental_throttle: 100,
-    generateId: generateUUID,
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-      fetch: fetchWithErrorHandlers,
-      prepareSendMessagesRequest({ messages, id, body }) {
-        const lastMessage = messages.at(-1);
-        return {
-          body: {
-            id,
-            message: lastMessage,
-            selectedChatModel: currentModelIdRef.current,
-            selectedVisibilityType: visibilityType,
-            isSearchGroundingEnabled: lastMessage?.data?.isSearchGroundingEnabled || false,
-            isReasoningEnabled: lastMessage?.data?.isReasoningEnabled || false,
-            ...body,
-          },
-        };
-      },
-    }),
-    onData: (dataPart) => {
-      setDataStream((ds) => (ds ? [...ds, dataPart] : []));
-      if (dataPart.type === 'data-usage') setUsage(dataPart.data);
-    },
+    initialMessages,
+    selectedModelId: currentModelId,
+    selectedVisibilityType: visibilityType,
+    groundingType: 'none', // Will be overridden by message data
+    isReasoningEnabled: false, // Will be overridden by message data
     onFinish: () => {
       mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
-        // Check if it's a credit card error
         if (
           error.message?.includes('AI Gateway requires a valid credit card')
         ) {
@@ -130,6 +106,11 @@ export function Chat({
             description: error.message,
           });
         }
+      } else {
+        toast({
+          type: 'error',
+          description: error.message || 'An error occurred',
+        });
       }
     },
   });
@@ -159,12 +140,13 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
 
-  useAutoResume({
-    autoResume,
-    initialMessages,
-    resumeStream,
-    setMessages,
-  });
+  // Note: Auto-resume not yet supported with GenAI SDK
+  // useAutoResume({
+  //   autoResume,
+  //   initialMessages,
+  //   resumeStream,
+  //   setMessages,
+  // });
 
   return (
     <>

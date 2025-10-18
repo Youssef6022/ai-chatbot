@@ -55,10 +55,14 @@ export const postRequestBodySchema = z.object({
     id: z.string().uuid(),
     role: z.enum(['user']),
     parts: z.array(partSchema),
+    data: z.object({
+      groundingType: z.enum(['none', 'search', 'maps']).optional(),
+      isReasoningEnabled: z.boolean().optional(),
+    }).optional(),
   }),
   selectedChatModel: z.enum(['chat-model-small', 'chat-model-medium', 'chat-model-large']),
   selectedVisibilityType: z.enum(['public', 'private']),
-  isSearchGroundingEnabled: z.boolean().optional(),
+  groundingType: z.enum(['none', 'search', 'maps']).optional(),
   isReasoningEnabled: z.boolean().optional(),
 });
 
