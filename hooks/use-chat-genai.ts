@@ -64,7 +64,7 @@ export function useChatGenAI({
           parts: [],
         },
       ]);
-      setStatus('submitting');
+      setStatus('streaming'); // Set to streaming immediately to show "Thinking..."
 
       try {
         abortControllerRef.current = new AbortController();
@@ -108,8 +108,7 @@ export function useChatGenAI({
           throw new Error('No response body');
         }
 
-        setStatus('streaming');
-
+        // Status is already 'streaming' from earlier
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let accumulatedText = '';
