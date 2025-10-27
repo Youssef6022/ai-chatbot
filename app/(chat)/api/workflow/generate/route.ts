@@ -15,9 +15,10 @@ export async function POST(request: NextRequest) {
       return new Response('GenAI client not initialized', { status: 500 });
     }
 
-    // Build message content
+    // Build message content - support both text and files (images)
     let currentMessage = '';
-    const history: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+    const messageParts: Array<any> = [];
+    const history: Array<{ role: 'user' | 'model'; parts: Array<any> }> = [];
 
     if (prompt && typeof prompt === 'string') {
       // Old format - single prompt
@@ -32,11 +33,38 @@ export async function POST(request: NextRequest) {
       if (userPrompt && typeof userPrompt === 'string' && userPrompt.trim()) {
         currentMessage += userPrompt;
 
-        // If there are files, append their content
+        // If there are files, process them for multimodal input
         if (files && Array.isArray(files) && files.length > 0) {
+          console.log('📨 Processing files for workflow:', files.length);
+
           for (const file of files) {
             if (file.url && file.contentType) {
-              if (!file.contentType.startsWith('image/')) {
+              if (file.contentType.startsWith('image/')) {
+                // For images, fetch and convert to base64 for AI vision
+                console.log('🖼️ Processing image:', file.url);
+                try {
+                  const fileResponse = await fetch(file.url);
+                  console.log('✅ Image fetch status:', fileResponse.status);
+
+                  if (fileResponse.ok) {
+                    const arrayBuffer = await fileResponse.arrayBuffer();
+                    console.log('📦 ArrayBuffer size:', arrayBuffer.byteLength);
+
+                    const base64Data = Buffer.from(arrayBuffer).toString('base64');
+                    console.log('🔐 Base64 data length:', base64Data.length);
+
+                    messageParts.push({
+                      inlineData: {
+                        mimeType: file.contentType,
+                        data: base64Data,
+                      },
+                    });
+                    console.log('✅ Image part added successfully');
+                  }
+                } catch (error) {
+                  console.error(`❌ Error fetching image ${file.name}:`, error);
+                }
+              } else {
                 // For text files, fetch content and add as text
                 try {
                   const fileResponse = await fetch(file.url);
@@ -107,10 +135,28 @@ export async function POST(request: NextRequest) {
       config: config,
     });
 
+    // Prepare message - use parts if there are images, otherwise use text
+    const hasImages = messageParts.length > 0;
+    console.log('🚀 Sending to AI - hasImages:', hasImages, 'parts count:', messageParts.length);
+
+    let finalMessage: any;
+    if (hasImages) {
+      // Add text part to the beginning
+      finalMessage = [
+        { text: currentMessage },
+        ...messageParts,
+      ];
+    } else {
+      // Simple text message
+      finalMessage = currentMessage;
+    }
+
     // Send message and get response
     const response = await chat.sendMessage({
-      message: currentMessage,
+      message: finalMessage,
     });
+
+    console.log('✅ Message sent to AI, got response');
 
     // Extract text from response
     const fullText = response.text || '';
