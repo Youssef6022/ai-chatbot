@@ -1682,7 +1682,7 @@ export default function WorkflowsPage() {
       position: { x: Math.random() * 300 + 400, y: Math.random() * 300 },
       data: {
         label: 'Decision',
-        selectedModel: 'chat-model-small', // Use small model for decisions
+        selectedModel: 'chat-model-medium', // Fixed to medium model
         result: '',
         variableName: `Decision ${nextNumber}`,
         instructions: '', // User prompt renamed to instructions
@@ -3050,42 +3050,6 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           An "Else" output is always available for unmatched responses
                         </span>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Model Selection */}
-                  <div className="flex items-center justify-between">
-                    <Label className='font-medium text-muted-foreground text-xs'>Model</Label>
-                    <div className="relative">
-                      <select
-                        value={editingNode.data.selectedModel || 'chat-model-small'}
-                        onChange={(e) => {
-                          updateNodeData(editingNode.id, { selectedModel: e.target.value });
-                          setEditingNode({
-                            ...editingNode,
-                            data: { ...editingNode.data, selectedModel: e.target.value }
-                          });
-                        }}
-                        className='cursor-pointer appearance-none bg-transparent pr-6 text-foreground text-sm focus:outline-none'
-                        style={{
-                          colorScheme: 'dark'
-                        }}
-                      >
-                        <option value="chat-model-small" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Small</option>
-                        <option value="chat-model-medium" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Medium</option>
-                        <option value="chat-model-large" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Large</option>
-                      </select>
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        className='-translate-y-1/2 pointer-events-none absolute top-1/2 right-0 transform text-muted-foreground'
-                      >
-                        <path d="M6 9l6 6 6-6"/>
-                      </svg>
                     </div>
                   </div>
                 </>
