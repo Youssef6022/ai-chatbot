@@ -70,15 +70,15 @@ export function DecisionNode({ data, selected }: NodeProps) {
         style={typeof dynamicHeight === 'number' ? { height: `${dynamicHeight}px` } : {}}
       >
         {/* Header section - showing instructions */}
-        <div className="border-b border-border/40 px-3 py-3">
+        <div className='border-border/40 border-b px-3 py-3'>
           <div className='flex items-start gap-2.5'>
             {/* Icon */}
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" className="mt-0.5 text-purple-600 dark:text-purple-400 flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" className='mt-0.5 flex-shrink-0 text-purple-600 dark:text-purple-400'>
               <path fill="currentColor" d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V7l-10-5m0 2.18L18 7.5v8.5c0 4.27-2.91 8.28-6 9.31c-3.09-1.03-6-5.04-6-9.31V7.5l6-3.32M11 11v6h2v-6h-2m0-4v2h2V7h-2z"/>
             </svg>
 
             {/* Instructions or name */}
-            <div className='flex-1 min-w-0'>
+            <div className='min-w-0 flex-1'>
               {nodeData.instructions ? (
                 <div className='text-gray-700 text-sm leading-relaxed dark:text-gray-300'>
                   {nodeData.instructions}
@@ -89,7 +89,7 @@ export function DecisionNode({ data, selected }: NodeProps) {
                 </div>
               )}
               {nodeData.selectedChoice && (
-                <div className='mt-1.5 inline-block rounded-full bg-purple-100 px-2 py-0.5 font-medium text-purple-700 text-[10px] dark:bg-purple-900/30 dark:text-purple-300'>
+                <div className='mt-1.5 inline-block rounded-full bg-purple-100 px-2 py-0.5 font-medium text-[10px] text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'>
                   → {nodeData.selectedChoice}
                 </div>
               )}
@@ -153,7 +153,7 @@ export function DecisionNode({ data, selected }: NodeProps) {
             })}
 
             {/* Else option - clean, no badge */}
-            <div className="relative flex items-center border-t border-border/40 py-1.5 pt-3 mt-1">
+            <div className='relative mt-1 flex items-center border-border/40 border-t py-1.5 pt-3'>
               <span className='pr-4 text-gray-600 text-sm dark:text-gray-400'>
                 Else
               </span>

@@ -136,6 +136,7 @@ function PureMultimodalInput({
     'none',
   );
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Enable reasoning automatically for medium and large models
   const isReasoningEnabled = selectedModelId.includes('medium') || selectedModelId.includes('large');
@@ -290,12 +291,77 @@ function PureMultimodalInput({
     [setAttachments],
   );
 
+  // Drag and drop handlers
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set to false if we're leaving the main container
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (
+      e.clientX <= rect.left ||
+      e.clientX >= rect.right ||
+      e.clientY <= rect.top ||
+      e.clientY >= rect.bottom
+    ) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+
+      const files = Array.from(e.dataTransfer.files);
+      if (files.length === 0) return;
+
+      setUploadQueue(files.map((file) => file.name));
+
+      try {
+        const uploadPromises = files.map((file) => uploadFile(file));
+        const uploadedAttachments = await Promise.all(uploadPromises);
+        const successfullyUploadedAttachments = uploadedAttachments.filter(
+          (attachment) => attachment !== undefined,
+        );
+
+        setAttachments((currentAttachments) => [
+          ...currentAttachments,
+          ...successfullyUploadedAttachments,
+        ]);
+      } catch (error) {
+        console.error('Error uploading files!', error);
+      } finally {
+        setUploadQueue([]);
+      }
+    },
+    [setAttachments],
+  );
+
   // Déterminer la couleur du contour selon le grounding type actif
   const borderColor = isHydrated && groundingType === 'search'
     ? 'border-blue-500/50 focus-within:border-blue-500'
     : isHydrated && groundingType === 'maps'
     ? 'border-green-500/50 focus-within:border-green-500'
     : 'border-border focus-within:border-border';
+
+  // Drag and drop styles
+  const dragDropStyles = isDragging
+    ? 'border-blue-500 border-2 bg-blue-50/50 dark:bg-blue-950/20'
+    : '';
 
   return (
     <div className='relative flex w-full flex-col gap-4'>
@@ -308,17 +374,24 @@ function PureMultimodalInput({
         tabIndex={-1}
       />
 
-      <PromptInput
-        className={`rounded-xl border bg-background p-3 shadow-xs transition-all duration-200 hover:border-muted-foreground/50 ${borderColor}`}
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (status !== 'ready') {
-            toast.error('Please wait for the model to finish its response!');
-          } else {
-            submitForm();
-          }
-        }}
+      <div
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className='relative'
       >
+        <PromptInput
+          className={`rounded-xl border bg-background p-3 shadow-xs transition-all duration-200 hover:border-muted-foreground/50 ${borderColor} ${dragDropStyles}`}
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (status !== 'ready') {
+              toast.error('Please wait for the model to finish its response!');
+            } else {
+              submitForm();
+            }
+          }}
+        >
         {(attachments.length > 0 || uploadQueue.length > 0) && (
           <div
             data-testid="attachments-preview"
@@ -408,6 +481,17 @@ function PureMultimodalInput({
           )}
         </PromptInputToolbar>
       </PromptInput>
+
+      {/* Drag and drop overlay indicator */}
+      {isDragging && (
+        <div className='pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-xl border-2 border-blue-500 border-dashed bg-blue-50/80 dark:bg-blue-950/40'>
+          <div className='flex flex-col items-center gap-2 text-blue-600 dark:text-blue-400'>
+            <PaperclipIcon size={32} />
+            <p className='font-medium text-sm'>Déposez vos fichiers ici</p>
+          </div>
+        </div>
+      )}
+      </div>
 
       <FileSelectionModal
         isOpen={isFileModalOpen}

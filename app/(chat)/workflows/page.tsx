@@ -40,7 +40,6 @@ import { WorkflowConsole } from '@/components/workflow/workflow-console';
 import { HighlightedTextarea } from '@/components/workflow/highlighted-textarea';
 import { PreRunVariablesModal } from '@/components/workflow/pre-run-variables-modal';
 import { toast } from 'sonner';
-import { chatModels } from '@/lib/ai/models';
 import { Loader2 } from 'lucide-react';
 
 // Files Selector Component
@@ -189,7 +188,7 @@ function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
                   <span className='text-base'>{getFileIcon(file.mime_type)}</span>
                   <div className='min-w-0 flex-1'>
                     <p className='truncate text-xs'>{file.original_name}</p>
-                    <p className='text-muted-foreground text-[10px]'>
+                    <p className='text-[10px] text-muted-foreground'>
                       {new Date(file.created_at).toLocaleDateString('fr-FR')}
                     </p>
                   </div>
@@ -3043,7 +3042,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                     {/* Else choice info */}
                     <div className='mt-3 rounded-lg border border-border/40 bg-muted/30 p-3'>
                       <div className="flex items-center gap-2">
-                        <div className='flex h-5 w-5 items-center justify-center rounded bg-gray-100 text-gray-600 text-[10px] dark:bg-gray-800 dark:text-gray-400'>
+                        <div className='flex h-5 w-5 items-center justify-center rounded bg-gray-100 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-400'>
                           ?
                         </div>
                         <span className='text-muted-foreground text-xs'>
