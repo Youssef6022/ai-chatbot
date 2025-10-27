@@ -1819,7 +1819,7 @@ export default function WorkflowsPage() {
       // Create initial execution order (only root nodes without incoming edges)
       const rootNodes = nodes.filter(node => {
         const hasIncomingEdge = edges.some(edge => edge.target === node.id);
-        return !hasIncomingEdge && (node.type === 'generate' || node.type === 'decision');
+        return !hasIncomingEdge && (node.type === 'generate' || node.type === 'decision' || node.type === 'files');
       });
 
       console.log('[executeWorkflow] Root nodes:', rootNodes.map(n => n.id));
@@ -1840,12 +1840,21 @@ export default function WorkflowsPage() {
           });
         });
 
-        if (!currentNodeState || (currentNodeState.type !== 'generate' && currentNodeState.type !== 'decision')) {
+        if (!currentNodeState) {
           return;
         }
 
-        // Execute the current node
-        await processGenerateNodeInOrder(nodeId);
+        // Files nodes don't need execution, they just pass through
+        if (currentNodeState.type === 'files') {
+          console.log(`[processNodeAndDescendants] Files node ${nodeId}, passing through...`);
+          // Continue to descendants without executing
+        } else if (currentNodeState.type === 'generate' || currentNodeState.type === 'decision') {
+          // Execute the current node (AI Agent or Decision)
+          await processGenerateNodeInOrder(nodeId);
+        } else {
+          // Unknown node type, skip
+          return;
+        }
 
         // Get the updated node state after execution to check for selectedChoice
         const updatedNodeState = await new Promise<any>(resolve => {
@@ -1882,6 +1891,12 @@ export default function WorkflowsPage() {
             await processNodeAndDescendants(matchingEdge.target);
           } else {
             console.log(`[executeWorkflow] No matching edge found for choice: ${selectedChoice}`);
+          }
+        } else if (updatedNodeState?.type === 'files') {
+          // For files nodes, follow all outgoing edges (they connect via 'files' handle)
+          console.log(`[processNodeAndDescendants] Files node has ${outgoingEdges.length} outgoing edges`);
+          for (const edge of outgoingEdges) {
+            await processNodeAndDescendants(edge.target);
           }
         } else {
           // For generate nodes or nodes without choices, follow all outgoing edges
