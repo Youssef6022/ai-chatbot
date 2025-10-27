@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const textPartSchema = z.object({
   type: z.enum(['text']),
-  text: z.string().min(1).max(2000),
+  text: z.string().min(1).max(100000), // Augmenté de 2000 à 100000 pour supporter le texte collé
 });
 
 const filePartSchema = z.object({

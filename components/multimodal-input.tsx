@@ -128,6 +128,39 @@ function PureMultimodalInput({
     setInput(event.target.value);
   };
 
+  const handlePaste = useCallback((event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const pastedText = event.clipboardData.getData('text');
+
+    // Limite maximale: 100 000 caractères (~25 000 tokens) - correspond à la limite de l'API
+    const MAX_PASTE_LENGTH = 100000;
+
+    if (pastedText && pastedText.length > MAX_PASTE_LENGTH) {
+      event.preventDefault();
+      toast.error(`Le texte collé est trop long (${pastedText.length.toLocaleString()} caractères). Maximum: ${MAX_PASTE_LENGTH.toLocaleString()} caractères.`);
+      return;
+    }
+
+    // Si le texte collé est long (> 200 caractères), créer une pièce jointe
+    if (pastedText && pastedText.length > 200) {
+      event.preventDefault(); // Empêcher le collage normal
+
+      // Créer une "pièce jointe" pour le texte collé
+      const textBlob = new Blob([pastedText], { type: 'text/plain' });
+      const textUrl = URL.createObjectURL(textBlob);
+
+      const pastedAttachment: Attachment & { textContent?: string } = {
+        url: textUrl,
+        name: `Pasted (${pastedText.length.toLocaleString()} chars)`,
+        contentType: 'text/plain',
+        textContent: pastedText, // Stocker le contenu directement
+      };
+
+      setAttachments((current) => [...current, pastedAttachment as Attachment]);
+      toast.success(`Texte collé ajouté (${pastedText.length.toLocaleString()} caractères)`);
+    }
+    // Si le texte est court, laisser le comportement par défaut
+  }, [setAttachments]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
@@ -174,20 +207,40 @@ function PureMultimodalInput({
 
     console.log('📤 Sending message with data:', messageData);
 
-    sendMessage({
-      role: 'user',
-      parts: [
-        ...attachments.map((attachment) => ({
+    // Construire les parts du message
+    const messageParts = [];
+    let combinedText = '';
+
+    // Ajouter les fichiers et textes collés
+    for (const attachment of attachments) {
+      if ((attachment as any).textContent) {
+        // Texte collé - ajouter au texte combiné
+        combinedText += `--- Pasted Content ---\n${(attachment as any).textContent}\n--- End of Pasted Content ---\n\n`;
+      } else {
+        // Fichier normal (image, etc.)
+        messageParts.push({
           type: 'file' as const,
           url: attachment.url,
           name: attachment.name,
           mediaType: attachment.contentType,
-        })),
-        {
-          type: 'text',
-          text: input,
-        },
-      ],
+        });
+      }
+    }
+
+    // Ajouter le texte de saisie au texte combiné
+    combinedText += input;
+
+    // Ajouter le texte combiné comme une seule partie
+    if (combinedText.trim()) {
+      messageParts.push({
+        type: 'text',
+        text: combinedText,
+      });
+    }
+
+    sendMessage({
+      role: 'user',
+      parts: messageParts,
       data: messageData,
     });
 
@@ -432,6 +485,7 @@ function PureMultimodalInput({
             placeholder="Send a message..."
             value={input}
             onChange={handleInput}
+            onPaste={handlePaste}
             minHeight={44}
             maxHeight={200}
             disableAutoResize={true}
