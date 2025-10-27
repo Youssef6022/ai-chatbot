@@ -63,20 +63,20 @@ export function DecisionNode({ data, selected }: NodeProps) {
   const choices = nodeData.choices || [];
   const totalOutputs = choices.length + 1; // +1 for "Else"
 
-  // Calculate vertical spacing for output handles - better distribution
-  const nodeHeight = 80; // Height of the node
-  const handleSize = 16; // Size of each handle
-  const usableHeight = nodeHeight - handleSize; // Space available for handles
-  const spacing = usableHeight / totalOutputs; // Space between each handle
+  // Calculate dynamic height based on number of outputs
+  const minHeight = 100;
+  const heightPerOutput = 35; // Space needed per output
+  const dynamicHeight = Math.max(minHeight, totalOutputs * heightPerOutput);
 
   return (
     <div className="relative">
       <div
-        className={`group min-w-[280px] cursor-pointer rounded-lg transition-all duration-300 ${getExecutionBorderStyles()} ${selected ? 'ring-2 ring-purple-500' : ''}`}
+        className={`group min-w-[320px] cursor-pointer rounded-lg transition-all duration-300 ${getExecutionBorderStyles()} ${selected ? 'ring-2 ring-purple-500' : ''}`}
+        style={{ minHeight: `${dynamicHeight}px` }}
       >
-        <div className='p-0'>
+        <div className='flex h-full flex-col p-0'>
           {/* Main content with decision icon and name */}
-          <div className="flex h-20">
+          <div className="flex h-20 flex-shrink-0">
             {/* Decision Icon - Full height left side */}
             <div className='flex w-16 items-center justify-center rounded-l-lg bg-gradient-to-br from-purple-500/10 to-blue-500/10'>
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" className="text-purple-600 dark:text-purple-400">
@@ -111,94 +111,97 @@ export function DecisionNode({ data, selected }: NodeProps) {
             className={getHandleClassName('input', 'target')}
             style={{
               left: '-6px',
-              top: '50%',
+              top: '40px',
               width: '12px',
               height: '24px',
               backgroundColor: '#9333ea',
               border: '2px solid #ffffff',
               boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
-              transform: 'translateY(-50%)',
               transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
               borderRadius: '2px',
               zIndex: 10
             }}
           />
 
-          {/* Dynamic Output Handles for each choice */}
-          {choices.map((choice, index) => {
-            // Calculate position: start from top with first spacing offset
-            const topPosition = (spacing * (index + 1));
-            return (
-              <div key={`choice-${index}`} className="relative">
-                {/* Label for the choice */}
-                <div
-                  className='pointer-events-none absolute z-20 font-medium text-purple-700 text-[10px] dark:text-purple-300'
-                  style={{
-                    right: '-85px',
-                    top: `${topPosition}px`,
-                    transform: 'translateY(-50%)',
-                    whiteSpace: 'nowrap',
-                    maxWidth: '80px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}
-                >
-                  {choice}
+          {/* Output section with labels */}
+          <div className="flex-1 py-2">
+            {/* Dynamic Output Handles for each choice */}
+            {choices.map((choice, index) => {
+              // Calculate position: evenly distribute in the remaining space
+              const startY = 80; // Start after the header
+              const availableHeight = dynamicHeight - 80 - 20; // Subtract header and padding
+              const spacing = availableHeight / totalOutputs;
+              const topPosition = startY + (spacing * index) + (spacing / 2);
+
+              return (
+                <div key={`choice-${index}`} className="relative" style={{ height: `${spacing}px` }}>
+                  {/* Label for the choice - inside the node */}
+                  <div className="absolute left-3 right-16 top-1/2 -translate-y-1/2">
+                    <div className='flex items-center gap-2'>
+                      <div className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-purple-500 text-[10px] font-bold text-white'>
+                        {index + 1}
+                      </div>
+                      <span className='truncate font-medium text-purple-700 text-xs dark:text-purple-300'>
+                        {choice}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Handle
+                    type="source"
+                    position={Position.Right}
+                    id={`choice-${index}`}
+                    className={getHandleClassName(`choice-${index}`, 'source')}
+                    style={{
+                      right: '-8px',
+                      top: '50%',
+                      width: '16px',
+                      height: '16px',
+                      backgroundColor: '#9333ea',
+                      border: '2px solid #ffffff',
+                      boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
+                      transform: 'translateY(-50%)',
+                      transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+                      borderRadius: '50%'
+                    }}
+                  />
                 </div>
+              );
+            })}
 
-                <Handle
-                  type="source"
-                  position={Position.Right}
-                  id={`choice-${index}`}
-                  className={getHandleClassName(`choice-${index}`, 'source')}
-                  style={{
-                    right: '-8px',
-                    top: `${topPosition}px`,
-                    width: '16px',
-                    height: '16px',
-                    backgroundColor: '#9333ea',
-                    border: '2px solid #ffffff',
-                    boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
-                    transform: 'translateY(-50%)',
-                    transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
-                  }}
-                />
+            {/* "Else" Output Handle (always present) */}
+            <div className="relative" style={{ height: `${(dynamicHeight - 80 - 20) / totalOutputs}px` }}>
+              {/* Label for "Else" - inside the node */}
+              <div className="absolute left-3 right-16 top-1/2 -translate-y-1/2">
+                <div className='flex items-center gap-2'>
+                  <div className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gray-500 text-[10px] font-bold text-white'>
+                    ?
+                  </div>
+                  <span className='font-medium text-gray-600 text-xs dark:text-gray-400'>
+                    Else
+                  </span>
+                </div>
               </div>
-            );
-          })}
 
-          {/* "Else" Output Handle (always present) */}
-          <div className="relative">
-            {/* Label for "Else" */}
-            <div
-              className='pointer-events-none absolute z-20 font-medium text-gray-600 text-[10px] dark:text-gray-400'
-              style={{
-                right: '-45px',
-                top: `${spacing * totalOutputs}px`,
-                transform: 'translateY(-50%)',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Else
+              <Handle
+                type="source"
+                position={Position.Right}
+                id="else"
+                className={getHandleClassName('else', 'source')}
+                style={{
+                  right: '-8px',
+                  top: '50%',
+                  width: '16px',
+                  height: '16px',
+                  backgroundColor: '#6b7280',
+                  border: '2px solid #ffffff',
+                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                  transform: 'translateY(-50%)',
+                  transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+                  borderRadius: '50%'
+                }}
+              />
             </div>
-
-            <Handle
-              type="source"
-              position={Position.Right}
-              id="else"
-              className={getHandleClassName('else', 'source')}
-              style={{
-                right: '-8px',
-                top: `${spacing * totalOutputs}px`,
-                width: '16px',
-                height: '16px',
-                backgroundColor: '#6b7280',
-                border: '2px solid #ffffff',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                transform: 'translateY(-50%)',
-                transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease'
-              }}
-            />
           </div>
         </div>
       </div>

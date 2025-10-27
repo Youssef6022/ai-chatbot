@@ -1318,12 +1318,14 @@ export default function WorkflowsPage() {
       }
 
       // Decision output → Generate input
+      // Accept any decision output handle (choice-0, choice-1, else, etc.)
       if (sourceNode.type === 'decision' && targetNode.type === 'generate' &&
           handleId === 'input') {
         return true;
       }
 
       // Decision output → Decision input
+      // Accept any decision output handle (choice-0, choice-1, else, etc.)
       if (sourceNode.type === 'decision' && targetNode.type === 'decision' &&
           handleId === 'input') {
         return true;
@@ -1815,11 +1817,22 @@ export default function WorkflowsPage() {
       // Wait for state to update
       await new Promise(resolve => setTimeout(resolve, 200));
 
-      // Create execution order based on dependencies
-      const executionOrder = getExecutionOrder();
+      // Create initial execution order (only root nodes without incoming edges)
+      const rootNodes = nodes.filter(node => {
+        const hasIncomingEdge = edges.some(edge => edge.target === node.id);
+        return !hasIncomingEdge && (node.type === 'generate' || node.type === 'decision');
+      });
 
-      // Execute nodes in proper order
-      for (const nodeId of executionOrder) {
+      console.log('[executeWorkflow] Root nodes:', rootNodes.map(n => n.id));
+
+      // Process nodes recursively starting from root nodes
+      const processedNodes = new Set<string>();
+
+      const processNodeAndDescendants = async (nodeId: string) => {
+        // Avoid processing the same node twice
+        if (processedNodes.has(nodeId)) return;
+        processedNodes.add(nodeId);
+
         const currentNodeState = await new Promise<any>(resolve => {
           setNodes(currentNodes => {
             const node = currentNodes.find(n => n.id === nodeId);
@@ -1828,9 +1841,63 @@ export default function WorkflowsPage() {
           });
         });
 
-        if (currentNodeState?.type === 'generate' || currentNodeState?.type === 'decision') {
-          await processGenerateNodeInOrder(nodeId);
+        if (!currentNodeState || (currentNodeState.type !== 'generate' && currentNodeState.type !== 'decision')) {
+          return;
         }
+
+        // Execute the current node
+        await processGenerateNodeInOrder(nodeId);
+
+        // Get the updated node state after execution to check for selectedChoice
+        const updatedNodeState = await new Promise<any>(resolve => {
+          setNodes(currentNodes => {
+            const node = currentNodes.find(n => n.id === nodeId);
+            resolve(node);
+            return currentNodes;
+          });
+        });
+
+        // Find all outgoing edges from this node
+        const outgoingEdges = edges.filter(edge => edge.source === nodeId);
+
+        // If this is a decision node, only follow the edge matching the selected choice
+        if (updatedNodeState?.type === 'decision' && updatedNodeState.data?.selectedChoice) {
+          const selectedChoice = updatedNodeState.data.selectedChoice;
+          console.log(`[executeWorkflow] Decision node ${nodeId} selected: ${selectedChoice}`);
+
+          // Find the edge that matches the selected choice
+          let matchingEdge;
+          if (selectedChoice === 'else') {
+            matchingEdge = outgoingEdges.find(edge => edge.sourceHandle === 'else');
+          } else {
+            // Find the index of the selected choice
+            const choices = updatedNodeState.data.choices || [];
+            const choiceIndex = choices.findIndex((c: string) => c === selectedChoice);
+            if (choiceIndex !== -1) {
+              matchingEdge = outgoingEdges.find(edge => edge.sourceHandle === `choice-${choiceIndex}`);
+            }
+          }
+
+          if (matchingEdge) {
+            console.log(`[executeWorkflow] Following edge to ${matchingEdge.target} (choice: ${selectedChoice})`);
+            await processNodeAndDescendants(matchingEdge.target);
+          } else {
+            console.log(`[executeWorkflow] No matching edge found for choice: ${selectedChoice}`);
+          }
+        } else {
+          // For generate nodes or nodes without choices, follow all outgoing edges
+          for (const edge of outgoingEdges) {
+            // Only follow edges from 'output' handle for generate nodes
+            if (updatedNodeState?.type === 'generate' && edge.sourceHandle === 'output') {
+              await processNodeAndDescendants(edge.target);
+            }
+          }
+        }
+      };
+
+      // Process all root nodes
+      for (const rootNode of rootNodes) {
+        await processNodeAndDescendants(rootNode.id);
       }
       
     } catch (error) {
