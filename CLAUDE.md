@@ -203,8 +203,14 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 ## Key Architectural Patterns
 
 ### API Route Structure
+APIs are organized into two directories:
+- `app/(chat)/api/` - Chat-related endpoints requiring user context
+- `app/api/` - Public/standalone endpoints
+
+**Key API Groups**:
 - **Chat API**:
   - `/api/chat/` - Vercel AI SDK streaming endpoint with individual chat management
+  - `/api/chat/[id]/stream` - Individual chat streaming endpoint
   - `/api/chat-genai/` - Google GenAI SDK endpoint (when `NEXT_PUBLIC_USE_GENAI_SDK=true`)
 - **File Management**:
   - `/api/files/upload/` - Vercel Blob storage integration for chat attachments
@@ -212,11 +218,13 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 - **Documents**: `/api/document/` for document CRUD operations
 - **History**: `/api/history/` for chat history management
 - **Workflows**:
-  - `/api/workflow/generate` - Workflow execution endpoint
-  - `/api/workflows` - Workflow persistence and listing
-  - `/api/workflows/[id]` - Individual workflow operations
+  - `/api/workflow/generate` - Workflow execution endpoint (in `app/(chat)/api/`)
+  - `/api/workflows` - Workflow persistence and listing (in `app/api/`)
+  - `/api/workflows/[id]` - Individual workflow operations (in `app/api/`)
 - **Voting**: `/api/vote/` for message voting functionality
 - **Suggestions**: `/api/suggestions/` for document editing suggestions
+- **Quota**: `/api/quota` for user quota management and tracking
+- **Anonymization**: `/api/anonymization` for data anonymization utilities
 
 ### State Management
 - **Server Actions**: Used in `app/(chat)/actions.ts` for server-side operations
@@ -267,15 +275,24 @@ The application supports two AI integration approaches:
 - `/share/[id]` - Shared chat views
 
 ### API Routes
-- `/api/auth/signout` - Sign out endpoint
+**Note**: API routes are split between `app/api/` (public APIs) and `app/(chat)/api/` (chat-related APIs).
+
+**Chat-related APIs** (`app/(chat)/api/`):
 - `/api/chat/` - Vercel AI SDK chat streaming and management
+- `/api/chat/[id]/stream` - Individual chat streaming endpoint
 - `/api/chat-genai/` - Google GenAI SDK chat endpoint (Maps/Search support)
 - `/api/files/upload/` - File upload to Vercel Blob for chat attachments
-- `/api/library/*` - File library system (upload, folders, move, delete)
 - `/api/document/` - Document CRUD operations
 - `/api/workflow/generate` - Workflow execution
-- `/api/workflows` - Workflow persistence and listing
 - `/api/vote/` - Message voting
 - `/api/suggestions/` - Document editing suggestions
 - `/api/history/` - Chat history management
+
+**Public APIs** (`app/api/`):
+- `/api/auth/signout` - Sign out endpoint
+- `/api/library/*` - File library system (upload, folders, move, delete)
+- `/api/workflows` - Workflow persistence and listing
+- `/api/workflows/[id]` - Get/update/delete specific workflow
+- `/api/quota` - User quota management and tracking
+- `/api/anonymization` - Data anonymization utilities
 - `/ping` - Health check for Playwright tests

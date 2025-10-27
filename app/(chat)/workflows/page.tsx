@@ -33,6 +33,7 @@ import {
 import { GenerateNode } from '@/components/workflow/generate-node';
 import { FilesNode } from '@/components/workflow/files-node';
 import { NoteNode } from '@/components/workflow/note-node';
+import { DecisionNode } from '@/components/workflow/decision-node';
 import { CustomEdge } from '@/components/workflow/custom-edge';
 import type { Variable } from '@/components/workflow/variables-panel';
 import { WorkflowConsole } from '@/components/workflow/workflow-console';
@@ -277,6 +278,7 @@ const nodeTypes = {
   generate: GenerateNode,
   files: FilesNode,
   note: NoteNode,
+  decision: DecisionNode,
 };
 
 const edgeTypes = {
@@ -394,14 +396,14 @@ export default function WorkflowsPage() {
       order.push(nodeId);
     };
     
-    // Start with generate nodes
-    nodes.filter(node => node.type === 'generate').forEach(node => {
+    // Start with generate and decision nodes
+    nodes.filter(node => node.type === 'generate' || node.type === 'decision').forEach(node => {
       visit(node.id);
     });
-    
+
     return order.filter(nodeId => {
       const node = nodes.find(n => n.id === nodeId);
-      return node?.type === 'generate';
+      return node?.type === 'generate' || node?.type === 'decision';
     });
   }, [nodes, edges]);
   
@@ -435,15 +437,15 @@ export default function WorkflowsPage() {
       // Get all ancestor nodes (nodes that the current node depends on)
       const ancestors = getNodeAncestors(currentNodeId);
       
-      // Add AI Generator results as variables, but only from ancestor nodes
-      const generateNodes = nodes.filter(node => 
-        node.type === 'generate' && 
+      // Add AI Generator and Decision Node results as variables, but only from ancestor nodes
+      const aiNodes = nodes.filter(node =>
+        (node.type === 'generate' || node.type === 'decision') &&
         node.data.variableName &&
         node.id !== currentNodeId &&  // Exclude current node
         ancestors.has(node.id)        // Only include ancestors
       );
-      
-      generateNodes.forEach(node => {
+
+      aiNodes.forEach(node => {
         allVariables.push({
           id: `ai-node-${node.id}`,
           name: node.data.variableName,
@@ -451,13 +453,13 @@ export default function WorkflowsPage() {
         });
       });
     } else {
-      // If no current node specified, include all generate nodes (for general validation)
-      const generateNodes = nodes.filter(node => 
-        node.type === 'generate' && 
+      // If no current node specified, include all generate and decision nodes (for general validation)
+      const aiNodes = nodes.filter(node =>
+        (node.type === 'generate' || node.type === 'decision') &&
         node.data.variableName
       );
-      
-      generateNodes.forEach(node => {
+
+      aiNodes.forEach(node => {
         allVariables.push({
           id: `ai-node-${node.id}`,
           name: node.data.variableName,
@@ -1303,19 +1305,37 @@ export default function WorkflowsPage() {
     
     // If we're connecting from a source handle, highlight compatible target handles
     if (connectingFrom.handleType === 'source' && handleType === 'target') {
-      // Generate output → Generate input  
-      if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
+      // Generate output → Generate input
+      if (sourceNode.type === 'generate' && targetNode.type === 'generate' &&
           connectingFrom.handleId === 'output' && handleId === 'input') {
         return true;
       }
-      
+
+      // Generate output → Decision input
+      if (sourceNode.type === 'generate' && targetNode.type === 'decision' &&
+          connectingFrom.handleId === 'output' && handleId === 'input') {
+        return true;
+      }
+
+      // Decision output → Generate input
+      if (sourceNode.type === 'decision' && targetNode.type === 'generate' &&
+          handleId === 'input') {
+        return true;
+      }
+
+      // Decision output → Decision input
+      if (sourceNode.type === 'decision' && targetNode.type === 'decision' &&
+          handleId === 'input') {
+        return true;
+      }
+
       // Files → Generate files
-      if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
+      if (sourceNode.type === 'files' && targetNode.type === 'generate' &&
           connectingFrom.handleId === 'files' && handleId === 'files') {
         return true;
       }
     }
-    
+
     return false;
   }, [connectingFrom, nodes]);
 
@@ -1333,10 +1353,10 @@ export default function WorkflowsPage() {
       if (!sourceNode || !targetNode) return;
       
       // Cas 1: Generate → Generate (chaînage via input)
-      if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
+      if (sourceNode.type === 'generate' && targetNode.type === 'generate' &&
           params.sourceHandle === 'output' && params.targetHandle === 'input') {
         // Supprimer toute connexion existante vers le même handle du même nœud Generate
-        const edgesWithoutTargetConnection = edges.filter(edge => 
+        const edgesWithoutTargetConnection = edges.filter(edge =>
           !(edge.target === params.target && edge.targetHandle === params.targetHandle)
         );
         const newEdge = {
@@ -1349,8 +1369,59 @@ export default function WorkflowsPage() {
         };
         newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
       }
-      // Cas 2: Files → Generate (connexions de fichiers)
-      else if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
+      // Cas 2: Generate → Decision (chaînage via input)
+      else if (sourceNode.type === 'generate' && targetNode.type === 'decision' &&
+               params.sourceHandle === 'output' && params.targetHandle === 'input') {
+        // Supprimer toute connexion existante vers le même handle du même nœud Decision
+        const edgesWithoutTargetConnection = edges.filter(edge =>
+          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+        );
+        const newEdge = {
+          ...params,
+          className: 'generate-to-generate',
+          data: {
+            sourceType: sourceNode.type,
+            targetType: targetNode.type
+          }
+        };
+        newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
+      }
+      // Cas 3: Decision → Generate (chaînage via n'importe quelle sortie)
+      else if (sourceNode.type === 'decision' && targetNode.type === 'generate' &&
+               params.targetHandle === 'input') {
+        // Supprimer toute connexion existante vers le même handle du même nœud Generate
+        const edgesWithoutTargetConnection = edges.filter(edge =>
+          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+        );
+        const newEdge = {
+          ...params,
+          className: 'generate-to-generate',
+          data: {
+            sourceType: sourceNode.type,
+            targetType: targetNode.type
+          }
+        };
+        newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
+      }
+      // Cas 4: Decision → Decision (chaînage via n'importe quelle sortie)
+      else if (sourceNode.type === 'decision' && targetNode.type === 'decision' &&
+               params.targetHandle === 'input') {
+        // Supprimer toute connexion existante vers le même handle du même nœud Decision
+        const edgesWithoutTargetConnection = edges.filter(edge =>
+          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+        );
+        const newEdge = {
+          ...params,
+          className: 'generate-to-generate',
+          data: {
+            sourceType: sourceNode.type,
+            targetType: targetNode.type
+          }
+        };
+        newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
+      }
+      // Cas 5: Files → Generate (connexions de fichiers)
+      else if (sourceNode.type === 'files' && targetNode.type === 'generate' &&
                params.sourceHandle === 'files' && params.targetHandle === 'files') {
         // Permettre plusieurs connexions de Files vers le même handle Generate
         // Ne pas supprimer les connexions existantes, juste ajouter la nouvelle
@@ -1376,26 +1447,44 @@ export default function WorkflowsPage() {
   const isValidConnection = useCallback((connection: Connection) => {
     const sourceNode = nodes.find(n => n.id === connection.source);
     const targetNode = nodes.find(n => n.id === connection.target);
-    
+
     if (!sourceNode || !targetNode) return false;
-    
+
     // Empêcher les connexions d'un nœud vers lui-même
     if (connection.source === connection.target) {
       return false;
     }
-    
+
     // Generate → Generate (chaînage via input)
-    if (sourceNode.type === 'generate' && targetNode.type === 'generate' && 
+    if (sourceNode.type === 'generate' && targetNode.type === 'generate' &&
         connection.sourceHandle === 'output' && connection.targetHandle === 'input') {
       return true;
     }
-    
+
+    // Generate → Decision (chaînage via input)
+    if (sourceNode.type === 'generate' && targetNode.type === 'decision' &&
+        connection.sourceHandle === 'output' && connection.targetHandle === 'input') {
+      return true;
+    }
+
+    // Decision → Generate (via n'importe quelle sortie decision)
+    if (sourceNode.type === 'decision' && targetNode.type === 'generate' &&
+        connection.targetHandle === 'input') {
+      return true;
+    }
+
+    // Decision → Decision (via n'importe quelle sortie decision)
+    if (sourceNode.type === 'decision' && targetNode.type === 'decision' &&
+        connection.targetHandle === 'input') {
+      return true;
+    }
+
     // Files → Generate (files)
-    if (sourceNode.type === 'files' && targetNode.type === 'generate' && 
+    if (sourceNode.type === 'files' && targetNode.type === 'generate' &&
         connection.sourceHandle === 'files' && connection.targetHandle === 'files') {
       return true;
     }
-    
+
     return false;
   }, [nodes]);
 
@@ -1573,6 +1662,42 @@ export default function WorkflowsPage() {
     saveToHistory(newNodes, edges);
   }, [setNodes, nodes, edges, saveToHistory]);
 
+  const addDecisionNode = useCallback(() => {
+    // Generate a unique variable name based on existing Decision nodes
+    const decisionNodes = nodes.filter(node => node.type === 'decision');
+
+    // Find the next available number for Decision Node
+    let nextNumber = 1;
+    const existingNames = decisionNodes.map(node => node.data.variableName);
+
+    while (existingNames.includes(`Decision ${nextNumber}`)) {
+      nextNumber++;
+    }
+
+    const newNode = {
+      id: `decision-${Date.now()}`,
+      type: 'decision',
+      position: { x: Math.random() * 300 + 400, y: Math.random() * 300 },
+      data: {
+        label: 'Decision',
+        selectedModel: 'chat-model-small', // Use small model for decisions
+        result: '',
+        variableName: `Decision ${nextNumber}`,
+        instructions: '', // User prompt renamed to instructions
+        choices: ['True', 'False'], // Default choices
+        selectedChoice: undefined,
+        onModelChange: () => {},
+        onVariableNameChange: () => {},
+        onInstructionsChange: () => {},
+        onChoicesChange: () => {},
+        onDelete: () => {},
+      },
+    };
+    const newNodes = [...nodes, newNode];
+    setNodes(newNodes);
+    saveToHistory(newNodes, edges);
+  }, [setNodes, nodes, edges, saveToHistory]);
+
   // Function that actually executes the workflow
   const executeWorkflow = useCallback(async (variablesToUse?: Variable[]) => {
     // Prevent double execution
@@ -1591,18 +1716,26 @@ export default function WorkflowsPage() {
     currentVariablesRef.current = currentVariables;
     console.log('[executeWorkflow] Using variables:', currentVariables);
 
-    // Validate that all AI Generators have User Prompts
+    // Validate that all AI Generators and Decision Nodes have prompts/instructions
     const generateNodes = nodes.filter(node => node.type === 'generate');
+    const decisionNodes = nodes.filter(node => node.type === 'decision');
+
     const nodesWithoutUserPrompt = generateNodes.filter(node =>
       !node.data.userPrompt || node.data.userPrompt.trim() === ''
     );
 
-    if (nodesWithoutUserPrompt.length > 0) {
-      const nodeNames = nodesWithoutUserPrompt.map(node =>
-        node.data.variableName || node.data.label || 'Unnamed AI Agent'
-      ).join(', ');
+    const nodesWithoutInstructions = decisionNodes.filter(node =>
+      !node.data.instructions || node.data.instructions.trim() === ''
+    );
 
-      showNotification(`Cannot run workflow: The following AI Generator(s) are missing User Prompts: ${nodeNames}`, 'error');
+    if (nodesWithoutUserPrompt.length > 0 || nodesWithoutInstructions.length > 0) {
+      const allInvalidNodes = [
+        ...nodesWithoutUserPrompt.map(node => node.data.variableName || node.data.label || 'Unnamed AI Agent'),
+        ...nodesWithoutInstructions.map(node => node.data.variableName || node.data.label || 'Unnamed Decision Node')
+      ];
+      const nodeNames = allInvalidNodes.join(', ');
+
+      showNotification(`Cannot run workflow: The following node(s) are missing prompts/instructions: ${nodeNames}`, 'error');
       isExecutingRef.current = false;
       return;
     }
@@ -1633,6 +1766,24 @@ export default function WorkflowsPage() {
       }
     });
 
+    // Validate decision nodes
+    decisionNodes.forEach(node => {
+      const allInvalidVars: string[] = [];
+
+      // Check instructions variables
+      const instructionsValidation = invalidVariables[`${node.id}-instructions`];
+      if (instructionsValidation?.hasInvalid) {
+        allInvalidVars.push(...instructionsValidation.variables);
+      }
+
+      if (allInvalidVars.length > 0) {
+        nodesWithInvalidVariables.push({
+          node,
+          invalidVars: [...new Set(allInvalidVars)]
+        });
+      }
+    });
+
     if (nodesWithInvalidVariables.length > 0) {
       const invalidVarsList = nodesWithInvalidVariables.map(({ node, invalidVars }) => {
         const nodeName = node.data.variableName || node.data.label || 'Unnamed AI Agent';
@@ -1656,9 +1807,9 @@ export default function WorkflowsPage() {
     addExecutionLog('info', 'Workflow execution started...');
     
     try {
-      // First, clear all previous results from Generate nodes before starting
-      generateNodes.forEach(node => {
-        updateNodeData(node.id, { result: '', isLoading: false, executionState: 'idle' });
+      // First, clear all previous results from Generate and Decision nodes before starting
+      [...generateNodes, ...decisionNodes].forEach(node => {
+        updateNodeData(node.id, { result: '', isLoading: false, executionState: 'idle', selectedChoice: undefined });
       });
 
       // Wait for state to update
@@ -1666,7 +1817,7 @@ export default function WorkflowsPage() {
 
       // Create execution order based on dependencies
       const executionOrder = getExecutionOrder();
-      
+
       // Execute nodes in proper order
       for (const nodeId of executionOrder) {
         const currentNodeState = await new Promise<any>(resolve => {
@@ -1676,8 +1827,8 @@ export default function WorkflowsPage() {
             return currentNodes;
           });
         });
-        
-        if (currentNodeState?.type === 'generate') {
+
+        if (currentNodeState?.type === 'generate' || currentNodeState?.type === 'decision') {
           await processGenerateNodeInOrder(nodeId);
         }
       }
@@ -1857,12 +2008,29 @@ export default function WorkflowsPage() {
 
       // Get the current node data
       const currentGenerateNode = latestNodes.find(node => node.id === generateNode.id);
-      let systemPrompt = currentGenerateNode?.data?.systemPrompt || '';
-      let userPrompt = currentGenerateNode?.data?.userPrompt || '';
+      let systemPrompt = '';
+      let userPrompt = '';
 
-      // Process variables in the prompts
-      systemPrompt = processPromptText(systemPrompt, latestNodes);
-      userPrompt = processPromptText(userPrompt, latestNodes);
+      // Handle Decision Nodes vs Generate Nodes
+      if (currentGenerateNode?.type === 'decision') {
+        // For decision nodes, create automatic system prompt with choices
+        const choices = currentGenerateNode?.data?.choices || [];
+        const choicesList = choices.map((choice: string) => `"${choice}"`).join(', ');
+
+        systemPrompt = `You are a decision-making assistant. You will be asked a question and you must respond with ONLY ONE of these exact choices: ${choicesList}${choices.length > 0 ? ', ' : ''}or "Else".
+
+IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not add any explanation, context, or additional text. Just respond with the choice that best matches the situation.`;
+
+        userPrompt = processPromptText(currentGenerateNode?.data?.instructions || '', latestNodes);
+      } else {
+        // For generate nodes, use normal prompts
+        systemPrompt = currentGenerateNode?.data?.systemPrompt || '';
+        userPrompt = currentGenerateNode?.data?.userPrompt || '';
+
+        // Process variables in the prompts
+        systemPrompt = processPromptText(systemPrompt, latestNodes);
+        userPrompt = processPromptText(userPrompt, latestNodes);
+      }
 
       // The input connection is only used for variable validation and replacement
       // Variables are already processed in processPromptText() above
@@ -1903,11 +2071,55 @@ export default function WorkflowsPage() {
       
       if (response.ok) {
         const result = await response.text();
-        // Set completed state (green) and keep it
-        updateNodeData(generateNode.id, { result, isLoading: false, executionState: 'completed' });
-        
-        // Log success
-        addExecutionLog('success', `Generation completed successfully`, generateNode.id, nodeName);
+
+        // For decision nodes, parse the response to determine the selected choice
+        if (currentGenerateNode?.type === 'decision') {
+          const choices = currentGenerateNode?.data?.choices || [];
+          const resultTrimmed = result.trim();
+
+          // Try to match the response with one of the choices
+          let selectedChoice: string | undefined;
+
+          // First, try exact match (case-insensitive)
+          const exactMatch = choices.find((choice: string) =>
+            choice.toLowerCase() === resultTrimmed.toLowerCase()
+          );
+
+          if (exactMatch) {
+            selectedChoice = exactMatch;
+          } else if (resultTrimmed.toLowerCase() === 'else') {
+            selectedChoice = 'else';
+          } else {
+            // If no exact match, try to find the choice in the response
+            const partialMatch = choices.find((choice: string) =>
+              resultTrimmed.toLowerCase().includes(choice.toLowerCase())
+            );
+
+            if (partialMatch) {
+              selectedChoice = partialMatch;
+            } else {
+              // Default to 'else' if no match found
+              selectedChoice = 'else';
+            }
+          }
+
+          // Set completed state with selected choice
+          updateNodeData(generateNode.id, {
+            result,
+            selectedChoice,
+            isLoading: false,
+            executionState: 'completed'
+          });
+
+          // Log success
+          addExecutionLog('success', `Decision made: ${selectedChoice}`, generateNode.id, nodeName);
+        } else {
+          // For generate nodes, just set the result
+          updateNodeData(generateNode.id, { result, isLoading: false, executionState: 'completed' });
+
+          // Log success
+          addExecutionLog('success', `Generation completed successfully`, generateNode.id, nodeName);
+        }
       } else {
         const errorMsg = 'Error: Failed to generate content';
         updateNodeData(generateNode.id, { 
@@ -1941,16 +2153,19 @@ export default function WorkflowsPage() {
       
       let className = '';
       
-      // Add animation class for Generate to Generate connections
-      if (sourceNode?.type === 'generate' && targetNode?.type === 'generate' && 
-          edge.sourceHandle === 'output' && edge.targetHandle === 'input') {
+      // Add animation class for Generate/Decision to Generate/Decision connections
+      if ((sourceNode?.type === 'generate' || sourceNode?.type === 'decision') &&
+          (targetNode?.type === 'generate' || targetNode?.type === 'decision') &&
+          edge.targetHandle === 'input') {
         className = 'generate-to-generate';
       }
-      
+
       // Add execution state classes
       if (isRunning) {
-        // For AI Generator to AI Generator connections - only activate when source is completed
-        if (sourceNode?.type === 'generate' && targetNode?.type === 'generate' && sourceNode?.data?.executionState) {
+        // For AI Generator/Decision to AI Generator/Decision connections - only activate when source is completed
+        if ((sourceNode?.type === 'generate' || sourceNode?.type === 'decision') &&
+            (targetNode?.type === 'generate' || targetNode?.type === 'decision') &&
+            sourceNode?.data?.executionState) {
           switch (sourceNode.data.executionState) {
             case 'completed':
               // Only activate the connection and target when source is completed
@@ -2012,54 +2227,54 @@ export default function WorkflowsPage() {
   const nodesWithCallbacks = useMemo(() => nodes.map(node => {
     const connectedResults = {};
     
-    if (node.type === 'generate') {
-      // Function to recursively find all Generate nodes in the dependency chain
-      const findAllGenerateNodesInChain = (nodeId: string, visited = new Set()): any[] => {
+    if (node.type === 'generate' || node.type === 'decision') {
+      // Function to recursively find all Generate/Decision nodes in the dependency chain
+      const findAllAINodesInChain = (nodeId: string, visited = new Set()): any[] => {
         if (visited.has(nodeId)) return []; // Avoid infinite loops
         visited.add(nodeId);
-        
-        const generateNodes: any[] = [];
-        
+
+        const aiNodes: any[] = [];
+
         // Find all nodes that feed into this node
         const incomingEdges = edges.filter(edge => edge.target === nodeId);
         incomingEdges.forEach(edge => {
           const sourceNode = nodes.find(n => n.id === edge.source);
           if (sourceNode) {
-            if (sourceNode.type === 'generate') {
-              // Add this Generate node
-              generateNodes.push(sourceNode);
+            if (sourceNode.type === 'generate' || sourceNode.type === 'decision') {
+              // Add this AI node
+              aiNodes.push(sourceNode);
             }
             // Recursively check the source node's dependencies
-            generateNodes.push(...findAllGenerateNodesInChain(sourceNode.id, visited));
+            aiNodes.push(...findAllAINodesInChain(sourceNode.id, visited));
           }
         });
-        
-        return generateNodes;
+
+        return aiNodes;
       };
-      
-      // Find all Generate nodes in the dependency chain
-      const allGenerateNodes = findAllGenerateNodesInChain(node.id);
-      
+
+      // Find all AI nodes in the dependency chain
+      const allAINodes = findAllAINodesInChain(node.id);
+
       // Remove duplicates based on node ID
-      const uniqueGenerateNodes = allGenerateNodes.filter((node, index, self) => 
+      const uniqueAINodes = allAINodes.filter((node, index, self) =>
         index === self.findIndex(n => n.id === node.id)
       );
-      
-      // Add all unique Generate nodes to connectedResults
-      uniqueGenerateNodes.forEach(generateNode => {
-        const variableName = generateNode.data.variableName || 'AI Agent 1';
-        (connectedResults as any)[variableName] = generateNode.data.result || '';
+
+      // Add all unique AI nodes to connectedResults
+      uniqueAINodes.forEach(aiNode => {
+        const variableName = aiNode.data.variableName || (aiNode.type === 'decision' ? 'Decision 1' : 'AI Agent 1');
+        (connectedResults as any)[variableName] = aiNode.data.result || '';
       });
     }
 
-    // Check if this Files node is connected to an executing AI Generator
+    // Check if this Files node is connected to an executing AI Generator or Decision Node
     let isConnectedToExecuting = false;
     if (node.type === 'files') {
       const outgoingEdges = edges.filter(edge => edge.source === node.id);
       isConnectedToExecuting = outgoingEdges.some(edge => {
         const targetNode = nodes.find(n => n.id === edge.target);
-        return targetNode?.type === 'generate' && 
-               targetNode.data?.executionState && 
+        return (targetNode?.type === 'generate' || targetNode?.type === 'decision') &&
+               targetNode.data?.executionState &&
                ['preparing', 'processing', 'completing'].includes(targetNode.data.executionState);
       });
     }
@@ -2068,13 +2283,13 @@ export default function WorkflowsPage() {
       ...node,
       data: {
         ...node.data,
-        variables: node.type === 'generate' ? variables : undefined,
-        connectedResults: node.type === 'generate' ? connectedResults : undefined,
+        variables: (node.type === 'generate' || node.type === 'decision') ? variables : undefined,
+        connectedResults: (node.type === 'generate' || node.type === 'decision') ? connectedResults : undefined,
         isConnectedToExecuting: node.type === 'files' ? isConnectedToExecuting : undefined,
-        onModelChange: node.type === 'generate'
+        onModelChange: (node.type === 'generate' || node.type === 'decision')
           ? (model: string) => updateNodeData(node.id, { selectedModel: model })
           : undefined,
-        onVariableNameChange: node.type === 'generate'
+        onVariableNameChange: (node.type === 'generate' || node.type === 'decision')
           ? (name: string) => {
               if (validateVariableName(name, node.id)) {
                 updateNodeData(node.id, { variableName: name.trim() });
@@ -2086,6 +2301,12 @@ export default function WorkflowsPage() {
           : undefined,
         onUserPromptChange: node.type === 'generate'
           ? (text: string) => updateNodeData(node.id, { userPrompt: text })
+          : undefined,
+        onInstructionsChange: node.type === 'decision'
+          ? (text: string) => updateNodeData(node.id, { instructions: text })
+          : undefined,
+        onChoicesChange: node.type === 'decision'
+          ? (choices: string[]) => updateNodeData(node.id, { choices })
           : undefined,
         onSearchGroundingChange: node.type === 'generate'
           ? (enabled: boolean) => updateNodeData(node.id, { isSearchGroundingEnabled: enabled })
@@ -2228,7 +2449,20 @@ export default function WorkflowsPage() {
                 </div>
                 <span className="font-medium text-foreground">AI Agent</span>
               </button>
-              
+
+              <button
+                onClick={addDecisionNode}
+                className='group flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent p-3 text-sm transition-all duration-200 hover:scale-[1.02] hover:border-purple-200 hover:bg-purple-50 hover:shadow-md dark:hover:border-purple-800 dark:hover:bg-purple-950/30'
+              >
+                <div className='flex h-6 w-6 items-center justify-center rounded-lg bg-purple-100 shadow-sm transition-shadow group-hover:shadow-md dark:bg-purple-200'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" className="text-purple-700 dark:text-purple-800">
+                    <path fill="currentColor" d="M7 10h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2zm0 4h2v2h-2z"/>
+                    <path fill="currentColor" d="M20.3 12.04L19.71 9.3c-.14-.6-.54-1.1-1.09-1.36l-2.25-1.07c-.22-.1-.46-.15-.71-.15h-2.53L12.5 6h-1l-.63.72H8.34c-.25 0-.49.05-.71.15L5.38 7.94c-.55.26-.95.76-1.09 1.36l-.59 2.74a2.08 2.08 0 0 0 .42 1.73l1.38 1.65v3.33c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-3.33l1.38-1.65c.38-.46.52-1.07.42-1.73M18 17.75c0 .14-.11.25-.25.25H6.25a.25.25 0 0 1-.25-.25v-2.91l.5.6c.26.31.65.49 1.06.49h9.13c.41 0 .8-.18 1.06-.49l.5-.6v2.91M19.04 13l-1.88 2.25c-.09.1-.22.16-.35.16H7.19c-.13 0-.26-.06-.35-.16L4.96 13a.51.51 0 0 1-.1-.42l.59-2.74c.04-.15.13-.27.27-.33l2.25-1.07c.06-.03.12-.04.18-.04h7.7c.06 0 .12.01.18.04l2.25 1.07c.14.06.23.18.27.33l.59 2.74c.03.15 0 .3-.1.42"/>
+                  </svg>
+                </div>
+                <span className="font-medium text-foreground">Decision</span>
+              </button>
+
               <button
                 onClick={addNoteNode}
                 className='group flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent p-3 text-sm transition-all duration-200 hover:scale-[1.02] hover:border-amber-200 hover:bg-amber-50 hover:shadow-md dark:hover:border-amber-800 dark:hover:bg-amber-950/30'
@@ -2394,15 +2628,42 @@ export default function WorkflowsPage() {
                         <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
                       </svg>
                     </div>
+                  ) : editingNode.type === 'decision' ? (
+                    <div className="group relative">
+                      <input
+                        value={editingNode.data.variableName || ''}
+                        onChange={(e) => {
+                          updateNodeData(editingNode.id, { variableName: e.target.value });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, variableName: e.target.value }
+                          });
+                        }}
+                        placeholder="Decision Node"
+                        className='w-full rounded border-none bg-transparent px-1 py-0.5 pr-6 font-semibold text-base outline-none transition-colors focus:bg-muted/30 group-hover:bg-muted/30'
+                      />
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className='-translate-y-1/2 pointer-events-none absolute top-1/2 right-1 transform text-muted-foreground/50 transition-colors group-hover:text-muted-foreground'
+                      >
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                      </svg>
+                    </div>
                   ) : (
                     <h3 className="font-semibold text-base">
-                      {editingNode.type === 'note' ? 'Note' : 
+                      {editingNode.type === 'note' ? 'Note' :
                        editingNode.type === 'files' ? 'Files' :
                        editingNode.type === 'variables' ? 'Global Variables' : 'Node'}
                     </h3>
                   )}
                   <p className='mt-1 text-muted-foreground text-xs'>
                     {editingNode.type === 'generate' ? 'Call the model with your instructions and tools' :
+                     editingNode.type === 'decision' ? 'Make decisions based on AI response - routes to different paths' :
                      editingNode.type === 'note' ? 'Add notes and documentation' :
                      editingNode.type === 'files' ? 'Select and manage files' :
                      editingNode.type === 'variables' ? 'Define variables to use in your prompts with {{variable_name}}' : 'Configure this node'}
@@ -2609,7 +2870,160 @@ export default function WorkflowsPage() {
                   }}
                 />
               )}
-              
+
+              {editingNode.type === 'decision' && !showResults && (
+                <>
+                  {/* Instructions (User Prompt) */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <Label className='font-medium text-muted-foreground text-xs'>Instructions</Label>
+                      <button
+                        onClick={() => {
+                          setExpandedField('instructions');
+                          setExpandedContent(editingNode.data.instructions || '');
+                        }}
+                        className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <HighlightedTextarea
+                      value={editingNode.data.instructions || ''}
+                      onChange={(value) => {
+                        updateNodeData(editingNode.id, { instructions: value });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, instructions: value }
+                        });
+                      }}
+                      placeholder="Enter your question or condition..."
+                      className="min-h-[60px] resize-none text-sm"
+                      variables={getAllAvailableVariables(editingNode.id)}
+                      onVariableValidation={(hasInvalid, invalidVars) => {
+                        setInvalidVariables(prev => ({
+                          ...prev,
+                          [`${editingNode.id}-instructions`]: { hasInvalid, variables: invalidVars }
+                        }));
+                      }}
+                    />
+                  </div>
+
+                  {/* Choices */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className='font-medium text-muted-foreground text-xs'>Response Choices</Label>
+                      <button
+                        onClick={() => {
+                          const currentChoices = editingNode.data.choices || [];
+                          const newChoices = [...currentChoices, `Choice ${currentChoices.length + 1}`];
+                          updateNodeData(editingNode.id, { choices: newChoices });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, choices: newChoices }
+                          });
+                        }}
+                        className='flex items-center gap-1 rounded bg-purple-500/10 px-2 py-1 text-purple-600 text-xs transition-colors hover:bg-purple-500/20 dark:text-purple-400'
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        Add Choice
+                      </button>
+                    </div>
+
+                    {/* List of choices */}
+                    <div className="space-y-2">
+                      {(editingNode.data.choices || []).map((choice: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div className='flex h-6 w-6 items-center justify-center rounded bg-purple-100 text-purple-700 text-xs dark:bg-purple-900/30 dark:text-purple-300'>
+                            {index + 1}
+                          </div>
+                          <Input
+                            value={choice}
+                            onChange={(e) => {
+                              const newChoices = [...(editingNode.data.choices || [])];
+                              newChoices[index] = e.target.value;
+                              updateNodeData(editingNode.id, { choices: newChoices });
+                              setEditingNode({
+                                ...editingNode,
+                                data: { ...editingNode.data, choices: newChoices }
+                              });
+                            }}
+                            placeholder={`Choice ${index + 1}`}
+                            className="flex-1 text-sm"
+                          />
+                          <button
+                            onClick={() => {
+                              const newChoices = (editingNode.data.choices || []).filter((_: string, i: number) => i !== index);
+                              updateNodeData(editingNode.id, { choices: newChoices });
+                              setEditingNode({
+                                ...editingNode,
+                                data: { ...editingNode.data, choices: newChoices }
+                              });
+                            }}
+                            className='flex h-6 w-6 items-center justify-center rounded bg-red-500/10 text-red-600 transition-colors hover:bg-red-500/20 dark:text-red-400'
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Else choice info */}
+                    <div className='mt-3 rounded-lg border border-border/40 bg-muted/30 p-3'>
+                      <div className="flex items-center gap-2">
+                        <div className='flex h-5 w-5 items-center justify-center rounded bg-gray-100 text-gray-600 text-[10px] dark:bg-gray-800 dark:text-gray-400'>
+                          ?
+                        </div>
+                        <span className='text-muted-foreground text-xs'>
+                          An "Else" output is always available for unmatched responses
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Model Selection */}
+                  <div className="flex items-center justify-between">
+                    <Label className='font-medium text-muted-foreground text-xs'>Model</Label>
+                    <div className="relative">
+                      <select
+                        value={editingNode.data.selectedModel || 'chat-model-small'}
+                        onChange={(e) => {
+                          updateNodeData(editingNode.id, { selectedModel: e.target.value });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, selectedModel: e.target.value }
+                          });
+                        }}
+                        className='cursor-pointer appearance-none bg-transparent pr-6 text-foreground text-sm focus:outline-none'
+                        style={{
+                          colorScheme: 'dark'
+                        }}
+                      >
+                        <option value="chat-model-small" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Small</option>
+                        <option value="chat-model-medium" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Medium</option>
+                        <option value="chat-model-large" className="!bg-background !text-foreground dark:!bg-gray-800 dark:!text-white text-xs" style={{backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '12px'}}>Large</option>
+                      </select>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className='-translate-y-1/2 pointer-events-none absolute top-1/2 right-0 transform text-muted-foreground'
+                      >
+                        <path d="M6 9l6 6 6-6"/>
+                      </svg>
+                    </div>
+                  </div>
+                </>
+              )}
+
               {/* Show Results Section */}
               {editingNode.type === 'generate' && editingNode.data.result && !showResults && (
                 <div className='mt-6 space-y-2 border-border/40 border-t pt-4'>
