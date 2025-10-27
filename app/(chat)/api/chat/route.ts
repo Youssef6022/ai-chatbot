@@ -119,24 +119,89 @@ export async function POST(request: Request) {
     const messagesFromDb = user ? await getMessagesByChatId({ id }) : [];
 
     // Build conversation history for GenAI
-    const history: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+    const history: Array<{ role: 'user' | 'model'; parts: Array<any> }> = [];
 
     for (const msg of messagesFromDb) {
       if (msg.role === 'user' || msg.role === 'assistant') {
-        const textParts = msg.parts
-          .filter((p: any) => p.type === 'text')
-          .map((p: any) => ({ text: p.text }));
+        const parts: Array<any> = [];
 
-        if (textParts.length > 0) {
+        for (const p of msg.parts as any[]) {
+          if (p.type === 'text') {
+            parts.push({ text: p.text });
+          } else if (p.type === 'file' && msg.role === 'user') {
+            // Only include files in user messages (model doesn't send files)
+            try {
+              const response = await fetch(p.url);
+              const arrayBuffer = await response.arrayBuffer();
+              const base64Data = Buffer.from(arrayBuffer).toString('base64');
+
+              parts.push({
+                inlineData: {
+                  mimeType: p.mediaType || 'image/jpeg',
+                  data: base64Data,
+                },
+              });
+            } catch (error) {
+              console.error('Error fetching file from history:', error);
+              // Skip this file if fetch fails
+            }
+          }
+        }
+
+        if (parts.length > 0) {
           history.push({
             role: msg.role === 'assistant' ? 'model' : 'user',
-            parts: textParts,
+            parts: parts,
           });
         }
       }
     }
 
-    // Prepare current message
+    // Prepare current message with both text and files
+    const currentMessageParts: Array<any> = [];
+
+    console.log('📨 Processing message parts:', message.parts.length);
+
+    for (const part of message.parts) {
+      if (part.type === 'text') {
+        console.log('📝 Adding text part:', part.text.substring(0, 50));
+        currentMessageParts.push({ text: part.text });
+      } else if (part.type === 'file') {
+        // Fetch the file data from the URL
+        console.log('🖼️ Processing file:', part.url, 'mediaType:', part.mediaType);
+        try {
+          const response = await fetch(part.url);
+          console.log('✅ Fetch response status:', response.status);
+
+          if (!response.ok) {
+            console.error('❌ Fetch failed with status:', response.status);
+            continue;
+          }
+
+          const arrayBuffer = await response.arrayBuffer();
+          console.log('📦 ArrayBuffer size:', arrayBuffer.byteLength);
+
+          const base64Data = Buffer.from(arrayBuffer).toString('base64');
+          console.log('🔐 Base64 data length:', base64Data.length);
+
+          const imagePart = {
+            inlineData: {
+              mimeType: part.mediaType || 'image/jpeg',
+              data: base64Data,
+            },
+          };
+
+          currentMessageParts.push(imagePart);
+          console.log('✅ Image part added successfully');
+        } catch (error) {
+          console.error('❌ Error fetching file:', error);
+          // Continue without this file if fetch fails
+        }
+      }
+    }
+
+    console.log('📊 Total message parts prepared:', currentMessageParts.length);
+
     const currentMessageText = message.parts
       .filter((part) => part.type === 'text')
       .map((part) => part.text)
@@ -226,15 +291,26 @@ export async function POST(request: Request) {
             config: config,
           });
 
+          const hasFiles = currentMessageParts.some((p: any) => p.inlineData);
           await logToFile('📤 SENDING MESSAGE', {
-            message: currentMessageText,
+            hasFiles,
+            partsCount: currentMessageParts.length,
+            messagePreview: currentMessageText.substring(0, 100),
           });
+
+          console.log('🚀 Sending to AI - hasFiles:', hasFiles, 'parts count:', currentMessageParts.length);
 
           // Send message and stream response
-          const response = await chat.sendMessageStream({
-            message: currentMessageText,
-          });
+          // Use parts if there are files, otherwise use text
+          const response = currentMessageParts.length > 1 || hasFiles
+            ? await chat.sendMessageStream({
+                message: currentMessageParts,
+              })
+            : await chat.sendMessageStream({
+                message: currentMessageText,
+              });
 
+          console.log('✅ Message sent to AI, streaming response...');
           await logToFile('📡 STREAMING STARTED');
 
           let fullText = '';
