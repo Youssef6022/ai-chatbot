@@ -56,39 +56,44 @@ export function DecisionNode({ data, selected }: NodeProps) {
   const choices = nodeData.choices || [];
   const totalOutputs = choices.length + 1;
 
-  // Better spacing: 50px per output with minimum height
-  const heightPerOutput = 50;
-  const dynamicHeight = Math.max(120, 80 + (totalOutputs * heightPerOutput));
+  // Better spacing for larger node
+  const heightPerOutput = 42;
+  const headerHeight = nodeData.instructions ? 'auto' : 70;
+  const dynamicHeight = typeof headerHeight === 'number'
+    ? headerHeight + (totalOutputs * heightPerOutput) + 24
+    : 'auto';
 
   return (
     <div className="relative">
       <div
-        className={`group min-w-[280px] cursor-pointer rounded-lg transition-all duration-300 ${getExecutionBorderStyles()} ${selected ? 'ring-2 ring-purple-500' : ''}`}
-        style={{ height: `${dynamicHeight}px` }}
+        className={`group min-w-[280px] max-w-[320px] cursor-pointer rounded-lg transition-all duration-300 ${getExecutionBorderStyles()} ${selected ? 'ring-2 ring-purple-500' : ''}`}
+        style={typeof dynamicHeight === 'number' ? { height: `${dynamicHeight}px` } : {}}
       >
-        {/* Header section */}
-        <div className="flex h-20 border-b border-border/40">
-          {/* Icon on left - no background */}
-          <div className='flex w-16 items-center justify-center'>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" className="text-purple-600 dark:text-purple-400">
-              <path fill="currentColor" d="M7 10h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2zm0 4h2v2h-2z"/>
-              <path fill="currentColor" d="M20.3 12.04L19.71 9.3c-.14-.6-.54-1.1-1.09-1.36l-2.25-1.07c-.22-.1-.46-.15-.71-.15h-2.53L12.5 6h-1l-.63.72H8.34c-.25 0-.49.05-.71.15L5.38 7.94c-.55.26-.95.76-1.09 1.36l-.59 2.74a2.08 2.08 0 0 0 .42 1.73l1.38 1.65v3.33c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-3.33l1.38-1.65c.38-.46.52-1.07.42-1.73M18 17.75c0 .14-.11.25-.25.25H6.25a.25.25 0 0 1-.25-.25v-2.91l.5.6c.26.31.65.49 1.06.49h9.13c.41 0 .8-.18 1.06-.49l.5-.6v2.91M19.04 13l-1.88 2.25c-.09.1-.22.16-.35.16H7.19c-.13 0-.26-.06-.35-.16L4.96 13a.51.51 0 0 1-.1-.42l.59-2.74c.04-.15.13-.27.27-.33l2.25-1.07c.06-.03.12-.04.18-.04h7.7c.06 0 .12.01.18.04l2.25 1.07c.14.06.23.18.27.33l.59 2.74c.03.15 0 .3-.1.42"/>
+        {/* Header section - showing instructions */}
+        <div className="border-b border-border/40 px-3 py-3">
+          <div className='flex items-start gap-2.5'>
+            {/* Icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" className="mt-0.5 text-purple-600 dark:text-purple-400 flex-shrink-0">
+              <path fill="currentColor" d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12c5.16-1.26 9-6.45 9-12V7l-10-5m0 2.18L18 7.5v8.5c0 4.27-2.91 8.28-6 9.31c-3.09-1.03-6-5.04-6-9.31V7.5l6-3.32M11 11v6h2v-6h-2m0-4v2h2V7h-2z"/>
             </svg>
-          </div>
 
-          {/* Name and info */}
-          <div className='flex flex-1 flex-col justify-center px-3'>
-            <div className='mb-0.5 font-medium text-gray-800 text-xs dark:text-gray-200'>
-              {nodeData.variableName || 'Decision Node'}
+            {/* Instructions or name */}
+            <div className='flex-1 min-w-0'>
+              {nodeData.instructions ? (
+                <div className='text-gray-700 text-sm leading-relaxed dark:text-gray-300'>
+                  {nodeData.instructions}
+                </div>
+              ) : (
+                <div className='font-medium text-gray-800 text-sm dark:text-gray-200'>
+                  {nodeData.variableName || 'Decision'}
+                </div>
+              )}
+              {nodeData.selectedChoice && (
+                <div className='mt-1.5 inline-block rounded-full bg-purple-100 px-2 py-0.5 font-medium text-purple-700 text-[10px] dark:bg-purple-900/30 dark:text-purple-300'>
+                  → {nodeData.selectedChoice}
+                </div>
+              )}
             </div>
-            <div className='text-gray-500 text-[10px] dark:text-gray-400'>
-              {choices.length} choix + Else
-            </div>
-            {nodeData.selectedChoice && (
-              <div className='mt-1 inline-block rounded bg-purple-100 px-1.5 py-0.5 font-medium text-purple-700 text-[10px] dark:bg-purple-900/30 dark:text-purple-300'>
-                → {nodeData.selectedChoice}
-              </div>
-            )}
           </div>
         </div>
 
@@ -100,7 +105,7 @@ export function DecisionNode({ data, selected }: NodeProps) {
           className={getHandleClassName('input', 'target')}
           style={{
             left: '-6px',
-            top: '40px',
+            top: '35px',
             width: '12px',
             height: '24px',
             backgroundColor: '#9333ea',
@@ -112,23 +117,16 @@ export function DecisionNode({ data, selected }: NodeProps) {
           }}
         />
 
-        {/* Output section - choices listed vertically */}
-        <div className="px-3 py-3">
+        {/* Output section - clean list without badges */}
+        <div className="px-4 py-3">
           <div className="space-y-2">
             {choices.map((choice, index) => {
-              const yPosition = 80 + 20 + (index * heightPerOutput) + (heightPerOutput / 2);
-
               return (
-                <div key={`choice-${index}`} className="relative flex items-center justify-between py-1.5">
-                  {/* Label on left with badge */}
-                  <div className='flex items-center gap-2'>
-                    <div className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-purple-500 text-[10px] font-bold text-white shadow-sm'>
-                      {index + 1}
-                    </div>
-                    <span className='truncate font-medium text-purple-700 text-sm dark:text-purple-300'>
-                      {choice}
-                    </span>
-                  </div>
+                <div key={`choice-${index}`} className="relative flex items-center py-1.5">
+                  {/* Just the label, no badge */}
+                  <span className='truncate pr-4 text-gray-700 text-sm dark:text-gray-300'>
+                    {choice}
+                  </span>
 
                   {/* Handle on right */}
                   <Handle
@@ -154,16 +152,11 @@ export function DecisionNode({ data, selected }: NodeProps) {
               );
             })}
 
-            {/* Else option */}
-            <div className="relative flex items-center justify-between border-t border-border/40 py-1.5 pt-3">
-              <div className='flex items-center gap-2'>
-                <div className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-500 text-[11px] font-bold text-white shadow-sm'>
-                  ?
-                </div>
-                <span className='font-medium text-gray-600 text-sm dark:text-gray-400'>
-                  Else
-                </span>
-              </div>
+            {/* Else option - clean, no badge */}
+            <div className="relative flex items-center border-t border-border/40 py-1.5 pt-3 mt-1">
+              <span className='pr-4 text-gray-600 text-sm dark:text-gray-400'>
+                Else
+              </span>
 
               <Handle
                 type="source"
@@ -178,7 +171,7 @@ export function DecisionNode({ data, selected }: NodeProps) {
                   height: '16px',
                   backgroundColor: '#6b7280',
                   border: '2px solid #ffffff',
-                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
                   transform: 'translateY(-50%)',
                   transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
                   borderRadius: '50%'
