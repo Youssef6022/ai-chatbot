@@ -5,7 +5,7 @@ import os
 import json
 
 # les credentials
-GOOGLE_GENERATIVE_AI_API_KEY= "AIzaSyCfC4oHEDsejuxZkTc2SAhGgG3tlZMm8o8"
+GOOGLE_GENERATIVE_AI_API_KEY= os.getenv("GOOGLE_GENERATIVE_AI_API_KEY")
 
 def generate():
   client = genai.Client(
