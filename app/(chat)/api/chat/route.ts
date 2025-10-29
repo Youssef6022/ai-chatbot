@@ -20,7 +20,7 @@ import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
 import type { VisibilityType } from '@/components/visibility-selector';
-import { genaiClient, getModelName, type ChatModelId } from '@/lib/ai/providers';
+import { genaiClient, vertexAIClient, getModelName, type ChatModelId } from '@/lib/ai/providers';
 import { logToFile, } from '@/lib/logger';
 
 export const maxDuration = 60;
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       message: ChatMessage;
       selectedChatModel: ChatModel['id'];
       selectedVisibilityType: VisibilityType;
-      groundingType?: 'none' | 'search' | 'maps';
+      groundingType?: 'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce';
       isReasoningEnabled?: boolean;
     } = requestBody;
 
@@ -60,7 +60,11 @@ export async function POST(request: Request) {
       message: message.parts.map(p => p.type === 'text' ? p.text : `[${p.type}]`).join(' '),
     });
 
-    if (!genaiClient) {
+    // Determine which client to use based on grounding type
+    const isRAG = groundingType === 'rag-civil' || groundingType === 'rag-commerce';
+    const activeClient = isRAG ? vertexAIClient : genaiClient;
+
+    if (!activeClient) {
       return new Response('GenAI client not initialized', { status: 500 });
     }
 
@@ -230,6 +234,27 @@ export async function POST(request: Request) {
       };
 
       await logToFile('📍 Google Maps tool added with toolConfig', toolConfig);
+    } else if (groundingType === 'rag-civil' || groundingType === 'rag-commerce') {
+      // RAG configuration with Vertex AI
+      const ragCorpus = groundingType === 'rag-civil'
+        ? 'projects/total-apparatus-451215-g1/locations/europe-west3/ragCorpora/3379951520341557248'
+        : 'projects/total-apparatus-451215-g1/locations/europe-west3/ragCorpora/2842897264777625600';
+
+      tools.push({
+        retrieval: {
+          vertex_rag_store: {
+            rag_resources: [{
+              rag_corpus: ragCorpus,
+            }],
+            similarity_top_k: 20,
+          },
+        },
+      });
+
+      await logToFile(`📚 RAG tool added (${groundingType === 'rag-civil' ? 'Code Civil' : 'Code Commerce'})`, {
+        ragCorpus,
+        similarityTopK: 20,
+      });
     }
 
     // Note: Weather tool removed - it conflicts with Google GenAI SDK tool format
@@ -274,19 +299,29 @@ export async function POST(request: Request) {
       hasThinkingConfig: !!config.thinkingConfig,
     });
 
+    // Force gemini-2.5-flash when RAG is active (no thinking mode)
+    let effectiveModel = selectedChatModel;
+    if (groundingType === 'rag-civil' || groundingType === 'rag-commerce') {
+      effectiveModel = 'chat-model-medium'; // gemini-2.5-flash
+      await logToFile('🔄 Forcing gemini-2.5-flash model for RAG', {
+        originalModel: selectedChatModel,
+        effectiveModel,
+      });
+    }
+
     // Create streaming response
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
         try {
           await logToFile('🚀 CREATING CHAT SESSION', {
-            model: getModelName(selectedChatModel as ChatModelId),
+            model: getModelName(effectiveModel as ChatModelId),
             historyLength: history.length,
           });
 
-          // Create chat with history
-          const chat = genaiClient.chats.create({
-            model: getModelName(selectedChatModel as ChatModelId),
+          // Create chat with history using the appropriate client
+          const chat = activeClient.chats.create({
+            model: getModelName(effectiveModel as ChatModelId),
             history: history,
             config: config,
           });

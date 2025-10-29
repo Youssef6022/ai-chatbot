@@ -12,11 +12,20 @@ export const MODEL_IDS = {
 
 export type ChatModelId = keyof typeof MODEL_IDS;
 
-// Initialize Google GenAI client
+// Initialize Google GenAI client for standard API (Search, Maps)
 export const genaiClient = isTestEnvironment
   ? null // Mock client for tests
   : new GoogleGenAI({
       apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || '',
+    });
+
+// Initialize Vertex AI client for RAG
+export const vertexAIClient = isTestEnvironment
+  ? null // Mock client for tests
+  : new GoogleGenAI({
+      vertexai: true,
+      project: 'total-apparatus-451215-g1',
+      location: 'europe-west3',
     });
 
 // Helper to get actual model name from our model IDs
