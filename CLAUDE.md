@@ -105,13 +105,26 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 Required environment variables (see `.env.example`):
 
 ```env
+# Authentication
 AUTH_SECRET=**** # Generate with: openssl rand -base64 32
+
+# Supabase Authentication (required)
+NEXT_PUBLIC_SUPABASE_URL=**** # Your Supabase project URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=**** # Your Supabase anon/public key
+
+# AI Configuration
 AI_GATEWAY_API_KEY=**** # AI Gateway API Key (required for non-Vercel deployments)
-BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token
-POSTGRES_URL=**** # PostgreSQL database connection string (supports Neon/Vercel Postgres)
-REDIS_URL=**** # Optional Redis for caching/performance
 GOOGLE_GENERATIVE_AI_API_KEY=**** # Google AI API key for Gemini models
 NEXT_PUBLIC_USE_GENAI_SDK=false # Set to 'true' to use @google/genai (enables Maps/Search), 'false' for Vercel AI SDK
+
+# Storage
+BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token
+
+# Database
+POSTGRES_URL=**** # PostgreSQL database connection string (supports Neon/Vercel Postgres)
+REDIS_URL=**** # Optional Redis for caching/performance
+
+# Testing
 PLAYWRIGHT=True # Set to enable test environment with mock AI models
 ```
 
@@ -197,8 +210,10 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 
 ### Testing Strategy
 - **E2E Testing**: Playwright tests with environment variable `PLAYWRIGHT=True`
-- **Mock AI Models**: Test environment automatically uses mock providers
+- **Test Organization**: Tests are organized into `tests/e2e/` (end-to-end) and `tests/routes/` (API routes)
+- **Mock AI Models**: Test environment automatically uses mock providers (`lib/ai/models.mock.ts`)
 - **Test Routes**: `/ping` endpoint for Playwright health checks
+- **Test Configuration**: `playwright.config.ts` with 240s timeout, Chrome browser, parallelization settings
 
 ## Key Architectural Patterns
 
@@ -243,6 +258,7 @@ APIs are organized into two directories:
 - Test environment automatically uses mock AI providers (see `lib/ai/models.mock.ts`)
 - Port 9627 is used for development to avoid conflicts with other services
 - Authentication supports both authenticated and guest users via Supabase
+- Supabase configuration requires both URL and anon key environment variables
 - Redis is optional but recommended for production performance and caching
 - Message format migration: Legacy `Message` table is deprecated, use `Message_v2` for new code
 - Vote format migration: Legacy `Vote` table is deprecated, use `Vote_v2` for new code
@@ -252,6 +268,7 @@ APIs are organized into two directories:
 - Workflow system uses ReactFlow with custom node types and variable interpolation
 - For production deployments on Vercel, OIDC tokens are used automatically for AI Gateway authentication
 - When switching AI providers, modify `lib/ai/providers.ts` to configure model mappings
+- **Security**: Never commit API keys or credentials to the repository. Check `scripts/` directory for any test files with hardcoded credentials
 
 ### Switching Between AI SDKs
 The application supports two AI integration approaches:
