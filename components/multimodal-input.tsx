@@ -164,7 +164,7 @@ function PureMultimodalInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
-  const [groundingType, setGroundingType] = useLocalStorage<'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce'>(
+  const [groundingType, setGroundingType] = useLocalStorage<'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce' | 'rag-droit-francais'>(
     'grounding-type',
     'none',
   );
@@ -822,8 +822,8 @@ function PureRAGButton({
   status,
   isHydrated,
 }: {
-  currentType: 'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce';
-  onSelect: (type: 'rag-civil' | 'rag-commerce') => void;
+  currentType: 'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce' | 'rag-droit-francais';
+  onSelect: (type: 'rag-civil' | 'rag-commerce' | 'rag-droit-francais') => void;
   status: UseChatHelpers<ChatMessage>['status'];
   isHydrated: boolean;
 }) {
@@ -831,7 +831,7 @@ function PureRAGButton({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const isRagActive = currentType === 'rag-civil' || currentType === 'rag-commerce';
+  const isRagActive = currentType === 'rag-civil' || currentType === 'rag-commerce' || currentType === 'rag-droit-francais';
 
   // Calculate dropdown position when opened
   useEffect(() => {
@@ -869,10 +869,11 @@ function PureRAGButton({
     if (!isHydrated) return 'Recherche RAG';
     if (currentType === 'rag-civil') return 'RAG: Code Civil';
     if (currentType === 'rag-commerce') return 'RAG: Code Commerce';
+    if (currentType === 'rag-droit-francais') return 'RAG: Codes Droit FR';
     return 'Activer la recherche RAG';
   };
 
-  const handleSelect = (type: 'rag-civil' | 'rag-commerce') => {
+  const handleSelect = (type: 'rag-civil' | 'rag-commerce' | 'rag-droit-francais') => {
     console.log('📚 RAG clicked! Current:', currentType, '→ New:', type);
     onSelect(type);
     setIsOpen(false);
@@ -959,6 +960,17 @@ function PureRAGButton({
             }}
           >
             💼 Code Commerce
+          </button>
+          <button
+            className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent ${
+              currentType === 'rag-droit-francais' ? 'bg-accent font-medium' : ''
+            }`}
+            onClick={(e) => {
+              e.preventDefault();
+              handleSelect('rag-droit-francais');
+            }}
+          >
+            ⚖️ Codes Droit Français
           </button>
           <div className="my-1 h-px bg-border" />
           <button

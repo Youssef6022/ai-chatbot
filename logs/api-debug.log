@@ -15490,3 +15490,570 @@
   "textPreview": "Salut ! Comment puis-je vous aider aujourd'hui ?"
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:19.067Z] 📥 INCOMING REQUEST
+{
+  "chatId": "019ffecc-b633-42d0-99f9-d273282189d3",
+  "model": "chat-model-medium",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "quels sont tes sources"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:19.842Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:19.843Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:19.845Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:19.845Z] 🔄 Forcing gemini-2.5-flash model for RAG
+{
+  "originalModel": "chat-model-medium",
+  "effectiveModel": "chat-model-medium"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:19.847Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:19.849Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "quels sont tes sources"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:28.641Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:31:29.941Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 2,
+  "totalTextLength": 490,
+  "hadToolCalls": false,
+  "textPreview": "Mes sources sont les documents qui m'ont été fournis pour répondre à cette question. Il s'agit de textes législatifs et réglementaires français, notamment des extraits des codes suivants :\n\n*   Code d"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:41:17.982Z] 📥 INCOMING REQUEST
+{
+  "chatId": "c6b91ef3-2c0f-4397-abd3-c98a04cc07b1",
+  "model": "chat-model-large",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\nUn maître d'ouvrage découvre des fissures structurelles 3 ans après réception des travaux. Le constructeur a déposé le bilan, l'architecte invoque la prescription biennale, et l'assureur dommages-ouvrage refuse sa garantie car la déclaration d'ouverture de chantier n'a pas été faite. Quels recours sont possibles ?\n--- End of Pasted Content ---\n\na"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:41:19.245Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:41:19.247Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:41:19.248Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION (si demandée)\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:41:19.250Z] 🔄 Forcing gemini-2.5-flash model for RAG
+{
+  "originalModel": "chat-model-large",
+  "effectiveModel": "chat-model-medium"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:41:19.252Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:41:19.254Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nUn maître d'ouvrage découvre des fissures structurelles 3 ans après réception"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:42:43.508Z] 📥 INCOMING REQUEST
+{
+  "chatId": "01d30bec-77da-4d6f-9b5c-a2fbecff62d6",
+  "model": "chat-model-medium",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\nUn maître d'ouvrage découvre des fissures structurelles 3 ans après réception des travaux. Le constructeur a déposé le bilan, l'architecte invoque la prescription biennale, et l'assureur dommages-ouvrage refuse sa garantie car la déclaration d'ouverture de chantier n'a pas été faite. Quels recours sont possibles ?\n--- End of Pasted Content ---\n\na"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:42:44.641Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:42:44.645Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:42:44.647Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION (si demandée)\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:42:44.655Z] 🔄 Forcing gemini-2.5-flash model for RAG
+{
+  "originalModel": "chat-model-medium",
+  "effectiveModel": "chat-model-medium"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:42:44.658Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:42:44.666Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nUn maître d'ouvrage découvre des fissures structurelles 3 ans après réception"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:43:37.749Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:43:46.178Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:46:44.134Z] 📥 INCOMING REQUEST
+{
+  "chatId": "c257aba8-3056-4fbb-a843-a2d9895d29b6",
+  "model": "chat-model-medium",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\nUn couple pacsé avec deux enfants d'unions précédentes souhaite optimiser la transmission de leur patrimoine commun (résidence principale de 800 000€, portefeuille titres de 500 000€). L'un souhaite faire une donation-partage, l'autre préfère un démembrement. Quelles sont les implications juridiques et fiscales de chaque option ?\n--- End of Pasted Content ---\n\na"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:46:45.092Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:46:45.093Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:46:45.094Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION (si demandée)\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:46:45.096Z] 🔄 Forcing gemini-2.5-flash model for RAG
+{
+  "originalModel": "chat-model-medium",
+  "effectiveModel": "chat-model-medium"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:46:45.097Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:46:45.099Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nUn couple pacsé avec deux enfants d'unions précédentes souhaite optimiser la "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:47:58.634Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:49.024Z] 📥 INCOMING REQUEST
+{
+  "chatId": "c257aba8-3056-4fbb-a843-a2d9895d29b6",
+  "model": "chat-model-medium",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\n\n🚀 Sending to AI - hasFiles: false parts count: 1\n POST /api/chat 200 in 59924ms\n GET /api/quota 200 in 215ms\n GET /api/history?limit=20 200 in 208ms\n GET /api/history?ending_before=769c30c3-d911-44e6-bb54-6e892a990d4e&limit=20 200 in 269ms\n✅ Message sent to AI, streaming response...\n📡 STREAMING STARTED\nStream closed by client during text streaming\n\n--- End of Pasted Content ---\n\na"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:49.564Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:49.565Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:49.566Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français avec accès à tous les codes de droit français via RAG.\n\n### PRINCIPES\n\n1. **Précision** : Source chaque affirmation (articles, jurisprudence, doctrine)\n2. **Adaptation** : Ajuste la technicité selon le destinataire\n3. **Structure** : Organise de façon claire et progressive\n\n### STRUCTURE DE RÉPONSE\n\n1. **Qualification juridique** + principes applicables avec citations\n2. **Analyse spécifique** : conditions, exceptions, conséquences\n3. **Application pratique** : cas concrets si pertinent\n4. **Fondements** : Textes législatifs > Jurisprudence > Doctrine\n5. **Vigilance** : Risques, délais, formalités critiques\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### MÉTHODOLOGIE\n\n- Rechercher dans le RAG avec termes juridiques + synonymes\n- Croiser loi + jurisprudence + doctrine\n- Structurer du général au particulier, principe aux exceptions\n- Adapter selon public (particulier/entreprise/professionnel/étudiant)\n- Si incertitude : l'identifier, présenter positions, indiquer tendance majoritaire\n\n### CONCLUSION\n\nTermine par: Synthèse (2-3 phrases) + Recommandations + Risques + Orientation si nécessaire.\n\n⚠️ Ne jamais donner de conseil définitif sur situations complexes sans avocat.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:49.568Z] 🔄 Forcing gemini-2.5-flash model for RAG
+{
+  "originalModel": "chat-model-medium",
+  "effectiveModel": "chat-model-medium"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:49.570Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:49.571Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\n\n🚀 Sending to AI - hasFiles: false parts count: 1\n POST /api/chat 200 in 599"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:53.382Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:50:53.389Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 1,
+  "totalTextLength": 130,
+  "hadToolCalls": false,
+  "textPreview": "Je suis désolé, mais votre message semble incomplet. Pourriez-vous préciser votre question ou ce que vous souhaitez que je fasse ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:51:18.237Z] 📥 INCOMING REQUEST
+{
+  "chatId": "2ebbea0e-a47f-4096-8c9a-3ae5b81fa2d5",
+  "model": "chat-model-medium",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\nUn couple pacsé avec deux enfants d'unions précédentes souhaite optimiser la transmission de leur patrimoine commun (résidence principale de 800 000€, portefeuille titres de 500 000€). L'un souhaite faire une donation-partage, l'autre préfère un démembrement. Quelles sont les implications juridiques et fiscales de chaque option ?\n--- End of Pasted Content ---\n\na"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:51:19.025Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:51:19.026Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:51:19.027Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français avec accès à tous les codes de droit français via RAG.\n\n### PRINCIPES\n\n1. **Précision** : Source chaque affirmation (articles, jurisprudence, doctrine)\n2. **Adaptation** : Ajuste la technicité selon le destinataire\n3. **Structure** : Organise de façon claire et progressive\n\n### STRUCTURE DE RÉPONSE\n\n1. **Qualification juridique** + principes applicables avec citations\n2. **Analyse spécifique** : conditions, exceptions, conséquences\n3. **Application pratique** : cas concrets si pertinent\n4. **Fondements** : Textes législatifs > Jurisprudence > Doctrine\n5. **Vigilance** : Risques, délais, formalités critiques\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### MÉTHODOLOGIE\n\n- Rechercher dans le RAG avec termes juridiques + synonymes\n- Croiser loi + jurisprudence + doctrine\n- Structurer du général au particulier, principe aux exceptions\n- Adapter selon public (particulier/entreprise/professionnel/étudiant)\n- Si incertitude : l'identifier, présenter positions, indiquer tendance majoritaire\n\n### CONCLUSION\n\nTermine par: Synthèse (2-3 phrases) + Recommandations + Risques + Orientation si nécessaire.\n\n⚠️ Ne jamais donner de conseil définitif sur situations complexes sans avocat.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:51:19.028Z] 🔄 Forcing gemini-2.5-flash model for RAG
+{
+  "originalModel": "chat-model-medium",
+  "effectiveModel": "chat-model-medium"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:51:19.028Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:51:19.030Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nUn couple pacsé avec deux enfants d'unions précédentes souhaite optimiser la "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:51:56.196Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:52:28.249Z] 📥 INCOMING REQUEST
+{
+  "chatId": "01d30bec-77da-4d6f-9b5c-a2fbecff62d6",
+  "model": "chat-model-medium",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\nUn couple pacsé avec deux enfants d'unions précédentes souhaite optimiser la transmission de leur patrimoine commun (résidence principale de 800 000€, portefeuille titres de 500 000€). L'un souhaite faire une donation-partage, l'autre préfère un démembrement. Quelles sont les implications juridiques et fiscales de chaque option ?\n--- End of Pasted Content ---\n\na"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:52:28.577Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:52:28.578Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:52:28.579Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français avec accès à tous les codes de droit français via RAG.\n\n### PRINCIPES\n\n1. **Précision** : Source chaque affirmation (articles, jurisprudence, doctrine)\n2. **Adaptation** : Ajuste la technicité selon le destinataire\n3. **Structure** : Organise de façon claire et progressive\n\n### STRUCTURE DE RÉPONSE\n\n1. **Qualification juridique** + principes applicables avec citations\n2. **Analyse spécifique** : conditions, exceptions, conséquences\n3. **Application pratique** : cas concrets si pertinent\n4. **Fondements** : Textes législatifs > Jurisprudence > Doctrine\n5. **Vigilance** : Risques, délais, formalités critiques\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### MÉTHODOLOGIE\n\n- Rechercher dans le RAG avec termes juridiques + synonymes\n- Croiser loi + jurisprudence + doctrine\n- Structurer du général au particulier, principe aux exceptions\n- Adapter selon public (particulier/entreprise/professionnel/étudiant)\n- Si incertitude : l'identifier, présenter positions, indiquer tendance majoritaire\n\n### CONCLUSION\n\nTermine par: Synthèse (2-3 phrases) + Recommandations + Risques + Orientation si nécessaire.\n\n⚠️ Ne jamais donner de conseil définitif sur situations complexes sans avocat.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:52:28.580Z] 🔄 Forcing gemini-2.5-flash model for RAG
+{
+  "originalModel": "chat-model-medium",
+  "effectiveModel": "chat-model-medium"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:52:28.581Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:52:28.583Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nUn couple pacsé avec deux enfants d'unions précédentes souhaite optimiser la "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:52:33.652Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 25,
+  "totalTextLength": 6709,
+  "hadToolCalls": false,
+  "textPreview": "Pour optimiser la transmission de votre patrimoine commun, deux options principales sont envisagées : la donation-partage et le démembrement de propriété. Voici les implications juridiques et fiscales"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:53:27.520Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:54:17.325Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 32,
+  "totalTextLength": 8628,
+  "hadToolCalls": false,
+  "textPreview": "Madame, Monsieur,\n\nVous souhaitez optimiser la transmission de votre patrimoine commun (résidence principale de 800 000€, portefeuille titres de 500 000€) et hésitez entre une donation-partage et un d"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:58:42.573Z] 📥 INCOMING REQUEST
+{
+  "chatId": "b3558072-04f5-4a80-afae-f2818bff83a5",
+  "model": "chat-model-large",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\nUn salarié en CDI depuis 5 ans, victime d'un accident de trajet reconnu comme accident du travail, est licencié pour inaptitude après deux visites médicales. Son employeur refuse de verser l'indemnité spéciale de licenciement en invoquant une faute grave antérieure à l'accident. Quels sont les droits du salarié et les recours possibles ?\n--- End of Pasted Content ---\n\na"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:58:43.572Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:58:43.574Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:58:43.575Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français avec accès à tous les codes de droit français via RAG.\n\n### PRINCIPES\n\n1. **Précision** : Source chaque affirmation (articles, jurisprudence, doctrine)\n2. **Adaptation** : Ajuste la technicité selon le destinataire\n3. **Structure** : Organise de façon claire et progressive\n\n### STRUCTURE DE RÉPONSE\n\n1. **Qualification juridique** + principes applicables avec citations\n2. **Analyse spécifique** : conditions, exceptions, conséquences\n3. **Application pratique** : cas concrets si pertinent\n4. **Fondements** : Textes législatifs > Jurisprudence > Doctrine\n5. **Vigilance** : Risques, délais, formalités critiques\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### MÉTHODOLOGIE\n\n- Rechercher dans le RAG avec termes juridiques + synonymes\n- Croiser loi + jurisprudence + doctrine\n- Structurer du général au particulier, principe aux exceptions\n- Adapter selon public (particulier/entreprise/professionnel/étudiant)\n- Si incertitude : l'identifier, présenter positions, indiquer tendance majoritaire\n\n### CONCLUSION\n\nTermine par: Synthèse (2-3 phrases) + Recommandations + Risques + Orientation si nécessaire.\n\n⚠️ Ne jamais donner de conseil définitif sur situations complexes sans avocat.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:58:43.576Z] 🔄 Forcing gemini-2.5-flash model for RAG
+{
+  "originalModel": "chat-model-large",
+  "effectiveModel": "chat-model-medium"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:58:43.577Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:58:43.578Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nUn salarié en CDI depuis 5 ans, victime d'un accident de trajet reconnu comme"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:59:34.331Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-10-30T02:59:51.373Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 13,
+  "totalTextLength": 3322,
+  "hadToolCalls": false,
+  "textPreview": "En matière d'indemnité spéciale de licenciement en cas d'inaptitude professionnelle consécutive à un accident du travail, les sources fournies abordent spécifiquement le cas des assistants maternels e"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -22,8 +22,9 @@ import type { ChatModel } from '@/lib/ai/models';
 import type { VisibilityType } from '@/components/visibility-selector';
 import { genaiClient, vertexAIClient, getModelName, type ChatModelId } from '@/lib/ai/providers';
 import { logToFile, } from '@/lib/logger';
+import { getSystemPrompt } from '@/lib/ai/system-prompts';
 
-export const maxDuration = 60;
+export const maxDuration = 120; // Increased to 120s for RAG queries with long prompts
 
 export async function POST(request: Request) {
   let requestBody: PostRequestBody;
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
       message: ChatMessage;
       selectedChatModel: ChatModel['id'];
       selectedVisibilityType: VisibilityType;
-      groundingType?: 'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce';
+      groundingType?: 'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce' | 'rag-droit-francais';
       isReasoningEnabled?: boolean;
     } = requestBody;
 
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
     });
 
     // Determine which client to use based on grounding type
-    const isRAG = groundingType === 'rag-civil' || groundingType === 'rag-commerce';
+    const isRAG = groundingType === 'rag-civil' || groundingType === 'rag-commerce' || groundingType === 'rag-droit-francais';
     const activeClient = isRAG ? vertexAIClient : genaiClient;
 
     if (!activeClient) {
@@ -234,11 +235,21 @@ export async function POST(request: Request) {
       };
 
       await logToFile('📍 Google Maps tool added with toolConfig', toolConfig);
-    } else if (groundingType === 'rag-civil' || groundingType === 'rag-commerce') {
+    } else if (groundingType === 'rag-civil' || groundingType === 'rag-commerce' || groundingType === 'rag-droit-francais') {
       // RAG configuration with Vertex AI
-      const ragCorpus = groundingType === 'rag-civil'
-        ? 'projects/total-apparatus-451215-g1/locations/europe-west3/ragCorpora/3379951520341557248'
-        : 'projects/total-apparatus-451215-g1/locations/europe-west3/ragCorpora/2842897264777625600';
+      let ragCorpus: string;
+      let ragName: string;
+
+      if (groundingType === 'rag-civil') {
+        ragCorpus = 'projects/total-apparatus-451215-g1/locations/europe-west3/ragCorpora/3379951520341557248';
+        ragName = 'Code Civil';
+      } else if (groundingType === 'rag-commerce') {
+        ragCorpus = 'projects/total-apparatus-451215-g1/locations/europe-west3/ragCorpora/2842897264777625600';
+        ragName = 'Code Commerce';
+      } else {
+        ragCorpus = 'projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952';
+        ragName = 'Codes Droit Francais';
+      }
 
       tools.push({
         retrieval: {
@@ -251,7 +262,7 @@ export async function POST(request: Request) {
         },
       });
 
-      await logToFile(`📚 RAG tool added (${groundingType === 'rag-civil' ? 'Code Civil' : 'Code Commerce'})`, {
+      await logToFile(`📚 RAG tool added (${ragName})`, {
         ragCorpus,
         similarityTopK: 20,
       });
@@ -270,10 +281,14 @@ export async function POST(request: Request) {
       toolConfig,
     });
 
+    // Configure system instruction based on grounding type
+    const systemInstruction = getSystemPrompt(groundingType);
+
     // Configure generation
     const config: any = {
       temperature: 0.7,
       maxOutputTokens: 8192,
+      systemInstruction: systemInstruction,
     };
 
     if (tools.length > 0) {
@@ -294,16 +309,17 @@ export async function POST(request: Request) {
     await logToFile('⚙️ GENERATION CONFIG', {
       temperature: config.temperature,
       maxOutputTokens: config.maxOutputTokens,
+      systemInstruction: config.systemInstruction,
       hasTools: !!config.tools,
       toolsCount: config.tools?.length,
       hasThinkingConfig: !!config.thinkingConfig,
     });
 
-    // Force gemini-2.5-flash when RAG is active (no thinking mode)
+    // Force gemini-2.5-pro when RAG is active for better analysis quality
     let effectiveModel = selectedChatModel;
-    if (groundingType === 'rag-civil' || groundingType === 'rag-commerce') {
-      effectiveModel = 'chat-model-medium'; // gemini-2.5-flash
-      await logToFile('🔄 Forcing gemini-2.5-flash model for RAG', {
+    if (groundingType === 'rag-civil' || groundingType === 'rag-commerce' || groundingType === 'rag-droit-francais') {
+      effectiveModel = 'chat-model-large'; // gemini-2.5-pro
+      await logToFile('🔄 Forcing gemini-2.5-pro model for RAG', {
         originalModel: selectedChatModel,
         effectiveModel,
       });
@@ -400,11 +416,17 @@ export async function POST(request: Request) {
                 if (part.thought && part.text) {
                   fullThinkingText += part.text;
 
-                  const thinkingData = {
-                    type: 'thinking-delta',
-                    thinkingDelta: part.text,
-                  };
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(thinkingData)}\n\n`));
+                  try {
+                    const thinkingData = {
+                      type: 'thinking-delta',
+                      thinkingDelta: part.text,
+                    };
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify(thinkingData)}\n\n`));
+                  } catch (err) {
+                    // Stream closed by client, stop streaming
+                    console.log('Stream closed by client during thinking');
+                    return;
+                  }
                 }
               }
             }
@@ -413,11 +435,17 @@ export async function POST(request: Request) {
             if (chunk.text) {
               fullText += chunk.text;
 
-              const data = {
-                type: 'text-delta',
-                textDelta: chunk.text,
-              };
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+              try {
+                const data = {
+                  type: 'text-delta',
+                  textDelta: chunk.text,
+                };
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+              } catch (err) {
+                // Stream closed by client, stop streaming
+                console.log('Stream closed by client during text streaming');
+                return;
+              }
             }
           }
 
@@ -459,21 +487,39 @@ export async function POST(request: Request) {
           }
 
           // Send finish event
-          const finishData = {
-            type: 'finish',
-            finishReason: 'stop',
-          };
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(finishData)}\n\n`));
+          try {
+            const finishData = {
+              type: 'finish',
+              finishReason: 'stop',
+            };
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(finishData)}\n\n`));
+          } catch (err) {
+            // Stream closed by client, that's ok
+            console.log('Stream closed by client before finish event');
+          }
 
-          controller.close();
+          try {
+            controller.close();
+          } catch (err) {
+            // Already closed, that's ok
+          }
         } catch (error: any) {
           console.error('GenAI streaming error:', error);
-          const errorData = {
-            type: 'error',
-            error: error.message || 'Unknown error',
-          };
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorData)}\n\n`));
-          controller.close();
+          try {
+            const errorData = {
+              type: 'error',
+              error: error.message || 'Unknown error',
+            };
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorData)}\n\n`));
+          } catch (enqueueError) {
+            // Controller already closed, ignore
+            console.error('Could not enqueue error (controller closed):', enqueueError);
+          }
+          try {
+            controller.close();
+          } catch (closeError) {
+            // Controller already closed, ignore
+          }
         }
       },
     });
