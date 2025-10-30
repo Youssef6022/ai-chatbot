@@ -315,15 +315,25 @@ export async function POST(request: Request) {
       hasThinkingConfig: !!config.thinkingConfig,
     });
 
+
     // Force gemini-2.5-pro when RAG is active for better analysis quality
     let effectiveModel = selectedChatModel;
     if (groundingType === 'rag-civil' || groundingType === 'rag-commerce' || groundingType === 'rag-droit-francais') {
-      effectiveModel = 'chat-model-medium'; // gemini-2.5-pro
-      await logToFile('🔄 Forcing gemini-2.5-pro model for RAG', {
+      effectiveModel = 'chat-model-medium'; // gemini-2.5-medium (required for thinking)
+
+      // Enable thinking by default for RAG queries
+      config.thinkingConfig = {
+        thinkingBudget: 8192,
+        includeThoughts: true,
+      };
+
+      await logToFile('🔄 Forcing gemini-2.5-pro model for RAG with thinking enabled', {
         originalModel: selectedChatModel,
         effectiveModel,
+        thinkingEnabled: true,
       });
     }
+
 
     // Create streaming response
     const encoder = new TextEncoder();
