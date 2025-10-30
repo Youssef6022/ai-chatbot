@@ -318,7 +318,7 @@ export async function POST(request: Request) {
     // Force gemini-2.5-pro when RAG is active for better analysis quality
     let effectiveModel = selectedChatModel;
     if (groundingType === 'rag-civil' || groundingType === 'rag-commerce' || groundingType === 'rag-droit-francais') {
-      effectiveModel = 'chat-model-large'; // gemini-2.5-pro
+      effectiveModel = 'chat-model-medium'; // gemini-2.5-pro
       await logToFile('🔄 Forcing gemini-2.5-pro model for RAG', {
         originalModel: selectedChatModel,
         effectiveModel,
