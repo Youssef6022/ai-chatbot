@@ -342,6 +342,7 @@ export default function WorkflowsPage() {
   
   // Toolbar state
   const [selectedTool, setSelectedTool] = useState<'select' | 'move'>('move');
+  const [snapToGridEnabled, setSnapToGridEnabled] = useState(true);
 
   // Pre-run variables modal state
   const [showPreRunModal, setShowPreRunModal] = useState(false);
@@ -1524,12 +1525,12 @@ export default function WorkflowsPage() {
   // Handle node selection for edit panel
   const onNodeClick = useCallback((event: React.MouseEvent, node: any) => {
     event.stopPropagation();
-    
+
     // Don't open edit panel for note nodes
     if (node.type === 'note') {
       return;
     }
-    
+
     setEditingNode(node);
     setIsEditPanelOpen(true);
     setShowResults(false); // Reset to edit view when switching nodes
@@ -2622,6 +2623,8 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           selectionOnDrag={selectedTool === 'select'}
           panOnScroll={true}
           selectionMode={selectedTool === 'select' ? 'partial' : undefined}
+          snapToGrid={snapToGridEnabled}
+          snapGrid={[20, 20]}
         >
           <Background 
             variant={BackgroundVariant.Dots} 
@@ -3422,8 +3425,8 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           onClick={redo}
           disabled={!canRedo}
           className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
-            canRedo 
-              ? 'text-muted-foreground hover:bg-background/20 hover:text-foreground' 
+            canRedo
+              ? 'text-muted-foreground hover:bg-background/20 hover:text-foreground'
               : 'cursor-not-allowed text-muted-foreground/30'
           }`}
           title="Redo"
@@ -3431,6 +3434,27 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 7v6h-6"/>
             <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/>
+          </svg>
+        </button>
+
+        {/* Divider */}
+        <div className="mx-1 h-6 w-px bg-border/60" />
+
+        {/* Snap to Grid Toggle */}
+        <button
+          onClick={() => setSnapToGridEnabled(!snapToGridEnabled)}
+          className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
+            snapToGridEnabled
+              ? 'border border-border bg-background text-foreground'
+              : 'text-muted-foreground hover:bg-background/20 hover:text-foreground'
+          }`}
+          title={snapToGridEnabled ? "Désactiver l'alignement sur la grille" : "Activer l'alignement sur la grille"}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
           </svg>
         </button>
       </div>
