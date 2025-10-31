@@ -65,6 +65,13 @@ export function DecisionNode({ data, selected }: NodeProps) {
 
   return (
     <div className="relative">
+      {/* Files Handle Label */}
+      <div className='-top-8 absolute right-0 left-0'>
+        <div className='absolute font-medium text-gray-700 text-xs dark:text-gray-300' style={{ left: '50%', transform: 'translateX(-50%)' }}>
+          Files
+        </div>
+      </div>
+
       <div
         className={`group min-w-[280px] max-w-[320px] cursor-pointer rounded-lg transition-all duration-300 ${getExecutionBorderStyles()} ${selected ? 'ring-2 ring-purple-500' : ''}`}
         style={typeof dynamicHeight === 'number' ? { height: `${dynamicHeight}px` } : {}}
@@ -92,7 +99,7 @@ export function DecisionNode({ data, selected }: NodeProps) {
           </div>
         </div>
 
-        {/* Input Handle (left side) - same as AI Agent */}
+        {/* Input Handle (left side) - accepts multiple connections */}
         <Handle
           type="target"
           position={Position.Left}
@@ -100,12 +107,34 @@ export function DecisionNode({ data, selected }: NodeProps) {
           className={getHandleClassName('input', 'target')}
           style={{
             left: '-6px',
-            top: '35px',
+            top: '50%',
             width: '12px',
             height: '24px',
             backgroundColor: '#9333ea',
             border: '2px solid #ffffff',
             boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
+            transform: 'translateY(-50%)',
+            transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+            borderRadius: '2px',
+            zIndex: 10
+          }}
+        />
+
+        {/* Files Handle (top, rectangular) */}
+        <Handle
+          type="target"
+          position={Position.Top}
+          id="files"
+          className={getHandleClassName('files', 'target')}
+          style={{
+            left: '50%',
+            top: '-6px',
+            width: '24px',
+            height: '12px',
+            backgroundColor: '#9333ea',
+            border: '2px solid #ffffff',
+            boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
+            transform: 'translateX(-50%)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
             borderRadius: '2px',
             zIndex: 10

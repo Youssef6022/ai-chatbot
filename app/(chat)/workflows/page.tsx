@@ -1447,6 +1447,12 @@ export default function WorkflowsPage() {
           connectingFrom.handleId === 'files' && handleId === 'files') {
         return true;
       }
+
+      // Files → Decision files
+      if (sourceNode.type === 'files' && targetNode.type === 'decision' &&
+          connectingFrom.handleId === 'files' && handleId === 'files') {
+        return true;
+      }
     }
 
     return false;
@@ -1482,13 +1488,10 @@ export default function WorkflowsPage() {
         };
         newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
       }
-      // Cas 2: Generate → Decision (chaînage via input)
+      // Cas 2: Generate → Decision (chaînage via input - permet connexions multiples)
       else if (sourceNode.type === 'generate' && targetNode.type === 'decision' &&
                params.sourceHandle === 'output' && params.targetHandle === 'input') {
-        // Supprimer toute connexion existante vers le même handle du même nœud Decision
-        const edgesWithoutTargetConnection = edges.filter(edge =>
-          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
-        );
+        // Permettre plusieurs connexions vers le handle input du Decision node
         const newEdge = {
           ...params,
           className: 'generate-to-generate',
@@ -1497,7 +1500,7 @@ export default function WorkflowsPage() {
             targetType: targetNode.type
           }
         };
-        newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
+        newEdges = addEdge(newEdge, edges);
       }
       // Cas 3: Decision → Generate (chaînage via n'importe quelle sortie)
       else if (sourceNode.type === 'decision' && targetNode.type === 'generate' &&
@@ -1516,13 +1519,10 @@ export default function WorkflowsPage() {
         };
         newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
       }
-      // Cas 4: Decision → Decision (chaînage via n'importe quelle sortie)
+      // Cas 4: Decision → Decision (chaînage via n'importe quelle sortie - permet connexions multiples)
       else if (sourceNode.type === 'decision' && targetNode.type === 'decision' &&
                params.targetHandle === 'input') {
-        // Supprimer toute connexion existante vers le même handle du même nœud Decision
-        const edgesWithoutTargetConnection = edges.filter(edge =>
-          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
-        );
+        // Permettre plusieurs connexions vers le handle input du Decision node
         const newEdge = {
           ...params,
           className: 'generate-to-generate',
@@ -1531,7 +1531,7 @@ export default function WorkflowsPage() {
             targetType: targetNode.type
           }
         };
-        newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
+        newEdges = addEdge(newEdge, edges);
       }
       // Cas 5: Files → Generate (connexions de fichiers)
       else if (sourceNode.type === 'files' && targetNode.type === 'generate' &&
@@ -1547,7 +1547,20 @@ export default function WorkflowsPage() {
         };
         newEdges = addEdge(newEdge, edges);
       }
-      
+      // Cas 6: Files → Decision (connexions de fichiers)
+      else if (sourceNode.type === 'files' && targetNode.type === 'decision' &&
+               params.sourceHandle === 'files' && params.targetHandle === 'files') {
+        // Permettre plusieurs connexions de Files vers le handle files du Decision
+        const newEdge = {
+          ...params,
+          data: {
+            sourceType: sourceNode.type,
+            targetType: targetNode.type
+          }
+        };
+        newEdges = addEdge(newEdge, edges);
+      }
+
       if (newEdges !== edges) {
         setEdges(newEdges);
         saveToHistory(nodes, newEdges);
@@ -1594,6 +1607,12 @@ export default function WorkflowsPage() {
 
     // Files → Generate (files)
     if (sourceNode.type === 'files' && targetNode.type === 'generate' &&
+        connection.sourceHandle === 'files' && connection.targetHandle === 'files') {
+      return true;
+    }
+
+    // Files → Decision (files)
+    if (sourceNode.type === 'files' && targetNode.type === 'decision' &&
         connection.sourceHandle === 'files' && connection.targetHandle === 'files') {
       return true;
     }
@@ -2228,7 +2247,7 @@ export default function WorkflowsPage() {
             const variableName = connectedNode.data.variableName ||
                                (connectedNode.type === 'decision' ? 'Decision Node' : 'AI Agent');
             const cleanResult = extractTextFromResult(connectedNode.data.result);
-            connectedContext += `\nVoici la réponse de ${variableName}:\n${cleanResult}\n`;
+            connectedContext += `\nRéponse de ${variableName} : {{${variableName}}}\n${cleanResult}\n`;
           }
         });
 
