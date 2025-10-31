@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { PlusIcon, TrashIcon } from '@/components/icons';
@@ -13,6 +14,7 @@ export interface Variable {
   name: string;
   value: string;
   askBeforeRun?: boolean;
+  description?: string;
 }
 
 interface VariablesPanelProps {
@@ -24,6 +26,7 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
   const [isOpen, setIsOpen] = useState(false);
   const [newVarName, setNewVarName] = useState('');
   const [newVarValue, setNewVarValue] = useState('');
+  const [newVarDescription, setNewVarDescription] = useState('');
   const [newVarAskBeforeRun, setNewVarAskBeforeRun] = useState(false);
 
   const addVariable = () => {
@@ -33,15 +36,17 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
         name: newVarName.trim(),
         value: newVarValue.trim(),
         askBeforeRun: newVarAskBeforeRun,
+        description: newVarDescription.trim() || undefined,
       };
       onVariablesChange([...variables, newVariable]);
       setNewVarName('');
       setNewVarValue('');
+      setNewVarDescription('');
       setNewVarAskBeforeRun(false);
     }
   };
 
-  const updateVariable = (id: string, field: 'name' | 'value' | 'askBeforeRun', newValue: string | boolean) => {
+  const updateVariable = (id: string, field: 'name' | 'value' | 'askBeforeRun' | 'description', newValue: string | boolean) => {
     onVariablesChange(
       variables.map(variable =>
         variable.id === id
@@ -102,6 +107,16 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
                     onKeyDown={(e) => e.key === 'Enter' && addVariable()}
                   />
                 </div>
+              </div>
+              <div>
+                <Label htmlFor="var-description" className="text-xs">Description (optional)</Label>
+                <Textarea
+                  id="var-description"
+                  placeholder="Décrivez à quoi sert cette variable..."
+                  value={newVarDescription}
+                  onChange={(e) => setNewVarDescription(e.target.value)}
+                  className="min-h-[60px] text-xs"
+                />
               </div>
               <div className="flex items-center gap-2">
                 <Switch
@@ -169,6 +184,15 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
                         >
                           <TrashIcon size={14} />
                         </Button>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Description (optional)</Label>
+                        <Textarea
+                          value={variable.description || ''}
+                          onChange={(e) => updateVariable(variable.id, 'description', e.target.value)}
+                          placeholder="Décrivez à quoi sert cette variable..."
+                          className="min-h-[60px] text-xs"
+                        />
                       </div>
                       <div className="flex items-center gap-2 border-t pt-2">
                         <Switch

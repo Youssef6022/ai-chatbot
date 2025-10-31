@@ -3782,6 +3782,20 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                 )}
               </div>
 
+              <div>
+                <Label className='mb-2 block font-medium text-muted-foreground text-sm'>Description (optional)</Label>
+                <textarea
+                  id="modal-var-description"
+                  defaultValue={variableModal.variable?.description || ''}
+                  placeholder="Décrivez à quoi sert cette variable..."
+                  rows={3}
+                  className='w-full resize-none rounded-lg border-2 border-border/60 bg-background px-3 py-2.5 text-sm transition-all focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20'
+                />
+                <div className='mt-1.5 text-muted-foreground text-xs'>
+                  Cette description s'affichera avec une icône ℹ️ lors du lancement
+                </div>
+              </div>
+
               {/* Ask before run toggle */}
               <div className="flex items-center gap-3 rounded-lg border-2 border-border/60 bg-muted/20 p-3">
                 <Switch
@@ -3810,6 +3824,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                   onClick={() => {
                     const nameInput = document.getElementById('modal-var-name') as HTMLInputElement;
                     const valueInput = document.getElementById('modal-var-value') as HTMLTextAreaElement;
+                    const descriptionInput = document.getElementById('modal-var-description') as HTMLTextAreaElement;
 
                     if (nameInput?.value.trim() && (valueInput?.value.trim() || modalAskBeforeRun)) {
                       if (variableModal.mode === 'add') {
@@ -3818,6 +3833,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           name: nameInput.value.trim(),
                           value: modalAskBeforeRun ? '' : valueInput.value.trim(),
                           askBeforeRun: modalAskBeforeRun,
+                          description: descriptionInput?.value.trim() || undefined,
                         };
                         setVariables([...variables, newVariable]);
                       } else if (variableModal.variable) {
@@ -3827,7 +3843,8 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                                 ...v,
                                 name: nameInput.value.trim(),
                                 value: modalAskBeforeRun ? '' : valueInput.value.trim(),
-                                askBeforeRun: modalAskBeforeRun
+                                askBeforeRun: modalAskBeforeRun,
+                                description: descriptionInput?.value.trim() || undefined,
                               }
                             : v
                         ));

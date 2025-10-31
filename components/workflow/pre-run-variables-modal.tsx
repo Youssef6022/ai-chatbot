@@ -86,9 +86,34 @@ export function PreRunVariablesModal({
           <div className="space-y-3">
             {variablesToAsk.map((variable) => (
               <div key={variable.id} className='flex min-w-0 items-center gap-2'>
-                <Label className='w-24 flex-shrink-0 truncate font-medium text-muted-foreground text-xs'>
-                  {variable.name}
-                </Label>
+                <div className='flex w-24 flex-shrink-0 items-center gap-1'>
+                  <Label className='truncate font-medium text-muted-foreground text-xs'>
+                    {variable.name}
+                  </Label>
+                  {variable.description && (
+                    <div className='group relative'>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="cursor-help text-muted-foreground/60 transition-colors hover:text-muted-foreground"
+                      >
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                      </svg>
+                      {/* Tooltip */}
+                      <div className='pointer-events-none absolute bottom-full left-1/2 z-[100] mb-2 hidden w-64 -translate-x-1/2 rounded-lg border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-lg group-hover:block'>
+                        {variable.description}
+                        {/* Arrow */}
+                        <div className='absolute top-full left-1/2 -translate-x-1/2 border-4 border-x-transparent border-b-transparent border-t-border' />
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <input
                   type="text"
                   id={`modal-var-${variable.id}`}
@@ -143,19 +168,26 @@ export function PreRunVariablesModal({
 
           <div className='zoom-in-95 relative flex h-[600px] max-h-[90vh] w-[800px] max-w-[90vw] animate-in flex-col rounded-xl border-2 border-border/60 bg-background shadow-2xl duration-200'>
             {/* Header */}
-            <div className='flex items-center justify-between border-border/60 border-b px-6 py-4'>
-              <h3 className='font-semibold text-lg'>
-                {variablesToAsk.find(v => v.id === expandedVariable)?.name}
-              </h3>
-              <button
-                onClick={() => setExpandedVariable(null)}
-                className='flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-muted/50'
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
+            <div className='border-border/60 border-b px-6 py-4'>
+              <div className='flex items-center justify-between'>
+                <h3 className='font-semibold text-lg'>
+                  {variablesToAsk.find(v => v.id === expandedVariable)?.name}
+                </h3>
+                <button
+                  onClick={() => setExpandedVariable(null)}
+                  className='flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-muted/50'
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+              {variablesToAsk.find(v => v.id === expandedVariable)?.description && (
+                <p className='mt-2 text-muted-foreground text-sm'>
+                  {variablesToAsk.find(v => v.id === expandedVariable)?.description}
+                </p>
+              )}
             </div>
 
             {/* Content */}
