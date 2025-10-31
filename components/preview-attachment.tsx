@@ -145,7 +145,7 @@ export const PreviewAttachment = ({
           />
         ) : contentType === 'text/plain' ? (
           <div className="flex size-full flex-col items-start justify-start overflow-hidden bg-slate-50 p-2 dark:bg-slate-900">
-            <div className="w-full overflow-hidden text-[8px] leading-[1.3] text-slate-600 dark:text-slate-400">
+            <div className='w-full overflow-hidden text-[8px] text-slate-600 leading-[1.3] dark:text-slate-400'>
               {textPreview}...
             </div>
           </div>
@@ -184,7 +184,7 @@ export const PreviewAttachment = ({
       )}
 
       {/* File name */}
-      <div className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 text-[9px] font-medium text-white">
+      <div className='absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1 font-medium text-[9px] text-white'>
         {name}
       </div>
     </div>

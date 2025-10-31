@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 import {
   ReactFlow,
@@ -61,31 +62,126 @@ interface UserFile {
 }
 
 function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      {/* Selected Files Display */}
+      {selectedFiles.length > 0 && (
+        <div className="space-y-1">
+          <Label className='font-medium text-[10px] text-muted-foreground'>
+            Fichiers sélectionnés ({selectedFiles.length})
+          </Label>
+          <div className='max-h-[120px] space-y-0.5 overflow-y-auto rounded border border-border p-1'>
+            {selectedFiles.map((file, index) => (
+              <div key={index} className='flex items-center justify-between gap-1 rounded bg-muted px-1.5 py-1 text-[10px]'>
+                <span className="min-w-0 flex-1 truncate">{file.name}</span>
+                <button
+                  onClick={() => onFilesChange(selectedFiles.filter((_, i) => i !== index))}
+                  className='flex h-3 w-3 flex-shrink-0 items-center justify-center rounded text-red-600 transition-colors hover:bg-red-500/20'
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Add Files Button */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className='flex w-full items-center justify-center gap-2 rounded border border-border border-dashed bg-muted/20 px-3 py-2 text-muted-foreground text-xs transition-colors hover:bg-muted/40'
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Ajouter des fichiers
+      </button>
+
+      {/* File Library Modal */}
+      {isModalOpen && (
+        <FileLibraryModal
+          selectedFiles={selectedFiles}
+          onFilesChange={onFilesChange}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// File Library Modal Component with own state
+function FileLibraryModal({ selectedFiles, onFilesChange, onClose }: {
+  selectedFiles: { url: string; name: string; contentType: string }[];
+  onFilesChange: (files: { url: string; name: string; contentType: string }[]) => void;
+  onClose: () => void;
+}) {
+  // Modal's own state
   const [libraryFiles, setLibraryFiles] = useState<UserFile[]>([]);
+  const [folders, setFolders] = useState<any[]>([]);
+  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
+  const [folderPath, setFolderPath] = useState<Array<{ id: string | null; name: string }>>([{ id: null, name: 'Racine' }]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Load folder content on mount and when folder changes
   useEffect(() => {
-    loadLibraryFiles();
-  }, []);
+    loadFolderContent(currentFolderId);
+  }, [currentFolderId]);
 
-  const loadLibraryFiles = async () => {
+  const loadFolderContent = async (folderId: string | null) => {
     setLoading(true);
     try {
-      const response = await fetch('/api/library/folders');
-      if (response.ok) {
-        const data = await response.json();
-        setLibraryFiles(data.files || []);
+      // Load folders
+      const foldersResponse = await fetch('/api/library/folders');
+      if (foldersResponse.ok) {
+        const foldersData = await foldersResponse.json();
+        console.log('📁 All folders data:', foldersData);
+        const allFolders = foldersData.folders || [];
+        console.log('📁 All folders:', allFolders);
+        // Filter folders by parent - handle both null and undefined
+        const filteredFolders = allFolders.filter((f: any) => {
+          const folderParentId = f.parent_id === undefined ? null : f.parent_id;
+          return folderParentId === folderId;
+        });
+        console.log(`📁 Filtered folders for parent ${folderId}:`, filteredFolders);
+        setFolders(filteredFolders);
+      }
+
+      // Load files
+      const filesEndpoint = folderId
+        ? `/api/library/folders/${folderId}/files`
+        : '/api/library/folders';
+      const filesResponse = await fetch(filesEndpoint);
+      if (filesResponse.ok) {
+        const filesData = await filesResponse.json();
+        console.log('📄 Files data:', filesData);
+        setLibraryFiles(filesData.files || []);
       }
     } catch (error) {
-      console.error('Error loading files:', error);
+      console.error('Error loading folder content:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  const navigateToFolder = (folderId: string | null, folderName: string) => {
+    setCurrentFolderId(folderId);
+    const folderIndex = folderPath.findIndex(f => f.id === folderId);
+    if (folderIndex >= 0) {
+      setFolderPath(folderPath.slice(0, folderIndex + 1));
+    } else {
+      setFolderPath([...folderPath, { id: folderId, name: folderName }]);
+    }
+  };
+
   const filteredFiles = libraryFiles.filter(file =>
     file.original_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredFolders = folders.filter(folder =>
+    folder.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const isFileSelected = (fileUrl: string) => {
@@ -107,90 +203,141 @@ function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
     }
   };
 
-  const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) return '🖼️';
-    if (mimeType === 'application/pdf') return '📄';
-    if (mimeType.startsWith('text/') || mimeType === 'application/json') return '📝';
-    if (mimeType.startsWith('video/')) return '🎥';
-    if (mimeType.startsWith('audio/')) return '🎵';
-    return '📎';
+  const getFilePreview = (file: UserFile) => {
+    if (file.mime_type.startsWith('image/')) {
+      return (
+        <img
+          src={file.blob_url}
+          alt={file.original_name}
+          className="h-full w-full object-cover"
+        />
+      );
+    }
+    // Default icon based on file type
+    const icon = file.mime_type === 'application/pdf' ? '📄' :
+                 file.mime_type.startsWith('text/') ? '📝' :
+                 file.mime_type.startsWith('video/') ? '🎥' :
+                 file.mime_type.startsWith('audio/') ? '🎵' : '📎';
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-muted text-4xl">
+        {icon}
+      </div>
+    );
   };
 
-  return (
-    <div className="space-y-3">
-      {/* Search Bar */}
-      <div className="space-y-1">
-        <Label className='font-medium text-muted-foreground text-xs'>Rechercher des fichiers</Label>
-        <Input
-          type="text"
-          placeholder="Rechercher dans votre bibliothèque..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="text-sm"
-        />
-      </div>
+  // Use portal to render modal at document level
+  if (typeof window === 'undefined') return null;
 
-      {/* Selected Files */}
-      {selectedFiles.length > 0 && (
-        <div className="space-y-1">
-          <Label className='font-medium text-muted-foreground text-xs'>
-            Fichiers sélectionnés ({selectedFiles.length})
-          </Label>
-          <div className='max-h-[120px] space-y-1 overflow-y-auto rounded-md border border-border p-2'>
-            {selectedFiles.map((file, index) => (
-              <div key={index} className='flex items-center justify-between rounded bg-muted p-2 text-xs'>
-                <span className="truncate">{file.name}</span>
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div className="relative h-[80vh] w-[90vw] max-w-6xl rounded-lg border border-border bg-background shadow-xl" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className='flex items-center justify-between border-border border-b p-4'>
+          <h2 className='font-semibold text-lg'>Bibliothèque de fichiers</h2>
+          <button
+            onClick={onClose}
+            className="rounded p-1 transition-colors hover:bg-muted"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Breadcrumb and Search */}
+        <div className='space-y-3 border-border border-b p-4'>
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm">
+            {folderPath.map((folder, index) => (
+              <div key={folder.id || 'root'} className="flex items-center gap-2">
                 <button
-                  onClick={() => onFilesChange(selectedFiles.filter((_, i) => i !== index))}
-                  className='flex h-4 w-4 items-center justify-center rounded bg-red-500 text-white hover:bg-red-600'
+                  onClick={() => navigateToFolder(folder.id, folder.name)}
+                  className={`rounded px-2 py-1 transition-colors ${
+                    index === folderPath.length - 1
+                      ? 'bg-blue-100 font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                      : 'text-muted-foreground hover:bg-muted/50'
+                  }`}
                 >
-                  ×
+                  {folder.name}
                 </button>
+                {index < folderPath.length - 1 && <span className="text-muted-foreground">/</span>}
               </div>
             ))}
           </div>
-        </div>
-      )}
 
-      {/* Available Files */}
-      <div className="space-y-1">
-        <Label className='font-medium text-muted-foreground text-xs'>
-          Fichiers disponibles ({filteredFiles.length})
-        </Label>
-        <div className='max-h-[300px] overflow-y-auto rounded-md border border-border'>
+          {/* Search */}
+          <Input
+            type="text"
+            placeholder="Rechercher des fichiers..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-md"
+          />
+        </div>
+
+        {/* Content */}
+        <div className="h-[calc(80vh-180px)] overflow-y-auto p-4">
           {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="animate-spin" size={20} />
-              <span className='ml-2 text-muted-foreground text-sm'>Chargement...</span>
+            <div className="flex h-full items-center justify-center">
+              <Loader2 className="animate-spin" size={32} />
+              <span className='ml-3 text-muted-foreground'>Chargement...</span>
             </div>
-          ) : filteredFiles.length === 0 ? (
-            <div className='py-8 text-center text-muted-foreground text-xs'>
-              {searchQuery ? 'Aucun fichier trouvé' : 'Aucun fichier dans votre bibliothèque'}
+          ) : filteredFolders.length === 0 && filteredFiles.length === 0 ? (
+            <div className='flex h-full items-center justify-center text-muted-foreground'>
+              {searchQuery ? 'Aucun résultat trouvé' : 'Aucun fichier dans ce dossier'}
             </div>
           ) : (
-            <div className="divide-y divide-border">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {/* Folders */}
+              {filteredFolders.map((folder) => (
+                <div
+                  key={folder.id}
+                  onClick={() => navigateToFolder(folder.id, folder.name)}
+                  className='group relative cursor-pointer overflow-hidden rounded-lg border border-border bg-card transition-all hover:shadow-lg'
+                >
+                  <div className="flex aspect-square items-center justify-center bg-muted/50">
+                    <span className='text-6xl'>📁</span>
+                  </div>
+                  <div className='border-border border-t p-2'>
+                    <p className='truncate font-medium text-sm'>{folder.name}</p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Files */}
               {filteredFiles.map((file) => (
                 <div
                   key={file.id}
                   onClick={() => toggleFile(file)}
-                  className={`flex cursor-pointer items-center gap-2 p-2 transition-colors hover:bg-muted/50 ${
-                    isFileSelected(file.blob_url) ? 'bg-blue-50 dark:bg-blue-950/20' : ''
+                  className={`group relative cursor-pointer overflow-hidden rounded-lg border transition-all hover:shadow-lg ${
+                    isFileSelected(file.blob_url)
+                      ? 'border-blue-500 ring-2 ring-blue-500/50'
+                      : 'border-border'
                   }`}
                 >
-                  <div className='flex h-5 w-5 items-center justify-center'>
+                  {/* Checkbox */}
+                  <div className='absolute top-2 right-2 z-10'>
                     <input
                       type="checkbox"
                       checked={isFileSelected(file.blob_url)}
                       onChange={() => toggleFile(file)}
-                      className="cursor-pointer rounded"
+                      className="h-4 w-4 cursor-pointer rounded"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </div>
-                  <span className='text-base'>{getFileIcon(file.mime_type)}</span>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-xs'>{file.original_name}</p>
+
+                  {/* Preview */}
+                  <div className="aspect-square overflow-hidden bg-muted">
+                    {getFilePreview(file)}
+                  </div>
+
+                  {/* Info */}
+                  <div className='border-border border-t bg-card p-2'>
+                    <p className='truncate font-medium text-xs' title={file.original_name}>
+                      {file.original_name}
+                    </p>
                     <p className='text-[10px] text-muted-foreground'>
-                      {new Date(file.created_at).toLocaleDateString('fr-FR')}
+                      {(file.size_bytes / 1024).toFixed(1)} KB
                     </p>
                   </div>
                 </div>
@@ -198,8 +345,22 @@ function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
             </div>
           )}
         </div>
+
+        {/* Footer */}
+        <div className='flex items-center justify-between border-border border-t p-4'>
+          <span className='text-muted-foreground text-sm'>
+            {selectedFiles.length} fichier{selectedFiles.length > 1 ? 's' : ''} sélectionné{selectedFiles.length > 1 ? 's' : ''}
+          </span>
+          <button
+            onClick={onClose}
+            className='rounded bg-blue-500 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-600'
+          >
+            Confirmer
+          </button>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -2296,7 +2457,7 @@ export default function WorkflowsPage() {
         });
 
         systemPrompt = `You are a decision-making assistant. You will be asked a question and you must respond with ONLY ONE of these exact choices: ${choicesList}${choices.length > 0 ? ', ' : ''}or "Else".
-${connectedContext ? '\nCONTEXT FROM CONNECTED NODES:' + connectedContext : ''}
+${connectedContext ? `\nCONTEXT FROM CONNECTED NODES:${connectedContext}` : ''}
 IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not add any explanation, context, or additional text. Just respond with the choice that best matches the situation.`;
 
         userPrompt = processPromptText(currentGenerateNode?.data?.instructions || '', latestNodes);
@@ -3302,7 +3463,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                             data: { ...editingNode.data, choices: newChoices }
                           });
                         }}
-                        className='flex items-center gap-1 rounded bg-purple-500/10 px-1.5 py-0.5 text-purple-600 text-[10px] transition-colors hover:bg-purple-500/20 dark:text-purple-400'
+                        className='flex items-center gap-1 rounded bg-purple-500/10 px-1.5 py-0.5 text-[10px] text-purple-600 transition-colors hover:bg-purple-500/20 dark:text-purple-400'
                       >
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M12 5v14M5 12h14"/>
@@ -3357,7 +3518,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         <div className='mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded bg-gray-100 text-[9px] text-gray-600 dark:bg-gray-800 dark:text-gray-400'>
                           ?
                         </div>
-                        <span className='text-[10px] leading-relaxed text-muted-foreground'>
+                        <span className='text-[10px] text-muted-foreground leading-relaxed'>
                           Une sortie "Else" est toujours disponible pour les réponses non reconnues
                         </span>
                       </div>

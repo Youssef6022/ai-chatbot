@@ -932,7 +932,7 @@ function PureRAGButton({
       {isOpen && isRagActive && (
         <div
           ref={dropdownRef}
-          className="fixed w-48 rounded-lg border bg-popover p-1 shadow-xl z-[9999]"
+          className='fixed z-[9999] w-48 rounded-lg border bg-popover p-1 shadow-xl'
           style={{
             top: `${dropdownPosition.top}px`,
             left: `${dropdownPosition.left}px`,
@@ -974,7 +974,7 @@ function PureRAGButton({
           </button>
           <div className="my-1 h-px bg-border" />
           <button
-            className="w-full rounded-md px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className='w-full rounded-md px-3 py-2 text-left text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground'
             onClick={(e) => {
               e.preventDefault();
               onSelect('none' as any);
