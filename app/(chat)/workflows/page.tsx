@@ -382,10 +382,10 @@ function AutoFitView({ nodes }: { nodes: any[] }) {
 
       const timer = setTimeout(() => {
         fitView({
-          padding: 0.2,
+          padding: 0.3,
           duration: 500,
-          maxZoom: 1.2,
-          minZoom: 0.4
+          maxZoom: 0.9,
+          minZoom: 0.2
         });
       }, 150);
 
@@ -398,10 +398,10 @@ function AutoFitView({ nodes }: { nodes: any[] }) {
     if (nodes.length > 0) {
       const timer = setTimeout(() => {
         fitView({
-          padding: 0.2,
+          padding: 0.3,
           duration: 500,
-          maxZoom: 1.2,
-          minZoom: 0.4
+          maxZoom: 0.9,
+          minZoom: 0.2
         });
       }, 300);
 
