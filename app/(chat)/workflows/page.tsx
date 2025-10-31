@@ -2165,8 +2165,27 @@ export default function WorkflowsPage() {
         const choices = currentGenerateNode?.data?.choices || [];
         const choicesList = choices.map((choice: string) => `"${choice}"`).join(', ');
 
-        systemPrompt = `You are a decision-making assistant. You will be asked a question and you must respond with ONLY ONE of these exact choices: ${choicesList}${choices.length > 0 ? ', ' : ''}or "Else".
+        // Collect context from connected input nodes (both Generate and Decision nodes)
+        let connectedContext = '';
+        const inputEdges = edges.filter(edge => edge.target === generateNode.id && edge.targetHandle === 'input');
 
+        inputEdges.forEach(edge => {
+          const connectedNode = latestNodes.find(node => node.id === edge.source);
+          // Support both 'generate' and 'decision' node types
+          if ((connectedNode?.type === 'generate' || connectedNode?.type === 'decision') &&
+              connectedNode.data.result &&
+              connectedNode.data.result.trim() !== '' &&
+              connectedNode.data.result !== 'Generating...' &&
+              !(connectedNode.data as any).isLoading) {
+            const variableName = connectedNode.data.variableName ||
+                               (connectedNode.type === 'decision' ? 'Decision Node' : 'AI Agent');
+            const cleanResult = extractTextFromResult(connectedNode.data.result);
+            connectedContext += `\nVoici la réponse de ${variableName}:\n${cleanResult}\n`;
+          }
+        });
+
+        systemPrompt = `You are a decision-making assistant. You will be asked a question and you must respond with ONLY ONE of these exact choices: ${choicesList}${choices.length > 0 ? ', ' : ''}or "Else".
+${connectedContext ? '\nCONTEXT FROM CONNECTED NODES:' + connectedContext : ''}
 IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not add any explanation, context, or additional text. Just respond with the choice that best matches the situation.`;
 
         userPrompt = processPromptText(currentGenerateNode?.data?.instructions || '', latestNodes);
