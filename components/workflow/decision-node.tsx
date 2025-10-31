@@ -88,31 +88,26 @@ export function DecisionNode({ data, selected }: NodeProps) {
                   {nodeData.variableName || 'Decision'}
                 </div>
               )}
-              {nodeData.selectedChoice && (
-                <div className='mt-1.5 inline-block rounded-full bg-purple-100 px-2 py-0.5 font-medium text-[10px] text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'>
-                  → {nodeData.selectedChoice}
-                </div>
-              )}
             </div>
           </div>
         </div>
 
-        {/* Input Handle (left side) - centered between border and content */}
+        {/* Input Handle (left side) - same as AI Agent */}
         <Handle
           type="target"
           position={Position.Left}
           id="input"
           className={getHandleClassName('input', 'target')}
           style={{
-            left: '-8px',
+            left: '-6px',
             top: '35px',
-            width: '16px',
-            height: '16px',
+            width: '12px',
+            height: '24px',
             backgroundColor: '#9333ea',
-            border: '3px solid #ffffff',
-            boxShadow: '0 2px 8px rgba(147, 51, 234, 0.4)',
+            border: '2px solid #ffffff',
+            boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-            borderRadius: '50%',
+            borderRadius: '2px',
             zIndex: 10
           }}
         />
