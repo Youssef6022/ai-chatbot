@@ -33,6 +33,9 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Run tests**: `pnpm test` (Playwright end-to-end tests)
 - **Test Environment Variable**: Set `PLAYWRIGHT=True` to enable test mode with mock AI models
 
+### Utilities
+- **Kill port process**: `pnpm run killp` or `./scripts/kill-port.sh` (kills process on port 9627)
+
 ## Architecture Overview
 
 ### AI Integration
@@ -92,6 +95,9 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ### Application Structure
 - **Framework**: Next.js 15 with App Router and Turbopack for development
+  - Experimental PPR (Partial Prerendering) enabled
+  - TypeScript build errors ignored (`typescript.ignoreBuildErrors: true`)
+  - Webpack configured with Node.js module fallbacks for client-side compatibility
 - **UI Library**: shadcn/ui components with Radix UI primitives
 - **Styling**: Tailwind CSS v4 with custom configuration
 - **Icons**: Lucide React + Simple Icons (`@icons-pack/react-simple-icons`)
@@ -99,6 +105,7 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Code Highlighting**: Shiki with multiple language support + CodeMirror for interactive editing (supports JavaScript, Python)
 - **Data Fetching**: SWR for client-side data management
 - **Animations**: Framer Motion for smooth UI transitions
+- **Image Optimization**: Next.js Image with remote patterns for Vercel Blob, Supabase, Gravatar, and avatar.vercel.sh
 
 ## Environment Variables
 
@@ -171,6 +178,14 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
   - Global variables with pre-run configuration modal
   - Variable highlighting in prompts with syntax: `{{variableName}}`
   - Connected node results available as variables
+- **AI Grounding Options** (per Generate Node):
+  - Google Search: Web search integration for up-to-date information
+  - Google Maps: Location-based queries and geographical information
+  - RAG (Retrieval-Augmented Generation): Vector search across legal document corpora
+    - Code Civil: French civil law corpus
+    - Code Commerce: French commercial law corpus
+    - Codes Droit Français: Complete French legal system corpus
+  - Note: Grounding options are mutually exclusive (only one can be active per node)
 - **Features**:
   - JSON export/import for workflow persistence
   - Real-time execution with API integration at `/api/workflow/generate`
@@ -186,6 +201,13 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 ### Advanced AI Features
 - Multi-turn conversations with context preservation
 - Tool calling capabilities (weather via `get-weather.ts`, document management, suggestions)
+- **RAG (Retrieval-Augmented Generation)**: Vector search integration via Vertex AI
+  - Uses `vertexAIClient` for RAG queries (separate from standard `genaiClient`)
+  - Three RAG corpora available: Code Civil, Code Commerce, Codes Droit Français
+  - Configured in [app/(chat)/api/chat/route.ts](app/(chat)/api/chat/route.ts#L238-L269) with corpus IDs and similarity settings
+  - System prompts customized per corpus in [lib/ai/system-prompts.ts](lib/ai/system-prompts.ts)
+  - Automatically forces gemini-2.5-medium model with thinking enabled for better legal analysis
+  - Supports both chat interface and workflow builder
 - Model migration system for backward compatibility (`migrateModelId` function)
 - AI entitlements system for usage control with quota management (`lib/ai/entitlements.ts`)
 - Usage tracking via `UserQuota` table with limits per model tier (small: 5000, medium: 2000, large: 500)

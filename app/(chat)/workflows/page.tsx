@@ -273,6 +273,63 @@ const GoogleMapsIcon = ({ size = 14, enabled = false }: { size?: number; enabled
   </svg>
 );
 
+// RAG Book Icon - Civil Code (Burgundy/Red)
+const RAGCivilIcon = ({ size = 14, enabled = false }: { size?: number; enabled?: boolean }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    style={{
+      filter: enabled ? 'none' : 'grayscale(100%)',
+      opacity: enabled ? 1 : 0.5,
+      transition: 'filter 0.2s ease, opacity 0.2s ease'
+    }}
+  >
+    <path fill="#8B1538" d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+    <path fill="#A91D3A" d="M8 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8V2z"/>
+    <path fill="#FFF" d="M10 8h6v1h-6zm0 3h6v1h-6zm0 3h4v1h-4z" opacity="0.9"/>
+  </svg>
+);
+
+// RAG Book Icon - Commerce Code (Blue)
+const RAGCommerceIcon = ({ size = 14, enabled = false }: { size?: number; enabled?: boolean }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    style={{
+      filter: enabled ? 'none' : 'grayscale(100%)',
+      opacity: enabled ? 1 : 0.5,
+      transition: 'filter 0.2s ease, opacity 0.2s ease'
+    }}
+  >
+    <path fill="#1565C0" d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+    <path fill="#1976D2" d="M8 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8V2z"/>
+    <path fill="#FFF" d="M10 8h6v1h-6zm0 3h6v1h-6zm0 3h4v1h-4z" opacity="0.9"/>
+  </svg>
+);
+
+// RAG Book Icon - French Law (Purple)
+const RAGDroitIcon = ({ size = 14, enabled = false }: { size?: number; enabled?: boolean }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    style={{
+      filter: enabled ? 'none' : 'grayscale(100%)',
+      opacity: enabled ? 1 : 0.5,
+      transition: 'filter 0.2s ease, opacity 0.2s ease'
+    }}
+  >
+    <path fill="#6A1B9A" d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+    <path fill="#7B1FA2" d="M8 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8V2z"/>
+    <path fill="#FFF" d="M10 8h6v1h-6zm0 3h6v1h-6zm0 3h4v1h-4z" opacity="0.9"/>
+  </svg>
+);
+
 const nodeTypes = {
   generate: GenerateNode,
   files: FilesNode,
@@ -298,6 +355,9 @@ const initialNodes = [
       userPrompt: '',
       isSearchGroundingEnabled: false,
       isMapsGroundingEnabled: false,
+      isRAGCivilEnabled: false,
+      isRAGCommerceEnabled: false,
+      isRAGDroitEnabled: false,
       onModelChange: () => {},
       onVariableNameChange: () => {},
       onSystemPromptChange: () => {},
@@ -1017,6 +1077,9 @@ export default function WorkflowsPage() {
           selectedFiles: node.data.selectedFiles || [],
           isSearchGroundingEnabled: node.data.isSearchGroundingEnabled || false,
           isMapsGroundingEnabled: node.data.isMapsGroundingEnabled || false,
+          isRAGCivilEnabled: node.data.isRAGCivilEnabled || false,
+          isRAGCommerceEnabled: node.data.isRAGCommerceEnabled || false,
+          isRAGDroitEnabled: node.data.isRAGDroitEnabled || false,
         }
       })),
       edges: edges.map(edge => ({
@@ -1618,6 +1681,9 @@ export default function WorkflowsPage() {
         userPrompt: '',
         isSearchGroundingEnabled: false,
         isMapsGroundingEnabled: false,
+        isRAGCivilEnabled: false,
+        isRAGCommerceEnabled: false,
+        isRAGDroitEnabled: false,
         onModelChange: () => {},
         onVariableNameChange: () => {},
         onSystemPromptChange: () => {},
@@ -2148,6 +2214,10 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           files: allFiles.length > 0 ? allFiles : undefined,
           isSearchGroundingEnabled: generateNode.data.isSearchGroundingEnabled || false,
           isMapsGroundingEnabled: generateNode.data.isMapsGroundingEnabled || false,
+          ragCorpus: generateNode.data.isRAGCivilEnabled ? 'rag-civil'
+                     : generateNode.data.isRAGCommerceEnabled ? 'rag-commerce'
+                     : generateNode.data.isRAGDroitEnabled ? 'rag-droit-francais'
+                     : 'none',
         }),
       });
       
@@ -2869,9 +2939,9 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                     <button
                         onClick={() => {
                           const newValue = !editingNode.data.isSearchGroundingEnabled;
-                          // Si on active Google Search, on désactive Google Maps
+                          // Si on active Google Search, on désactive Google Maps et RAG
                           const updates = newValue
-                            ? { isSearchGroundingEnabled: true, isMapsGroundingEnabled: false }
+                            ? { isSearchGroundingEnabled: true, isMapsGroundingEnabled: false, isRAGCivilEnabled: false, isRAGCommerceEnabled: false, isRAGDroitEnabled: false }
                             : { isSearchGroundingEnabled: false };
                           updateNodeData(editingNode.id, updates);
                           setEditingNode({
@@ -2900,9 +2970,9 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                       <button
                         onClick={() => {
                           const newValue = !editingNode.data.isMapsGroundingEnabled;
-                          // Si on active Google Maps, on désactive Google Search
+                          // Si on active Google Maps, on désactive Google Search et RAG
                           const updates = newValue
-                            ? { isMapsGroundingEnabled: true, isSearchGroundingEnabled: false }
+                            ? { isMapsGroundingEnabled: true, isSearchGroundingEnabled: false, isRAGCivilEnabled: false, isRAGCommerceEnabled: false, isRAGDroitEnabled: false }
                             : { isMapsGroundingEnabled: false };
                           updateNodeData(editingNode.id, updates);
                           setEditingNode({
@@ -2918,6 +2988,99 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                       >
                         <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
                           editingNode.data.isMapsGroundingEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </button>
+                    </div>
+
+                    {/* RAG Code Civil Toggle */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <RAGCivilIcon size={14} enabled={editingNode.data.isRAGCivilEnabled} />
+                        <span className='font-medium text-muted-foreground text-xs'>Code Civil</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newValue = !editingNode.data.isRAGCivilEnabled;
+                          // Si on active RAG Civil, désactiver tous les autres
+                          const updates = newValue
+                            ? { isRAGCivilEnabled: true, isRAGCommerceEnabled: false, isRAGDroitEnabled: false, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
+                            : { isRAGCivilEnabled: false };
+                          updateNodeData(editingNode.id, updates);
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, ...updates }
+                          });
+                        }}
+                        className={`relative h-5 w-10 rounded-full border transition-colors ${
+                          editingNode.data.isRAGCivilEnabled
+                            ? 'border-red-700 bg-red-700'
+                            : 'border-border bg-muted'
+                        }`}
+                      >
+                        <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
+                          editingNode.data.isRAGCivilEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </button>
+                    </div>
+
+                    {/* RAG Code Commerce Toggle */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <RAGCommerceIcon size={14} enabled={editingNode.data.isRAGCommerceEnabled} />
+                        <span className='font-medium text-muted-foreground text-xs'>Code Commerce</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newValue = !editingNode.data.isRAGCommerceEnabled;
+                          // Si on active RAG Commerce, désactiver tous les autres
+                          const updates = newValue
+                            ? { isRAGCommerceEnabled: true, isRAGCivilEnabled: false, isRAGDroitEnabled: false, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
+                            : { isRAGCommerceEnabled: false };
+                          updateNodeData(editingNode.id, updates);
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, ...updates }
+                          });
+                        }}
+                        className={`relative h-5 w-10 rounded-full border transition-colors ${
+                          editingNode.data.isRAGCommerceEnabled
+                            ? 'border-blue-700 bg-blue-700'
+                            : 'border-border bg-muted'
+                        }`}
+                      >
+                        <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
+                          editingNode.data.isRAGCommerceEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                        }`} />
+                      </button>
+                    </div>
+
+                    {/* RAG Codes Droit Français Toggle */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <RAGDroitIcon size={14} enabled={editingNode.data.isRAGDroitEnabled} />
+                        <span className='font-medium text-muted-foreground text-xs'>Codes Droit FR</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newValue = !editingNode.data.isRAGDroitEnabled;
+                          // Si on active RAG Droit, désactiver tous les autres
+                          const updates = newValue
+                            ? { isRAGDroitEnabled: true, isRAGCivilEnabled: false, isRAGCommerceEnabled: false, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
+                            : { isRAGDroitEnabled: false };
+                          updateNodeData(editingNode.id, updates);
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, ...updates }
+                          });
+                        }}
+                        className={`relative h-5 w-10 rounded-full border transition-colors ${
+                          editingNode.data.isRAGDroitEnabled
+                            ? 'border-purple-700 bg-purple-700'
+                            : 'border-border bg-muted'
+                        }`}
+                      >
+                        <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
+                          editingNode.data.isRAGDroitEnabled ? 'translate-x-5' : 'translate-x-0.5'
                         }`} />
                       </button>
                     </div>
