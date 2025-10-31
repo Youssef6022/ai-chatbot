@@ -2291,7 +2291,7 @@ export default function WorkflowsPage() {
             const variableName = connectedNode.data.variableName ||
                                (connectedNode.type === 'decision' ? 'Decision Node' : 'AI Agent');
             const cleanResult = extractTextFromResult(connectedNode.data.result);
-            connectedContext += `\nRéponse de ${variableName} : {{${variableName}}}\n${cleanResult}\n`;
+            connectedContext += `\nRéponse de l'Agent ${variableName} :\n${cleanResult}\n`;
           }
         });
 
