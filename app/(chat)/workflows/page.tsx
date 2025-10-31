@@ -271,35 +271,29 @@ function FileLibraryModal({ selectedFiles, onFilesChange, onClose }: {
           </button>
         </div>
 
-        {/* Breadcrumb and Search */}
-        <div className='space-y-3 border-border border-b p-4'>
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm">
+        {/* Breadcrumb Navigation */}
+        <div className='border-border border-b px-6 py-4'>
+          <div className="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
             {folderPath.map((folder, index) => (
               <div key={folder.id || 'root'} className="flex items-center gap-2">
+                {index > 0 && <span className="text-muted-foreground">/</span>}
                 <button
                   onClick={() => navigateToFolder(folder.id, folder.name)}
-                  className={`rounded px-2 py-1 transition-colors ${
+                  className={`text-sm transition-colors ${
                     index === folderPath.length - 1
-                      ? 'bg-blue-100 font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                      : 'text-muted-foreground hover:bg-muted/50'
+                      ? 'font-medium text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {folder.name}
                 </button>
-                {index < folderPath.length - 1 && <span className="text-muted-foreground">/</span>}
               </div>
             ))}
           </div>
-
-          {/* Search */}
-          <Input
-            type="text"
-            placeholder="Rechercher des fichiers..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-          />
         </div>
 
         {/* Content */}
