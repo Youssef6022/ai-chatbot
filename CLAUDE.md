@@ -31,6 +31,8 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 
 ### Testing
 - **Run tests**: `pnpm test` (Playwright end-to-end tests)
+- **Test RAG**: `pnpm run test:rag` (test Vertex AI RAG integration)
+- **Test RAG Simple**: `pnpm run test:rag-simple` (simple RAG test)
 - **Test Environment Variable**: Set `PLAYWRIGHT=True` to enable test mode with mock AI models
 
 ### Utilities
@@ -84,20 +86,29 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Password Hashing**: Uses `bcrypt-ts` for secure password handling
 
 ### File Storage and Management
-- **Provider**: Vercel Blob Storage
-- **Configuration**: `BLOB_READ_WRITE_TOKEN` environment variable
-- **Features**:
-  - File uploads in chat interface with attachment support
+- **Dual Storage System**:
+  - **Vercel Blob Storage**: For chat file attachments (configured via `BLOB_READ_WRITE_TOKEN`)
+  - **Supabase Storage**: For file library system with folder organization (configured via Supabase credentials)
+- **File Library Features** (Supabase Storage):
   - Folder-based organization system (nested folders supported)
-  - File metadata tracking (tags, MIME types, sizes)
+  - File metadata tracking (tags, MIME types, sizes) in `user_files` table
+  - 50MB file size limit with MIME type validation
+  - Upload endpoint at [app/api/library/upload/route.ts](app/api/library/upload/route.ts)
+- **Chat Attachments** (Vercel Blob):
+  - File uploads in chat interface via `/api/files/upload/`
   - Chat-file associations via `chat_file_attachments` table
-  - JSZip for archive handling, PapaParse for CSV processing
+- **File Processing**: JSZip for archive handling, PapaParse for CSV processing
 
 ### Application Structure
 - **Framework**: Next.js 15 with App Router and Turbopack for development
   - Experimental PPR (Partial Prerendering) enabled
   - TypeScript build errors ignored (`typescript.ignoreBuildErrors: true`)
   - Webpack configured with Node.js module fallbacks for client-side compatibility
+- **App Directory Structure**: Uses Next.js route groups for organization:
+  - `app/(auth)/` - Authentication routes (login, register) with shared auth layout
+  - `app/(chat)/` - Main chat interface, workflows, library, and chat-related APIs
+  - `app/api/` - Public standalone APIs (workflows, library, quota, anonymization)
+  - `app/auth/` - OAuth callback handlers
 - **UI Library**: shadcn/ui components with Radix UI primitives
 - **Styling**: Tailwind CSS v4 with custom configuration
 - **Icons**: Lucide React + Simple Icons (`@icons-pack/react-simple-icons`)
@@ -125,7 +136,7 @@ GOOGLE_GENERATIVE_AI_API_KEY=**** # Google AI API key for Gemini models
 NEXT_PUBLIC_USE_GENAI_SDK=false # Set to 'true' to use @google/genai (enables Maps/Search), 'false' for Vercel AI SDK
 
 # Storage
-BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token
+BLOB_READ_WRITE_TOKEN=**** # Vercel Blob storage token for chat attachments
 
 # Database
 POSTGRES_URL=**** # PostgreSQL database connection string (supports Neon/Vercel Postgres)
@@ -250,8 +261,8 @@ APIs are organized into two directories:
   - `/api/chat/[id]/stream` - Individual chat streaming endpoint
   - `/api/chat-genai/` - Google GenAI SDK endpoint (when `NEXT_PUBLIC_USE_GENAI_SDK=true`)
 - **File Management**:
-  - `/api/files/upload/` - Vercel Blob storage integration for chat attachments
-  - `/api/library/*` - Complete file library system (upload, folders, move, delete)
+  - `/api/files/upload/` - Vercel Blob storage integration for chat attachments (in `app/(chat)/api/`)
+  - `/api/library/*` - Complete file library system with Supabase Storage (upload, folders, move, delete) (in `app/api/`)
 - **Documents**: `/api/document/` for document CRUD operations
 - **History**: `/api/history/` for chat history management
 - **Workflows**:
@@ -275,30 +286,131 @@ APIs are organized into two directories:
 
 ## Important Development Notes
 
+### Core Architecture
+- Port 9627 is used for development/production to avoid conflicts with other services
+- React 19 RC is used (`react@19.0.0-rc-45804af1-20241021`)
+- Next.js route groups organize code: `(auth)`, `(chat)`, and standalone `api/` directory
+- TypeScript build errors are ignored (`typescript.ignoreBuildErrors: true`)
+
+### Database & Migrations
 - Always run database migrations after schema changes (`pnpm run db:migrate`)
-- Use Biome for all code formatting and linting (configured in `biome.jsonc`)
-- Test environment automatically uses mock AI providers (see `lib/ai/models.mock.ts`)
-- Port 9627 is used for development to avoid conflicts with other services
-- Authentication supports both authenticated and guest users via Supabase
-- Supabase configuration requires both URL and anon key environment variables
-- Redis is optional but recommended for production performance and caching
 - Message format migration: Legacy `Message` table is deprecated, use `Message_v2` for new code
 - Vote format migration: Legacy `Vote` table is deprecated, use `Vote_v2` for new code
-- React 19 RC is used (`react@19.0.0-rc-45804af1-20241021`)
+- Database queries centralized in `lib/db/queries.ts` (70+ query functions)
+
+### AI & SDK Configuration
+- Test environment automatically uses mock AI providers (see `lib/ai/models.mock.ts`)
+- For production deployments on Vercel, OIDC tokens are used automatically for AI Gateway authentication
+- When switching AI providers, modify `lib/ai/providers.ts` to configure model mappings
+- RAG queries use separate `vertexAIClient` (not the standard `genaiClient`)
+
+### Authentication & Storage
+- Authentication supports both authenticated and guest users via Supabase
+- Supabase configuration requires both URL and anon key environment variables
+- Dual storage: Vercel Blob for chat attachments, Supabase Storage for file library (50MB limit)
+- Redis is optional but recommended for production performance and caching
+
+### Code Quality
+- Use Biome for all code formatting and linting (configured in `biome.jsonc`)
+- Run `pnpm run lint:fix` before commits to auto-fix issues
+- Biome replaces both ESLint and Prettier in this project
+
+### Dependencies & Features
 - File uploads support: JSZip for archive handling, PapaParse for CSV processing
 - Advanced dependencies: Data grids (`react-data-grid`), OpenTelemetry monitoring, token analytics (`tokenlens`)
 - Workflow system uses ReactFlow with custom node types and variable interpolation
-- For production deployments on Vercel, OIDC tokens are used automatically for AI Gateway authentication
-- When switching AI providers, modify `lib/ai/providers.ts` to configure model mappings
-- **Security**: Never commit API keys or credentials to the repository. Check `scripts/` directory for any test files with hardcoded credentials
+
+### Security
+- **CRITICAL**: Never commit API keys or credentials to the repository
+- Check `scripts/` directory for any test files with hardcoded credentials before commits
+- Server-only imports (`server-only` package) protect sensitive operations
+- Middleware protects routes via Supabase session management
 
 ### Switching Between AI SDKs
 The application supports two AI integration approaches:
 - **Vercel AI SDK** (default, `NEXT_PUBLIC_USE_GENAI_SDK=false`): Best for standard chat with streaming and multi-provider support
 - **Google GenAI SDK** (`NEXT_PUBLIC_USE_GENAI_SDK=true`): Required for Google Maps integration and Google Search features
-- Configuration is centralized in `lib/config.ts`
+- Configuration is centralized in [lib/config.ts](lib/config.ts)
 - Chat routes automatically switch based on configuration (`/api/chat/` vs `/api/chat-genai/`)
-- Artifacts and some tools may not be fully supported with GenAI SDK (see deprecation warnings in `lib/ai/providers.ts`)
+- Artifacts and some tools may not be fully supported with GenAI SDK (see deprecation warnings in [lib/ai/providers.ts](lib/ai/providers.ts))
+
+## Quick Reference: Key Files
+
+### Most Critical Files (Start Here)
+- [lib/config.ts](lib/config.ts) - SDK selection and app configuration
+- [lib/ai/providers.ts](lib/ai/providers.ts) - AI model mappings (Gemini 2.5 flash-lite/flash/pro)
+- [lib/db/schema.ts](lib/db/schema.ts) - Complete database schema (14 tables)
+- [lib/db/queries.ts](lib/db/queries.ts) - Centralized database queries (70+ functions)
+- [app/(chat)/api/chat/route.ts](app/(chat)/api/chat/route.ts) - Main chat endpoint with streaming
+- [middleware.ts](middleware.ts) - Session management and route protection
+
+### AI & Model Configuration
+- [lib/ai/models.ts](lib/ai/models.ts) - Model definitions and configurations
+- [lib/ai/models.mock.ts](lib/ai/models.mock.ts) - Mock models for testing
+- [lib/ai/system-prompts.ts](lib/ai/system-prompts.ts) - System prompts including RAG corpus prompts
+- [lib/ai/entitlements.ts](lib/ai/entitlements.ts) - Usage quotas and entitlements
+- [lib/ai/prompts.ts](lib/ai/prompts.ts) - Custom AI personas and prompts
+
+### Database & Storage
+- [lib/supabase/server.ts](lib/supabase/server.ts) - Server-side Supabase client
+- [lib/supabase/admin.ts](lib/supabase/admin.ts) - Admin Supabase client for elevated operations
+- [lib/supabase/middleware.ts](lib/supabase/middleware.ts) - Session refresh middleware
+- [lib/db/migrate.ts](lib/db/migrate.ts) - Migration runner script
+
+### Key API Routes
+- [app/(chat)/api/chat/route.ts](app/(chat)/api/chat/route.ts) - Vercel AI SDK chat streaming
+- [app/(chat)/api/chat-genai/route.ts](app/(chat)/api/chat-genai/route.ts) - Google GenAI SDK endpoint
+- [app/(chat)/api/workflow/generate/route.ts](app/(chat)/api/workflow/generate/route.ts) - Workflow execution
+- [app/api/library/upload/route.ts](app/api/library/upload/route.ts) - Supabase Storage file upload
+- [app/(chat)/api/files/upload/route.ts](app/(chat)/api/files/upload/route.ts) - Vercel Blob chat attachment upload
+
+### Workflow System
+- [app/(chat)/workflows/page.tsx](app/(chat)/workflows/page.tsx) - Workflow builder UI
+- [components/workflow/](components/workflow/) - Workflow components (nodes, edges, console)
+
+## Common Troubleshooting
+
+### Database Issues
+```bash
+# Reset and recreate database schema
+pnpm run db:generate && pnpm run db:migrate
+
+# Open Drizzle Studio to inspect data
+pnpm run db:studio
+
+# Push schema without migration (use with caution)
+pnpm run db:push
+```
+
+### Port Already in Use
+```bash
+# Kill process on port 9627
+pnpm run killp
+# OR manually
+./scripts/kill-port.sh
+```
+
+### AI Model Errors
+- Check `GOOGLE_GENERATIVE_AI_API_KEY` is set in `.env.local`
+- Verify `NEXT_PUBLIC_USE_GENAI_SDK` matches your intended SDK (true/false)
+- For non-Vercel deployments, ensure `AI_GATEWAY_API_KEY` is configured
+- Check model availability in [lib/ai/providers.ts](lib/ai/providers.ts)
+
+### File Upload Failures
+- **Chat attachments**: Verify `BLOB_READ_WRITE_TOKEN` (Vercel Blob)
+- **File library**: Verify Supabase credentials (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+- Check file size limit (50MB for Supabase Storage)
+- Review allowed MIME types in [app/api/library/upload/route.ts](app/api/library/upload/route.ts)
+
+### Authentication Issues
+- Ensure both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set
+- Check `AUTH_SECRET` is generated and set (use: `openssl rand -base64 32`)
+- Verify middleware is running correctly in [middleware.ts](middleware.ts)
+
+### Testing Issues
+- Set `PLAYWRIGHT=True` environment variable to enable test mode
+- Test environment uses mock AI models automatically
+- Run individual tests: `pnpm exec playwright test tests/e2e/your-test.spec.ts`
 
 ## Application Routes Structure
 
@@ -322,14 +434,19 @@ The application supports two AI integration approaches:
 - `/api/chat-genai/` - Google GenAI SDK chat endpoint (Maps/Search support)
 - `/api/files/upload/` - File upload to Vercel Blob for chat attachments
 - `/api/document/` - Document CRUD operations
-- `/api/workflow/generate` - Workflow execution
+- `/api/workflow/generate` - Workflow execution endpoint
 - `/api/vote/` - Message voting
 - `/api/suggestions/` - Document editing suggestions
 - `/api/history/` - Chat history management
 
 **Public APIs** (`app/api/`):
 - `/api/auth/signout` - Sign out endpoint
-- `/api/library/*` - File library system (upload, folders, move, delete)
+- `/api/library/upload` - File upload to Supabase Storage (50MB limit)
+- `/api/library/files` - List and manage files
+- `/api/library/folders` - Folder CRUD operations
+- `/api/library/folders/[id]/files` - Files within specific folder
+- `/api/library/move` - Move files between folders
+- `/api/library/delete` - Delete files and folders
 - `/api/workflows` - Workflow persistence and listing
 - `/api/workflows/[id]` - Get/update/delete specific workflow
 - `/api/quota` - User quota management and tracking

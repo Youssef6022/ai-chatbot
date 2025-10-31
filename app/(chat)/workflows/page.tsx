@@ -2303,24 +2303,50 @@ export default function WorkflowsPage() {
     // Check if there are any variables that need to be asked before run
     const variablesToAsk = variables.filter(v => v.askBeforeRun);
 
-    if (variablesToAsk.length > 0) {
+    // Check if there are any files nodes that need to be asked before run
+    const filesNodesToAsk = nodes.filter(node =>
+      node.type === 'files' && node.data.askBeforeRun
+    );
+
+    if (variablesToAsk.length > 0 || filesNodesToAsk.length > 0) {
       // Show the pre-run modal
       setShowPreRunModal(true);
     } else {
       // Execute directly
       executeWorkflow();
     }
-  }, [variables, executeWorkflow]);
+  }, [variables, nodes, executeWorkflow]);
 
   // Handler for pre-run modal confirmation
-  const handlePreRunConfirm = useCallback((updatedVariables: Variable[]) => {
+  const handlePreRunConfirm = useCallback((
+    updatedVariables: Variable[],
+    updatedFilesNodes?: Map<string, Array<{ url: string; name: string; contentType: string }>>
+  ) => {
     // Update variables with the new values from the modal
     setVariables(updatedVariables);
+
+    // Update files nodes with selected files
+    if (updatedFilesNodes) {
+      const updatedNodes = nodes.map(node => {
+        if (node.type === 'files' && updatedFilesNodes.has(node.id)) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              selectedFiles: updatedFilesNodes.get(node.id) || []
+            }
+          };
+        }
+        return node;
+      });
+      setNodes(updatedNodes);
+    }
+
     // Close modal
     setShowPreRunModal(false);
     // Execute workflow immediately with the updated variables (no need to wait)
     executeWorkflow(updatedVariables);
-  }, [executeWorkflow]);
+  }, [executeWorkflow, nodes, setNodes]);
   
   // Helper function to extract clean text from result (handles both string and JSON objects)
   const extractTextFromResult = (result: any): string => {
@@ -4295,6 +4321,15 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
         isOpen={showPreRunModal}
         onClose={() => setShowPreRunModal(false)}
         variables={variables}
+        filesNodes={nodes
+          .filter(node => node.type === 'files' && node.data.askBeforeRun)
+          .map(node => ({
+            id: node.id,
+            variableName: node.data.variableName || 'Files',
+            description: node.data.description,
+            selectedFiles: node.data.selectedFiles || []
+          }))
+        }
         onConfirm={handlePreRunConfirm}
       />
       </div>
