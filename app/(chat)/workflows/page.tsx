@@ -1080,6 +1080,11 @@ export default function WorkflowsPage() {
           isRAGCivilEnabled: node.data.isRAGCivilEnabled || false,
           isRAGCommerceEnabled: node.data.isRAGCommerceEnabled || false,
           isRAGDroitEnabled: node.data.isRAGDroitEnabled || false,
+          // Decision node specific fields
+          instructions: node.data.instructions || '',
+          choices: node.data.choices || [],
+          // Note node specific fields
+          content: node.data.content || '',
         }
       })),
       edges: edges.map(edge => ({
