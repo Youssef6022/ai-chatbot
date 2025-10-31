@@ -97,38 +97,46 @@ export function DecisionNode({ data, selected }: NodeProps) {
           </div>
         </div>
 
-        {/* Input Handle (left side) */}
+        {/* Input Handle (left side) - centered between border and content */}
         <Handle
           type="target"
           position={Position.Left}
           id="input"
           className={getHandleClassName('input', 'target')}
           style={{
-            left: '-6px',
+            left: '-8px',
             top: '35px',
-            width: '12px',
-            height: '24px',
+            width: '16px',
+            height: '16px',
             backgroundColor: '#9333ea',
-            border: '2px solid #ffffff',
-            boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
+            border: '3px solid #ffffff',
+            boxShadow: '0 2px 8px rgba(147, 51, 234, 0.4)',
             transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-            borderRadius: '2px',
+            borderRadius: '50%',
             zIndex: 10
           }}
         />
 
-        {/* Output section - clean list without badges */}
+        {/* Output section - simple and clean */}
         <div className="px-4 py-3">
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {choices.map((choice, index) => {
               return (
-                <div key={`choice-${index}`} className="relative flex items-center py-1.5">
-                  {/* Just the label, no badge */}
-                  <span className='truncate pr-4 text-gray-700 text-sm dark:text-gray-300'>
+                <div
+                  key={`choice-${index}`}
+                  className="relative flex items-center gap-2.5 py-1"
+                >
+                  {/* Simple number */}
+                  <span className='flex-shrink-0 font-medium text-purple-600 text-sm dark:text-purple-400'>
+                    {index + 1}.
+                  </span>
+
+                  {/* Choice text */}
+                  <span className='flex-1 truncate text-gray-800 text-sm dark:text-gray-200'>
                     {choice}
                   </span>
 
-                  {/* Handle on right */}
+                  {/* Handle - centered between border and content */}
                   <Handle
                     type="source"
                     position={Position.Right}
@@ -136,25 +144,30 @@ export function DecisionNode({ data, selected }: NodeProps) {
                     className={getHandleClassName(`choice-${index}`, 'source')}
                     style={{
                       position: 'absolute',
-                      right: '-14px',
+                      right: '-8px',
                       top: '50%',
                       width: '16px',
                       height: '16px',
                       backgroundColor: '#9333ea',
-                      border: '2px solid #ffffff',
-                      boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
+                      border: '3px solid #ffffff',
+                      boxShadow: '0 2px 8px rgba(147, 51, 234, 0.4)',
                       transform: 'translateY(-50%)',
-                      transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-                      borderRadius: '50%'
+                      transition: 'all 0.3s ease',
+                      borderRadius: '50%',
+                      zIndex: 10
                     }}
                   />
                 </div>
               );
             })}
 
-            {/* Else option - clean, no badge */}
-            <div className='relative mt-1 flex items-center border-border/40 border-t py-1.5 pt-3'>
-              <span className='pr-4 text-gray-600 text-sm dark:text-gray-400'>
+            {/* Else option - simple separator */}
+            <div className='relative flex items-center gap-2.5 border-border/30 border-t pt-2.5'>
+              <span className='flex-shrink-0 font-medium text-gray-500 text-sm dark:text-gray-400'>
+                ⊗
+              </span>
+
+              <span className='flex-1 text-gray-600 text-sm dark:text-gray-400'>
                 Else
               </span>
 
@@ -165,16 +178,17 @@ export function DecisionNode({ data, selected }: NodeProps) {
                 className={getHandleClassName('else', 'source')}
                 style={{
                   position: 'absolute',
-                  right: '-14px',
+                  right: '-8px',
                   top: '50%',
                   width: '16px',
                   height: '16px',
                   backgroundColor: '#6b7280',
-                  border: '2px solid #ffffff',
-                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
+                  border: '3px solid #ffffff',
+                  boxShadow: '0 2px 8px rgba(107, 114, 128, 0.4)',
                   transform: 'translateY(-50%)',
-                  transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-                  borderRadius: '50%'
+                  transition: 'all 0.3s ease',
+                  borderRadius: '50%',
+                  zIndex: 10
                 }}
               />
             </div>
