@@ -10,6 +10,7 @@ import {
   Background,
   MiniMap,
   BackgroundVariant,
+  useReactFlow,
   type Connection,
   type Edge,
   type OnConnectStart,
@@ -368,6 +369,48 @@ const initialNodes = [
 ];
 
 const initialEdges: Edge[] = [];
+
+// Component to handle auto-fit view when nodes change
+function AutoFitView({ nodes }: { nodes: any[] }) {
+  const { fitView } = useReactFlow();
+  const prevNodesLength = useRef(nodes.length);
+
+  useEffect(() => {
+    // Fit view when nodes are added/removed or on initial load
+    if (nodes.length > 0 && prevNodesLength.current !== nodes.length) {
+      prevNodesLength.current = nodes.length;
+
+      const timer = setTimeout(() => {
+        fitView({
+          padding: 0.2,
+          duration: 500,
+          maxZoom: 1.2,
+          minZoom: 0.4
+        });
+      }, 150);
+
+      return () => clearTimeout(timer);
+    }
+  }, [nodes.length, fitView]);
+
+  // Also fit on initial mount
+  useEffect(() => {
+    if (nodes.length > 0) {
+      const timer = setTimeout(() => {
+        fitView({
+          padding: 0.2,
+          duration: 500,
+          maxZoom: 1.2,
+          minZoom: 0.4
+        });
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, []); // Empty deps = run once on mount
+
+  return null;
+}
 
 export default function WorkflowsPage() {
   const [nodes, setNodes, onNodesChangeInternal] = useNodesState(initialNodes);
@@ -2720,9 +2763,10 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           snapToGrid={snapToGridEnabled}
           snapGrid={[20, 20]}
         >
-          <Background 
-            variant={BackgroundVariant.Dots} 
-            gap={20} 
+          <AutoFitView nodes={nodes} />
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={20}
             size={1.5}
             color="#e2e8f0"
             style={{
