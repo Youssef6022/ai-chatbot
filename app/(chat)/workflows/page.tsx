@@ -3123,7 +3123,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                   {/* Instructions (User Prompt) */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <Label className='font-medium text-muted-foreground text-xs'>Instructions</Label>
+                      <Label className='font-medium text-muted-foreground text-xs'>Question</Label>
                       <button
                         onClick={() => {
                           setExpandedField('instructions');
@@ -3131,7 +3131,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         }}
                         className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
                         </svg>
                       </button>
@@ -3145,8 +3145,8 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           data: { ...editingNode.data, instructions: value }
                         });
                       }}
-                      placeholder="Enter your question or condition..."
-                      className="min-h-[60px] resize-none text-sm"
+                      placeholder="Quelle question poser à l'IA ?"
+                      className="min-h-[45px] resize-none text-xs"
                       variables={getAllAvailableVariables(editingNode.id)}
                       onVariableValidation={(hasInvalid, invalidVars) => {
                         setInvalidVariables(prev => ({
@@ -3158,33 +3158,33 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                   </div>
 
                   {/* Choices */}
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <Label className='font-medium text-muted-foreground text-xs'>Response Choices</Label>
+                      <Label className='font-medium text-muted-foreground text-xs'>Choix possibles</Label>
                       <button
                         onClick={() => {
                           const currentChoices = editingNode.data.choices || [];
-                          const newChoices = [...currentChoices, `Choice ${currentChoices.length + 1}`];
+                          const newChoices = [...currentChoices, `Choix ${currentChoices.length + 1}`];
                           updateNodeData(editingNode.id, { choices: newChoices });
                           setEditingNode({
                             ...editingNode,
                             data: { ...editingNode.data, choices: newChoices }
                           });
                         }}
-                        className='flex items-center gap-1 rounded bg-purple-500/10 px-2 py-1 text-purple-600 text-xs transition-colors hover:bg-purple-500/20 dark:text-purple-400'
+                        className='flex items-center gap-1 rounded bg-purple-500/10 px-1.5 py-0.5 text-purple-600 text-[10px] transition-colors hover:bg-purple-500/20 dark:text-purple-400'
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M12 5v14M5 12h14"/>
                         </svg>
-                        Add Choice
+                        Ajouter
                       </button>
                     </div>
 
                     {/* List of choices */}
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       {(editingNode.data.choices || []).map((choice: string, index: number) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <div className='flex h-6 w-6 items-center justify-center rounded bg-purple-100 text-purple-700 text-xs dark:bg-purple-900/30 dark:text-purple-300'>
+                        <div key={index} className="flex items-center gap-1.5">
+                          <div className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded bg-purple-100 text-[10px] text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'>
                             {index + 1}
                           </div>
                           <Input
@@ -3198,8 +3198,8 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                                 data: { ...editingNode.data, choices: newChoices }
                               });
                             }}
-                            placeholder={`Choice ${index + 1}`}
-                            className="flex-1 text-sm"
+                            placeholder={`Choix ${index + 1}`}
+                            className="h-7 flex-1 text-xs"
                           />
                           <button
                             onClick={() => {
@@ -3210,9 +3210,9 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                                 data: { ...editingNode.data, choices: newChoices }
                               });
                             }}
-                            className='flex h-6 w-6 items-center justify-center rounded bg-red-500/10 text-red-600 transition-colors hover:bg-red-500/20 dark:text-red-400'
+                            className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded bg-red-500/10 text-red-600 transition-colors hover:bg-red-500/20 dark:text-red-400'
                           >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M18 6L6 18M6 6l12 12"/>
                             </svg>
                           </button>
@@ -3221,13 +3221,13 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                     </div>
 
                     {/* Else choice info */}
-                    <div className='mt-3 rounded-lg border border-border/40 bg-muted/30 p-3'>
-                      <div className="flex items-center gap-2">
-                        <div className='flex h-5 w-5 items-center justify-center rounded bg-gray-100 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-400'>
+                    <div className='mt-2 rounded border border-border/40 bg-muted/20 p-2'>
+                      <div className="flex items-start gap-1.5">
+                        <div className='mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded bg-gray-100 text-[9px] text-gray-600 dark:bg-gray-800 dark:text-gray-400'>
                           ?
                         </div>
-                        <span className='text-muted-foreground text-xs'>
-                          An "Else" output is always available for unmatched responses
+                        <span className='text-[10px] leading-relaxed text-muted-foreground'>
+                          Une sortie "Else" est toujours disponible pour les réponses non reconnues
                         </span>
                       </div>
                     </div>
