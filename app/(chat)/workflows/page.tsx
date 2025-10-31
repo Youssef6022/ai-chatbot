@@ -1962,10 +1962,6 @@ export default function WorkflowsPage() {
       const processedNodes = new Set<string>();
 
       const processNodeAndDescendants = async (nodeId: string) => {
-        // Avoid processing the same node twice
-        if (processedNodes.has(nodeId)) return;
-        processedNodes.add(nodeId);
-
         const currentNodeState = await new Promise<any>(resolve => {
           setNodes(currentNodes => {
             const node = currentNodes.find(n => n.id === nodeId);
@@ -1977,6 +1973,44 @@ export default function WorkflowsPage() {
         if (!currentNodeState) {
           return;
         }
+
+        // For Decision nodes, check if ALL input nodes have completed BEFORE checking processedNodes
+        if (currentNodeState.type === 'decision') {
+          const inputEdges = edges.filter(edge => edge.target === nodeId && edge.targetHandle === 'input');
+          console.log(`[processNodeAndDescendants] Decision node ${nodeId} has ${inputEdges.length} input edges`);
+
+          // Check if all connected input nodes are completed
+          let allInputsReady = true;
+          for (const inputEdge of inputEdges) {
+            const inputNode = await new Promise<any>(resolve => {
+              setNodes(currentNodes => {
+                const node = currentNodes.find(n => n.id === inputEdge.source);
+                resolve(node);
+                return currentNodes;
+              });
+            });
+
+            if (!inputNode || inputNode.data.executionState !== 'completed') {
+              console.log(`[processNodeAndDescendants] Decision node ${nodeId} waiting for input node ${inputEdge.source} to complete`);
+              allInputsReady = false;
+              break;
+            }
+          }
+
+          if (!allInputsReady) {
+            console.log(`[processNodeAndDescendants] Decision node ${nodeId} not ready, skipping for now (NOT marking as processed)`);
+            return; // Skip this node for now, DON'T add to processedNodes so it can be retried
+          }
+
+          console.log(`[processNodeAndDescendants] All inputs ready for Decision node ${nodeId}, executing...`);
+        }
+
+        // Avoid processing the same node twice (check AFTER decision readiness check)
+        if (processedNodes.has(nodeId)) {
+          console.log(`[processNodeAndDescendants] Node ${nodeId} already processed, skipping`);
+          return;
+        }
+        processedNodes.add(nodeId);
 
         // Files nodes don't need execution, they just pass through
         if (currentNodeState.type === 'files') {
@@ -2037,6 +2071,16 @@ export default function WorkflowsPage() {
           for (const edge of outgoingEdges) {
             // Only follow edges from 'output' handle for generate nodes
             if (updatedNodeState?.type === 'generate' && edge.sourceHandle === 'output') {
+              // Check if target is a decision node that might have been skipped earlier
+              const targetNode = await new Promise<any>(resolve => {
+                setNodes(currentNodes => {
+                  const node = currentNodes.find(n => n.id === edge.target);
+                  resolve(node);
+                  return currentNodes;
+                });
+              });
+
+              // Always try to process descendants (decision nodes will check if they're ready)
               await processNodeAndDescendants(edge.target);
             }
           }
