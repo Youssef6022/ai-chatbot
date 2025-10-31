@@ -131,7 +131,7 @@ export function DecisionNode({ data, selected }: NodeProps) {
                     {choice}
                   </span>
 
-                  {/* Handle - centered between border and content */}
+                  {/* Handle - positioned like AI Agent */}
                   <Handle
                     type="source"
                     position={Position.Right}
@@ -139,15 +139,15 @@ export function DecisionNode({ data, selected }: NodeProps) {
                     className={getHandleClassName(`choice-${index}`, 'source')}
                     style={{
                       position: 'absolute',
-                      right: '-8px',
+                      right: '-12px',
                       top: '50%',
                       width: '16px',
                       height: '16px',
                       backgroundColor: '#9333ea',
-                      border: '3px solid #ffffff',
-                      boxShadow: '0 2px 8px rgba(147, 51, 234, 0.4)',
+                      border: '2px solid #ffffff',
+                      boxShadow: '0 2px 6px rgba(147, 51, 234, 0.3)',
                       transform: 'translateY(-50%)',
-                      transition: 'all 0.3s ease',
+                      transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
                       borderRadius: '50%',
                       zIndex: 10
                     }}
@@ -173,15 +173,15 @@ export function DecisionNode({ data, selected }: NodeProps) {
                 className={getHandleClassName('else', 'source')}
                 style={{
                   position: 'absolute',
-                  right: '-8px',
+                  right: '-12px',
                   top: '50%',
                   width: '16px',
                   height: '16px',
                   backgroundColor: '#6b7280',
-                  border: '3px solid #ffffff',
-                  boxShadow: '0 2px 8px rgba(107, 114, 128, 0.4)',
+                  border: '2px solid #ffffff',
+                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
                   transform: 'translateY(-50%)',
-                  transition: 'all 0.3s ease',
+                  transition: 'background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
                   borderRadius: '50%',
                   zIndex: 10
                 }}
