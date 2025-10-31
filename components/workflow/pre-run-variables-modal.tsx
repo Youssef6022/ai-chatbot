@@ -62,20 +62,20 @@ export function PreRunVariablesModal({
       <div className="fixed inset-0 z-[70] flex items-center justify-center">
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           onClick={handleCancel}
         />
 
         {/* Modal */}
-        <div className='zoom-in-95 relative max-h-[80vh] w-[500px] max-w-[90vw] animate-in overflow-y-auto rounded-xl border-2 border-border/60 bg-background/95 p-6 shadow-2xl backdrop-blur-sm duration-200'>
+        <div className='zoom-in-95 relative w-[420px] max-w-[90vw] animate-in overflow-hidden rounded-xl border border-border bg-background shadow-xl duration-200'>
           {/* Header */}
-          <div className='mb-4 flex items-center justify-between'>
-            <h3 className='font-semibold text-lg'>Variables du workflow</h3>
+          <div className='flex items-center justify-between border-border border-b px-4 py-3'>
+            <h3 className='font-medium text-sm'>Context</h3>
             <button
               onClick={handleCancel}
-              className='flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-muted/30'
+              className='flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-muted'
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
@@ -83,77 +83,63 @@ export function PreRunVariablesModal({
           </div>
 
           {/* Form */}
-          <div className="space-y-3">
-            {variablesToAsk.map((variable) => (
-              <div key={variable.id} className='flex min-w-0 items-center gap-2'>
-                <div className='flex w-24 flex-shrink-0 items-center gap-1'>
-                  <Label className='truncate font-medium text-muted-foreground text-xs'>
-                    {variable.name}
-                  </Label>
-                  {variable.description && (
-                    <div className='group relative'>
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        className="cursor-help text-muted-foreground/60 transition-colors hover:text-muted-foreground"
-                      >
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                      </svg>
-                      {/* Tooltip */}
-                      <div className='pointer-events-none absolute bottom-full left-1/2 z-[100] mb-2 hidden w-64 -translate-x-1/2 rounded-lg border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-lg group-hover:block'>
-                        {variable.description}
-                        {/* Arrow */}
-                        <div className='absolute top-full left-1/2 -translate-x-1/2 border-4 border-x-transparent border-b-transparent border-t-border' />
-                      </div>
+          <div className="max-h-[70vh] overflow-y-auto px-4 py-4">
+            <div className="space-y-4">
+              {variablesToAsk.map((variable) => (
+                <div key={variable.id} className="space-y-1">
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center gap-1.5'>
+                      <Label className='font-medium text-muted-foreground text-xs'>{variable.name}</Label>
+                      <span className='rounded bg-muted px-1.5 py-0.5 font-mono text-muted-foreground text-[10px]'>text</span>
                     </div>
+                    <button
+                      onClick={() => setExpandedVariable(variable.id)}
+                      className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
+                      title="Agrandir"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <textarea
+                    id={`modal-var-${variable.id}`}
+                    value={tempValues[variable.id] || ''}
+                    onChange={(e) => setTempValues({
+                      ...tempValues,
+                      [variable.id]: e.target.value,
+                    })}
+                    placeholder="Entrez la valeur..."
+                    rows={3}
+                    className='w-full resize-none rounded-lg border border-border bg-muted/30 px-3 py-2 font-mono text-xs leading-relaxed transition-colors placeholder:text-muted-foreground/50 focus:border-foreground focus:bg-background focus:outline-none'
+                  />
+                  {variable.description && (
+                    <p className='text-muted-foreground text-xs leading-relaxed'>
+                      {variable.description}
+                    </p>
                   )}
                 </div>
-                <input
-                  type="text"
-                  id={`modal-var-${variable.id}`}
-                  value={tempValues[variable.id] || ''}
-                  onChange={(e) => setTempValues({
-                    ...tempValues,
-                    [variable.id]: e.target.value,
-                  })}
-                  placeholder={`Valeur...`}
-                  className='h-9 min-w-0 flex-1 rounded-lg border-2 border-border/60 bg-background px-3 text-sm transition-all focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20'
-                />
-                {/* Expand button */}
-                <button
-                  onClick={() => setExpandedVariable(variable.id)}
-                  className='flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-muted/50 transition-colors hover:bg-muted'
-                  title="Agrandir"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                  </svg>
-                </button>
-              </div>
-            ))}
-
-            {/* Actions */}
-            <div className="flex gap-3 pt-2">
-              <Button
-                variant="outline"
-                onClick={handleCancel}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleConfirm}
-                className='flex-1 bg-orange-600 text-white hover:bg-orange-700'
-              >
-                Lancer le workflow
-              </Button>
+              ))}
             </div>
+          </div>
+
+          {/* Footer */}
+          <div className='flex gap-2 border-border border-t px-4 py-3'>
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              size="sm"
+              className="flex-1"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              size="sm"
+              className='flex-1'
+            >
+              Lancer
+            </Button>
           </div>
         </div>
       </div>
