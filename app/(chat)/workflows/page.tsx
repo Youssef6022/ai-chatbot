@@ -1946,12 +1946,24 @@ export default function WorkflowsPage() {
   }, [setNodes, nodes, edges, saveToHistory]);
 
   const addFilesNode = useCallback(() => {
+    // Generate a unique variable name based on existing Files nodes
+    const filesNodes = nodes.filter(node => node.type === 'files');
+
+    // Find the next available number for Files
+    let nextNumber = 1;
+    const existingNames = filesNodes.map(node => node.data.variableName);
+
+    while (existingNames.includes(`Files ${nextNumber}`)) {
+      nextNumber++;
+    }
+
     const newNode = {
       id: `files-${Date.now()}`,
       type: 'files',
       position: { x: Math.random() * 300, y: Math.random() * 300 + 200 },
       data: {
         label: 'Files',
+        variableName: `Files ${nextNumber}`,
         selectedFiles: [],
         onFilesChange: () => {},
         onDelete: () => {},
@@ -3121,10 +3133,35 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
                       </svg>
                     </div>
+                  ) : editingNode.type === 'files' ? (
+                    <div className="group relative">
+                      <input
+                        value={editingNode.data.variableName || ''}
+                        onChange={(e) => {
+                          updateNodeData(editingNode.id, { variableName: e.target.value });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, variableName: e.target.value }
+                          });
+                        }}
+                        placeholder="Files"
+                        className='w-full rounded border-none bg-transparent px-1 py-0.5 pr-6 font-semibold text-base outline-none transition-colors focus:bg-muted/30 group-hover:bg-muted/30'
+                      />
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className='-translate-y-1/2 pointer-events-none absolute top-1/2 right-1 transform text-muted-foreground/50 transition-colors group-hover:text-muted-foreground'
+                      >
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                      </svg>
+                    </div>
                   ) : (
                     <h3 className="font-semibold text-base">
                       {editingNode.type === 'note' ? 'Note' :
-                       editingNode.type === 'files' ? 'Files' :
                        editingNode.type === 'variables' ? 'Global Variables' : 'Node'}
                     </h3>
                   )}
@@ -3419,16 +3456,58 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
               )}
 
               {editingNode.type === 'files' && (
-                <FilesSelector
-                  selectedFiles={editingNode.data.selectedFiles || []}
-                  onFilesChange={(files) => {
-                    updateNodeData(editingNode.id, { selectedFiles: files });
-                    setEditingNode({
-                      ...editingNode,
-                      data: { ...editingNode.data, selectedFiles: files }
-                    });
-                  }}
-                />
+                <>
+                  {/* Ask Before Run Toggle */}
+                  <div className="flex items-center gap-3 rounded-lg border-2 border-border/60 bg-muted/20 p-3">
+                    <Switch
+                      id="files-ask-before-run"
+                      checked={editingNode.data.askBeforeRun || false}
+                      onCheckedChange={(checked) => {
+                        updateNodeData(editingNode.id, { askBeforeRun: checked });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, askBeforeRun: checked }
+                        });
+                      }}
+                    />
+                    <Label htmlFor="files-ask-before-run" className="cursor-pointer text-sm">
+                      Demander avant le lancement
+                    </Label>
+                  </div>
+
+                  {/* Description (only if askBeforeRun is true) */}
+                  {editingNode.data.askBeforeRun && (
+                    <div className="space-y-1">
+                      <Label className='font-medium text-muted-foreground text-xs'>Description (optional)</Label>
+                      <Textarea
+                        value={editingNode.data.description || ''}
+                        onChange={(e) => {
+                          updateNodeData(editingNode.id, { description: e.target.value });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, description: e.target.value }
+                          });
+                        }}
+                        placeholder="Décrivez quels fichiers sélectionner..."
+                        className='min-h-[60px] resize-none text-xs'
+                      />
+                    </div>
+                  )}
+
+                  {/* Files Selector (only if NOT askBeforeRun) */}
+                  {!editingNode.data.askBeforeRun && (
+                    <FilesSelector
+                      selectedFiles={editingNode.data.selectedFiles || []}
+                      onFilesChange={(files) => {
+                        updateNodeData(editingNode.id, { selectedFiles: files });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, selectedFiles: files }
+                        });
+                      }}
+                    />
+                  )}
+                </>
               )}
 
               {editingNode.type === 'decision' && !showResults && (

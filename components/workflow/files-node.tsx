@@ -12,7 +12,10 @@ interface SelectedFile {
 
 interface FilesNodeData {
   label: string;
+  variableName?: string;
   selectedFiles: SelectedFile[];
+  askBeforeRun?: boolean;
+  description?: string;
   onFilesChange: (files: SelectedFile[]) => void;
   onDelete?: () => void;
   isHandleHighlighted?: (handleId: string, handleType: 'source' | 'target') => boolean;
@@ -44,14 +47,14 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
 
   return (
     <>
-      <div className='group relative'>
+      <div className='group relative flex flex-col items-center'>
         {/* File Count Badge */}
-        {data.selectedFiles.length > 0 && (
+        {data.selectedFiles.length > 0 && !data.askBeforeRun && (
           <div className='-top-2 -right-2 absolute z-20 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-orange-500 font-bold text-white text-xs shadow-lg dark:border-gray-800'>
             {data.selectedFiles.length}
           </div>
         )}
-        
+
         {/* Circular Files Node */}
         <div
           className={`flex h-16 w-16 items-center justify-center rounded-full transition-all duration-300 ${getExecutionStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
@@ -78,6 +81,12 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
           />
         </div>
 
+        {/* Variable Name Label */}
+        {data.variableName && (
+          <div className='mt-2 max-w-[120px] truncate rounded bg-muted px-2 py-1 text-center text-foreground text-xs'>
+            {data.variableName}
+          </div>
+        )}
       </div>
     </>
   );
