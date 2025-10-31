@@ -118,49 +118,64 @@ function FileLibraryModal({ selectedFiles, onFilesChange, onClose }: {
   onClose: () => void;
 }) {
   // Modal's own state
-  const [libraryFiles, setLibraryFiles] = useState<UserFile[]>([]);
-  const [folders, setFolders] = useState<any[]>([]);
+  const [allFiles, setAllFiles] = useState<UserFile[]>([]); // Cache all files
+  const [allFolders, setAllFolders] = useState<any[]>([]); // Cache all folders
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [folderPath, setFolderPath] = useState<Array<{ id: string | null; name: string }>>([{ id: null, name: 'Racine' }]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Load folder content on mount and when folder changes
+  // Load all data once on mount
   useEffect(() => {
-    loadFolderContent(currentFolderId);
-  }, [currentFolderId]);
+    loadAllData();
+  }, []);
 
-  const loadFolderContent = async (folderId: string | null) => {
+  const loadAllData = async () => {
     setLoading(true);
     try {
-      // Load folders
-      const foldersResponse = await fetch('/api/library/folders');
+      // Load all folders and files in parallel
+      const [foldersResponse, filesResponse] = await Promise.all([
+        fetch('/api/library/folders'),
+        fetch('/api/library/folders')
+      ]);
+
+      let allFoldersData: any[] = [];
+      let rootFiles: UserFile[] = [];
+
+      // Process folders
       if (foldersResponse.ok) {
         const foldersData = await foldersResponse.json();
-        console.log('📁 All folders data:', foldersData);
-        const allFolders = foldersData.folders || [];
-        console.log('📁 All folders:', allFolders);
-        // Filter folders by parent - handle both null and undefined
-        const filteredFolders = allFolders.filter((f: any) => {
-          const folderParentId = f.parent_id === undefined ? null : f.parent_id;
-          return folderParentId === folderId;
-        });
-        console.log(`📁 Filtered folders for parent ${folderId}:`, filteredFolders);
-        setFolders(filteredFolders);
+        allFoldersData = foldersData.folders || [];
+        setAllFolders(allFoldersData);
       }
 
-      // Load files
-      const filesEndpoint = folderId
-        ? `/api/library/folders/${folderId}/files`
-        : '/api/library/folders';
-      const filesResponse = await fetch(filesEndpoint);
+      // Process root files
       if (filesResponse.ok) {
         const filesData = await filesResponse.json();
-        console.log('📄 Files data:', filesData);
-        setLibraryFiles(filesData.files || []);
+        rootFiles = filesData.files || [];
       }
+
+      // Load files from all folders in parallel
+      const filePromises = allFoldersData.map(async (folder: any) => {
+        try {
+          const folderFilesResponse = await fetch(`/api/library/folders/${folder.id}/files`);
+          if (folderFilesResponse.ok) {
+            const folderFilesData = await folderFilesResponse.json();
+            return folderFilesData.files || [];
+          }
+        } catch (error) {
+          console.error(`Error loading files for folder ${folder.id}:`, error);
+        }
+        return [];
+      });
+
+      const folderFilesArrays = await Promise.all(filePromises);
+      const allFilesFromFolders = folderFilesArrays.flat();
+
+      // Combine root files and folder files
+      setAllFiles([...rootFiles, ...allFilesFromFolders]);
     } catch (error) {
-      console.error('Error loading folder content:', error);
+      console.error('Error loading library data:', error);
     } finally {
       setLoading(false);
     }
@@ -176,11 +191,23 @@ function FileLibraryModal({ selectedFiles, onFilesChange, onClose }: {
     }
   };
 
-  const filteredFiles = libraryFiles.filter(file =>
+  // Filter files by current folder and search query
+  const currentFolderFiles = allFiles.filter(file => {
+    const fileFolderId = file.folder_id === undefined ? null : file.folder_id;
+    return fileFolderId === currentFolderId;
+  });
+
+  const filteredFiles = currentFolderFiles.filter(file =>
     file.original_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredFolders = folders.filter(folder =>
+  // Filter folders by current parent and search query
+  const currentSubFolders = allFolders.filter(folder => {
+    const folderParentId = folder.parent_id === undefined ? null : folder.parent_id;
+    return folderParentId === currentFolderId;
+  });
+
+  const filteredFolders = currentSubFolders.filter(folder =>
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
