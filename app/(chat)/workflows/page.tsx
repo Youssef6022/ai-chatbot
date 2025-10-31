@@ -3483,8 +3483,22 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
 
               {editingNode.type === 'files' && (
                 <>
-                  {/* Ask Before Run Toggle */}
-                  <div className="flex items-center gap-3 rounded-lg border-2 border-border/60 bg-muted/20 p-3">
+                  {/* Files Selector (always visible, but grayed out if askBeforeRun) */}
+                  <div className={editingNode.data.askBeforeRun ? 'opacity-50 pointer-events-none' : ''}>
+                    <FilesSelector
+                      selectedFiles={editingNode.data.selectedFiles || []}
+                      onFilesChange={(files) => {
+                        updateNodeData(editingNode.id, { selectedFiles: files });
+                        setEditingNode({
+                          ...editingNode,
+                          data: { ...editingNode.data, selectedFiles: files }
+                        });
+                      }}
+                    />
+                  </div>
+
+                  {/* Ask Before Run Toggle (smaller, below file selector) */}
+                  <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/10 px-2.5 py-2">
                     <Switch
                       id="files-ask-before-run"
                       checked={editingNode.data.askBeforeRun || false}
@@ -3495,8 +3509,9 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           data: { ...editingNode.data, askBeforeRun: checked }
                         });
                       }}
+                      className="scale-75"
                     />
-                    <Label htmlFor="files-ask-before-run" className="cursor-pointer text-sm">
+                    <Label htmlFor="files-ask-before-run" className="cursor-pointer text-xs text-muted-foreground">
                       Demander avant le lancement
                     </Label>
                   </div>
@@ -3518,20 +3533,6 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         className='min-h-[60px] resize-none text-xs'
                       />
                     </div>
-                  )}
-
-                  {/* Files Selector (only if NOT askBeforeRun) */}
-                  {!editingNode.data.askBeforeRun && (
-                    <FilesSelector
-                      selectedFiles={editingNode.data.selectedFiles || []}
-                      onFilesChange={(files) => {
-                        updateNodeData(editingNode.id, { selectedFiles: files });
-                        setEditingNode({
-                          ...editingNode,
-                          data: { ...editingNode.data, selectedFiles: files }
-                        });
-                      }}
-                    />
                   )}
                 </>
               )}
