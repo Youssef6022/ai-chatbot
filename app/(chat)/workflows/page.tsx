@@ -1310,6 +1310,9 @@ export default function WorkflowsPage() {
           choices: node.data.choices || [],
           // Note node specific fields
           content: node.data.content || '',
+          // Files node specific fields
+          askBeforeRun: node.data.askBeforeRun || false,
+          description: node.data.description || '',
         }
       })),
       edges: edges.map(edge => ({
@@ -3483,8 +3486,8 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
 
               {editingNode.type === 'files' && (
                 <>
-                  {/* Files Selector (always visible, but grayed out if askBeforeRun) */}
-                  <div className={editingNode.data.askBeforeRun ? 'opacity-50 pointer-events-none' : ''}>
+                  {/* Files Selector (hidden if askBeforeRun is true) */}
+                  {!editingNode.data.askBeforeRun && (
                     <FilesSelector
                       selectedFiles={editingNode.data.selectedFiles || []}
                       onFilesChange={(files) => {
@@ -3495,9 +3498,9 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         });
                       }}
                     />
-                  </div>
+                  )}
 
-                  {/* Ask Before Run Toggle (smaller, below file selector) */}
+                  {/* Ask Before Run Toggle (smaller, below file selector or at top if askBeforeRun is true) */}
                   <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/10 px-2.5 py-2">
                     <Switch
                       id="files-ask-before-run"
@@ -3519,7 +3522,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                   {/* Description (only if askBeforeRun is true) */}
                   {editingNode.data.askBeforeRun && (
                     <div className="space-y-1">
-                      <Label className='font-medium text-muted-foreground text-xs'>Description (optional)</Label>
+                      <Label className='font-medium text-muted-foreground text-xs'>Description (optionnel)</Label>
                       <Textarea
                         value={editingNode.data.description || ''}
                         onChange={(e) => {

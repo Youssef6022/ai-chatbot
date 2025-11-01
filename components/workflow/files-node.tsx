@@ -55,6 +55,13 @@ export function FilesNode({ data, selected }: NodeProps<FilesNodeData>) {
           </div>
         )}
 
+        {/* Ask Before Run Badge */}
+        {data.askBeforeRun && (
+          <div className='-top-2 -right-2 absolute z-20 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-blue-500 font-bold text-white text-xs shadow-lg dark:border-gray-800' title="Fichiers demandés au lancement">
+            ?
+          </div>
+        )}
+
         {/* Circular Files Node */}
         <div
           className={`flex h-16 w-16 items-center justify-center rounded-full transition-all duration-300 ${getExecutionStyles()} ${selected ? 'ring-2 ring-orange-500' : ''}`}
