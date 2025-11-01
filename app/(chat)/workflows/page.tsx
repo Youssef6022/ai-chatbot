@@ -2567,10 +2567,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           files: allFiles.length > 0 ? allFiles : undefined,
           isSearchGroundingEnabled: generateNode.data.isSearchGroundingEnabled || false,
           isMapsGroundingEnabled: generateNode.data.isMapsGroundingEnabled || false,
-          ragCorpus: generateNode.data.isRAGCivilEnabled ? 'rag-civil'
-                     : generateNode.data.isRAGCommerceEnabled ? 'rag-commerce'
-                     : generateNode.data.isRAGDroitEnabled ? 'rag-droit-francais'
-                     : 'none',
+          ragCorpus: generateNode.data.isRAGDroitEnabled ? 'rag-droit-francais' : 'none',
         }),
       });
       
@@ -3320,7 +3317,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           const newValue = !editingNode.data.isSearchGroundingEnabled;
                           // Si on active Google Search, on désactive Google Maps et RAG
                           const updates = newValue
-                            ? { isSearchGroundingEnabled: true, isMapsGroundingEnabled: false, isRAGCivilEnabled: false, isRAGCommerceEnabled: false, isRAGDroitEnabled: false }
+                            ? { isSearchGroundingEnabled: true, isMapsGroundingEnabled: false, isRAGDroitEnabled: false }
                             : { isSearchGroundingEnabled: false };
                           updateNodeData(editingNode.id, updates);
                           setEditingNode({
@@ -3351,7 +3348,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           const newValue = !editingNode.data.isMapsGroundingEnabled;
                           // Si on active Google Maps, on désactive Google Search et RAG
                           const updates = newValue
-                            ? { isMapsGroundingEnabled: true, isSearchGroundingEnabled: false, isRAGCivilEnabled: false, isRAGCommerceEnabled: false, isRAGDroitEnabled: false }
+                            ? { isMapsGroundingEnabled: true, isSearchGroundingEnabled: false, isRAGDroitEnabled: false }
                             : { isMapsGroundingEnabled: false };
                           updateNodeData(editingNode.id, updates);
                           setEditingNode({
@@ -3371,68 +3368,6 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                       </button>
                     </div>
 
-                    {/* RAG Code Civil Toggle */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <RAGCivilIcon size={14} enabled={editingNode.data.isRAGCivilEnabled} />
-                        <span className='font-medium text-muted-foreground text-xs'>Code Civil</span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const newValue = !editingNode.data.isRAGCivilEnabled;
-                          // Si on active RAG Civil, désactiver tous les autres
-                          const updates = newValue
-                            ? { isRAGCivilEnabled: true, isRAGCommerceEnabled: false, isRAGDroitEnabled: false, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
-                            : { isRAGCivilEnabled: false };
-                          updateNodeData(editingNode.id, updates);
-                          setEditingNode({
-                            ...editingNode,
-                            data: { ...editingNode.data, ...updates }
-                          });
-                        }}
-                        className={`relative h-5 w-10 rounded-full border transition-colors ${
-                          editingNode.data.isRAGCivilEnabled
-                            ? 'border-red-700 bg-red-700'
-                            : 'border-border bg-muted'
-                        }`}
-                      >
-                        <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                          editingNode.data.isRAGCivilEnabled ? 'translate-x-5' : 'translate-x-0.5'
-                        }`} />
-                      </button>
-                    </div>
-
-                    {/* RAG Code Commerce Toggle */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <RAGCommerceIcon size={14} enabled={editingNode.data.isRAGCommerceEnabled} />
-                        <span className='font-medium text-muted-foreground text-xs'>Code Commerce</span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const newValue = !editingNode.data.isRAGCommerceEnabled;
-                          // Si on active RAG Commerce, désactiver tous les autres
-                          const updates = newValue
-                            ? { isRAGCommerceEnabled: true, isRAGCivilEnabled: false, isRAGDroitEnabled: false, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
-                            : { isRAGCommerceEnabled: false };
-                          updateNodeData(editingNode.id, updates);
-                          setEditingNode({
-                            ...editingNode,
-                            data: { ...editingNode.data, ...updates }
-                          });
-                        }}
-                        className={`relative h-5 w-10 rounded-full border transition-colors ${
-                          editingNode.data.isRAGCommerceEnabled
-                            ? 'border-blue-700 bg-blue-700'
-                            : 'border-border bg-muted'
-                        }`}
-                      >
-                        <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                          editingNode.data.isRAGCommerceEnabled ? 'translate-x-5' : 'translate-x-0.5'
-                        }`} />
-                      </button>
-                    </div>
-
                     {/* RAG Codes Droit Français Toggle */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -3442,9 +3377,9 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                       <button
                         onClick={() => {
                           const newValue = !editingNode.data.isRAGDroitEnabled;
-                          // Si on active RAG Droit, désactiver tous les autres
+                          // Si on active RAG Droit, désactiver Google Search et Google Maps
                           const updates = newValue
-                            ? { isRAGDroitEnabled: true, isRAGCivilEnabled: false, isRAGCommerceEnabled: false, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
+                            ? { isRAGDroitEnabled: true, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
                             : { isRAGDroitEnabled: false };
                           updateNodeData(editingNode.id, updates);
                           setEditingNode({
