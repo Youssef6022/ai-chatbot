@@ -517,8 +517,8 @@ function PureMultimodalInput({
               isHydrated={isHydrated}
             />
             <RAGButton
-              currentType={groundingType}
-              onSelect={(type) => setGroundingType(type)}
+              isEnabled={groundingType === 'rag-droit-francais'}
+              onToggle={(enabled) => setGroundingType(enabled ? 'rag-droit-francais' : 'none')}
               status={status}
               isHydrated={isHydrated}
             />
@@ -817,175 +817,61 @@ function PureGoogleMapsButton({
 const GoogleMapsButton = memo(PureGoogleMapsButton);
 
 function PureRAGButton({
-  currentType,
-  onSelect,
+  isEnabled,
+  onToggle,
   status,
   isHydrated,
 }: {
-  currentType: 'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce' | 'rag-droit-francais';
-  onSelect: (type: 'rag-civil' | 'rag-commerce' | 'rag-droit-francais') => void;
+  isEnabled: boolean;
+  onToggle: (enabled: boolean) => void;
   status: UseChatHelpers<ChatMessage>['status'];
   isHydrated: boolean;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const isRagActive = currentType === 'rag-civil' || currentType === 'rag-commerce' || currentType === 'rag-droit-francais';
-
-  // Calculate dropdown position when opened
-  useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.top - 8, // 8px margin above the button
-        left: rect.left,
-      });
-    }
-  }, [isOpen]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        buttonRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }
-  }, [isOpen]);
-
-  const getTitle = () => {
-    if (!isHydrated) return 'Recherche RAG';
-    if (currentType === 'rag-civil') return 'RAG: Code Civil';
-    if (currentType === 'rag-commerce') return 'RAG: Code Commerce';
-    if (currentType === 'rag-droit-francais') return 'RAG: Codes Droit FR';
-    return 'Activer la recherche RAG';
-  };
-
-  const handleSelect = (type: 'rag-civil' | 'rag-commerce' | 'rag-droit-francais') => {
-    console.log('📚 RAG clicked! Current:', currentType, '→ New:', type);
-    onSelect(type);
-    setIsOpen(false);
-  };
+  const title = isHydrated
+    ? isEnabled ? 'Désactiver RAG: Codes Droit FR' : 'Activer RAG: Codes Droit FR'
+    : 'RAG: Codes Droit FR';
 
   return (
-    <>
-      <TooltipProvider delayDuration={200}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              ref={buttonRef}
-              data-testid="rag-button"
-              className="aspect-square h-8 w-8 rounded-lg p-1.5 transition-all hover:bg-accent"
-              onClick={(event) => {
-                event.preventDefault();
-                if (isRagActive) {
-                  // If RAG is active, toggle the dropdown
-                  setIsOpen(!isOpen);
-                } else {
-                  // If RAG is not active, activate Code Civil by default
-                  handleSelect('rag-civil');
-                }
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            data-testid="rag-button"
+            className="aspect-square h-8 w-8 rounded-lg p-1.5 transition-all hover:bg-accent"
+            onClick={(event) => {
+              event.preventDefault();
+              console.log('📚 RAG clicked! Current:', isEnabled, '→ New:', !isEnabled);
+              onToggle(!isEnabled);
+            }}
+            disabled={status !== 'ready'}
+            variant="ghost"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-full w-full"
+              style={{
+                color: isEnabled && isHydrated ? '#8b5cf6' : 'currentColor',
+                opacity: isEnabled && isHydrated ? 1 : 0.5,
+                transition: 'color 0.2s ease, opacity 0.2s ease'
               }}
-              disabled={status !== 'ready'}
-              variant="ghost"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-full w-full"
-                style={{
-                  color: isRagActive && isHydrated ? '#8b5cf6' : 'currentColor',
-                  opacity: isRagActive && isHydrated ? 1 : 0.5,
-                  transition: 'color 0.2s ease, opacity 0.2s ease'
-                }}
-              >
-                {/* Book icon */}
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-              </svg>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top" className="bg-popover text-popover-foreground">
-            <p className="text-xs">{getTitle()}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      {/* Dropdown menu - rendered as fixed positioned element */}
-      {isOpen && isRagActive && (
-        <div
-          ref={dropdownRef}
-          className='fixed z-[9999] w-48 rounded-lg border bg-popover p-1 shadow-xl'
-          style={{
-            top: `${dropdownPosition.top}px`,
-            left: `${dropdownPosition.left}px`,
-            transform: 'translateY(-100%)',
-          }}
-        >
-          <button
-            className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent ${
-              currentType === 'rag-civil' ? 'bg-accent font-medium' : ''
-            }`}
-            onClick={(e) => {
-              e.preventDefault();
-              handleSelect('rag-civil');
-            }}
-          >
-            📖 Code Civil
-          </button>
-          <button
-            className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent ${
-              currentType === 'rag-commerce' ? 'bg-accent font-medium' : ''
-            }`}
-            onClick={(e) => {
-              e.preventDefault();
-              handleSelect('rag-commerce');
-            }}
-          >
-            💼 Code Commerce
-          </button>
-          <button
-            className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent ${
-              currentType === 'rag-droit-francais' ? 'bg-accent font-medium' : ''
-            }`}
-            onClick={(e) => {
-              e.preventDefault();
-              handleSelect('rag-droit-francais');
-            }}
-          >
-            ⚖️ Codes Droit Français
-          </button>
-          <div className="my-1 h-px bg-border" />
-          <button
-            className='w-full rounded-md px-3 py-2 text-left text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground'
-            onClick={(e) => {
-              e.preventDefault();
-              onSelect('none' as any);
-              setIsOpen(false);
-            }}
-          >
-            ❌ Désactiver RAG
-          </button>
-        </div>
-      )}
-    </>
+              {/* Book icon */}
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-popover text-popover-foreground">
+          <p className="text-xs">{title}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
