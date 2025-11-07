@@ -122,7 +122,7 @@ export function PreRunVariablesModal({
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-1.5'>
                       <Label className='font-medium text-muted-foreground text-xs'>{variable.name}</Label>
-                      <span className='rounded bg-muted px-1.5 py-0.5 font-mono text-muted-foreground text-[10px]'>text</span>
+                      <span className='rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground'>text</span>
                     </div>
                     <button
                       onClick={() => setExpandedVariable(variable.id)}
@@ -158,23 +158,23 @@ export function PreRunVariablesModal({
                 <div key={node.id} className="space-y-1">
                   <div className='flex items-center gap-1.5'>
                     <Label className='font-medium text-muted-foreground text-xs'>{node.variableName}</Label>
-                    <span className='rounded bg-muted px-1.5 py-0.5 font-mono text-muted-foreground text-[10px]'>files</span>
+                    <span className='rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground'>files</span>
                   </div>
 
                   {/* File selection UI */}
                   <div className='space-y-2 rounded-lg border border-border bg-muted/30 p-3'>
-                    {tempFiles.get(node.id) && tempFiles.get(node.id)!.length > 0 ? (
+                    {tempFiles.get(node.id) && tempFiles.get(node.id)?.length > 0 ? (
                       <div className="space-y-1.5">
                         <div className='text-muted-foreground text-xs'>
-                          {tempFiles.get(node.id)!.length} fichier(s) sélectionné(s)
+                          {tempFiles.get(node.id)?.length} fichier(s) sélectionné(s)
                         </div>
                         <div className='max-h-[80px] space-y-0.5 overflow-y-auto'>
-                          {tempFiles.get(node.id)!.map((file, index) => (
+                          {tempFiles.get(node.id)?.map((file, index) => (
                             <div key={index} className='flex items-center justify-between gap-2 rounded bg-background px-2 py-1 text-[10px]'>
                               <span className="min-w-0 flex-1 truncate">{file.name}</span>
                               <button
                                 onClick={() => {
-                                  const updatedFiles = tempFiles.get(node.id)!.filter((_, i) => i !== index);
+                                  const updatedFiles = tempFiles.get(node.id)?.filter((_, i) => i !== index);
                                   const newTempFiles = new Map(tempFiles);
                                   newTempFiles.set(node.id, updatedFiles);
                                   setTempFiles(newTempFiles);
@@ -188,7 +188,7 @@ export function PreRunVariablesModal({
                         </div>
                       </div>
                     ) : (
-                      <div className='text-center text-muted-foreground text-xs py-1'>
+                      <div className='py-1 text-center text-muted-foreground text-xs'>
                         Aucun fichier sélectionné
                       </div>
                     )}

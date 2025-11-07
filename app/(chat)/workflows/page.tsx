@@ -3449,7 +3449,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                       }}
                       className="scale-75"
                     />
-                    <Label htmlFor="files-ask-before-run" className="cursor-pointer text-xs text-muted-foreground">
+                    <Label htmlFor="files-ask-before-run" className='cursor-pointer text-muted-foreground text-xs'>
                       Demander avant le lancement
                     </Label>
                   </div>

@@ -23,12 +23,8 @@ import { MoreHorizontal, Download, Trash2, Play } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
-  ReactFlow,
-  Background,
   useNodesState,
   useEdgesState,
-  type Node,
-  type Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 

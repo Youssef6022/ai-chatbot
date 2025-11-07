@@ -16057,3 +16057,3230 @@
   "textPreview": "En matière d'indemnité spéciale de licenciement en cas d'inaptitude professionnelle consécutive à un accident du travail, les sources fournies abordent spécifiquement le cas des assistants maternels e"
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:03:34.769Z] 📥 INCOMING REQUEST
+{
+  "chatId": "12470d8a-4dff-403e-97e8-2d1544748e5b",
+  "model": "chat-model-medium",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\nJean PIGEON et Remy SANSOUS sont amis de longue date. Ils ont de nombreux points communs et passent la plupart de leur temps à rigoler lorsqu’ils sont tous les deux. Toutefois, un trait de la personnalité de Rémy énerve Jean : Remy n’a jamais d’argent et prend l’habitude de se faire inviter à chaque fois qu’ils vont boire un verre…\n\nUn soir, le 29 avril 2020, alors qu’ils prennent un verre à la terrasse d’un café, Remy explique à Jean qu’il a trouvé une idée de « business en ligne » à développer dans le domaine des paris sportifs. Il en est convaincu : ce projet le rendra riche. Tout ce dont il a besoin c’est d’une somme de 10 000 euros pour lancer son projet.\n\nJean finit par se laisser convaincre de lui prêter cette somme mais demande à son ami de lui faire une reconnaissance de dette pour officialiser ce prêt (sans intérêts). Après tout, il s’agit d’une forte somme et il ne croit pas vraiment en la capacité de remboursement de son ami…\n\n« Aucun problème ! » lui répond Rémy qui télécharge immédiatement un modèle d’acte sous seing privé sur internet, l’imprime et le remplit à la main. Il reconnait lui devoir la somme de « dix mille euros » et s’engage à lui rendre cette somme au plus tard dans 3 mois mais ne prend pas le temps de noter cette somme en chiffre. Ce soir-là, un autre ami, Grégoire JAITOUVU, qui s’était joint à eux, assiste à la scène d’un air amusé.\n\nSix mois plus tard, Jean PIGEON n’ayant plus de nouvelles de son « ami », qui ne répond plus à ses messages et appels, se rend chez lui et lui demande de lui rembourser la somme prêtée. Rémy lui répond avec étonnement « Mais tu m’as donné cette somme, je ne te dois rien ! Pars de chez moi ou j’appelle la police ! ».\n\nFou de rage, Jean PIGEON, qui a toujours avec lui la reconnaissance de dette, est décidé à demander en justice le remboursement de son prêt.\n\nPeut-il prouver que Rémy SANSOUS lui doit 10 000 euros ?\n--- End of Pasted Content ---\n\nanalyse et répond"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:03:35.549Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:03:35.551Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:03:35.552Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français avec accès à tous les codes de droit français via RAG.\n\n### PRINCIPES\n\n1. **Précision** : Source chaque affirmation (articles, jurisprudence, doctrine)\n2. **Adaptation** : Ajuste la technicité selon le destinataire\n3. **Structure** : Organise de façon claire et progressive\n\n### STRUCTURE DE RÉPONSE\n\n1. **Qualification juridique** + principes applicables avec citations\n2. **Analyse spécifique** : conditions, exceptions, conséquences\n3. **Application pratique** : cas concrets si pertinent\n4. **Fondements** : Textes législatifs > Jurisprudence > Doctrine\n5. **Vigilance** : Risques, délais, formalités critiques\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### MÉTHODOLOGIE\n\n- Rechercher dans le RAG avec termes juridiques + synonymes\n- Croiser loi + jurisprudence + doctrine\n- Structurer du général au particulier, principe aux exceptions\n- Adapter selon public (particulier/entreprise/professionnel/étudiant)\n- Si incertitude : l'identifier, présenter positions, indiquer tendance majoritaire\n\n### CONCLUSION\n\nTermine par: Synthèse (2-3 phrases) + Recommandations + Risques + Orientation si nécessaire.\n\n⚠️ Ne jamais donner de conseil définitif sur situations complexes sans avocat.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:03:35.554Z] 🔄 Forcing gemini-2.5-pro model for RAG with thinking enabled
+{
+  "originalModel": "chat-model-medium",
+  "effectiveModel": "chat-model-medium",
+  "thinkingEnabled": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:03:35.556Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:03:35.559Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nJean PIGEON et Remy SANSOUS sont amis de longue date. Ils ont de nombreux poi"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:05:04.939Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:08.966Z] 📥 INCOMING REQUEST
+{
+  "chatId": "b0f29e04-0580-45cc-8c53-c8538bfac9d6",
+  "model": "chat-model-medium",
+  "groundingType": "search",
+  "isReasoningEnabled": true,
+  "message": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.\n--- End of Pasted Content ---\n\n--- Pasted Content ---\nJean PIGEON et Remy SANSOUS sont amis de longue date. Ils ont de nombreux points communs et passent la plupart de leur temps à rigoler lorsqu’ils sont tous les deux. Toutefois, un trait de la personnalité de Rémy énerve Jean : Remy n’a jamais d’argent et prend l’habitude de se faire inviter à chaque fois qu’ils vont boire un verre...\nUn soir, le 29 avril 2020, alors qu’ils prennent un verre à la terrasse d’un café, Remy explique à Jean qu’il a trouvé une idée de « business en ligne » à développer dans le domaine des paris sportifs. Il en est convaincu : ce projet le rendra riche. Tout ce dont il a besoin c’est d’une somme de 10 000 euros pour lancer son projet.\nJean finit par se laisser convaincre de lui prêter cette somme mais demande à son ami de lui faire une reconnaissance de dette pour officialiser ce prêt (sans intérêts). Après tout, il s’agit d’une forte somme et il ne croit pas vraiment en la capacité de remboursement de son ami...\n« Aucun problème ! » lui répond Rémy qui télécharge immédiatement un modèle d’acte sous seing privé sur internet, l’imprime et le remplit à la main. Il reconnait lui devoir la somme de « dix mille euros » et s’engage à lui rendre cette somme au plus tard dans 3 mois mais ne prend pas le temps de noter cette somme en chiffre. Ce soir-là, un autre ami, Grégoire JAITOUVU, qui s’était joint à eux, assiste à la scène d’un air amusé.\nSix mois plus tard, Jean PIGEON n’ayant plus de nouvelles de son « ami », qui ne répond plus à ses messages et appels, se rend chez lui et lui demande de lui rembourser la somme prêtée. Rémy lui répond avec étonnement « Mais tu m’as donné cette somme, je ne te dois rien ! Pars de chez moi ou j’appelle la police ! ».\nFou de rage, Jean PIGEON, qui a toujours avec lui la reconnaissance de dette, est décidé à demander en justice le remboursement de son prêt.\nPeut-il prouver que Rémy SANSOUS lui doit 10 000 euros ?\n--- End of Pasted Content ---\n\nanalyse et répond à la question"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:09.994Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:09.995Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:09.997Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Search. Utilise les résultats de recherche pour fournir des informations à jour et précises.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:09.998Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:10.002Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil ju"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:11.629Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:11.636Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 417,
+      "textPreview": "**Examining Loan Evidence**\n\nI'm currently focused on the evidence Jean Pigeon might present to prov",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:13.678Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 542,
+      "textPreview": "**Defining Key Legal Aspects**\n\nI am now delving into the legal classifications relevant to the case",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:15.919Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 640,
+      "textPreview": "**Investigating Formal Requirements**\n\nI'm now deeply engaged in the formal requirements for the rec",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:17.773Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 354,
+      "textPreview": "**Evaluating Witness Credibility**\n\nI'm now determining the weight of the witness testimony. I'm foc",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T15:32:20.589Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 686,
+      "textPreview": "**Evaluating Potential Weaknesses**\n\nI'm now focusing on the legal aspects of proof for the debt rec",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:09.576Z] 📥 INCOMING REQUEST
+{
+  "chatId": "b0f29e04-0580-45cc-8c53-c8538bfac9d6",
+  "model": "chat-model-large",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.\n--- End of Pasted Content ---\n\n--- Pasted Content ---\n# Evaluation LLM\n\nJean PIGEON et Remy SANSOUS sont amis de longue date. Ils ont de nombreux points communs et passent la plupart de leur temps à rigoler lorsqu’ils sont tous les deux. Toutefois, un trait de la personnalité de Rémy énerve Jean : Remy n’a jamais d’argent et prend l’habitude de se faire inviter à chaque fois qu’ils vont boire un verre...\nUn soir, le 29 avril 2020, alors qu’ils prennent un verre à la terrasse d’un café, Remy explique à Jean qu’il a trouvé une idée de « business en ligne » à développer dans le domaine des paris sportifs. Il en est convaincu : ce projet le rendra riche. Tout ce dont il a besoin c’est d’une somme de 10 000 euros pour lancer son projet.\nJean finit par se laisser convaincre de lui prêter cette somme mais demande à son ami de lui faire une reconnaissance de dette pour officialiser ce prêt (sans intérêts). Après tout, il s’agit d’une forte somme et il ne croit pas vraiment en la capacité de remboursement de son ami...\n« Aucun problème ! » lui répond Rémy qui télécharge immédiatement un modèle d’acte sous seing privé sur internet, l’imprime et le remplit à la main. Il reconnait lui devoir la somme de « dix mille euros » et s’engage à lui rendre cette somme au plus tard dans 3 mois mais ne prend pas le temps de noter cette somme en chiffre. Ce soir-là, un autre ami, Grégoire JAITOUVU, qui s’était joint à eux, assiste à la scène d’un air amusé.\nSix mois plus tard, Jean PIGEON n’ayant plus de nouvelles de son « ami », qui ne répond plus à ses messages et appels, se rend chez lui et lui demande de lui rembourser la somme prêtée. Rémy lui répond avec étonnement « Mais tu m’as donné cette somme, je ne te dois rien ! Pars de chez moi ou j’appelle la police ! ».\nFou de rage, Jean PIGEON, qui a toujours avec lui la reconnaissance de dette, est décidé à demander en justice le remboursement de son prêt.\nPeut-il prouver que Rémy SANSOUS lui doit 10 000 euros ?\n--- End of Pasted Content ---\n\nAnalyse le contexte et repond à la question"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:09.920Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [],
+  "toolsCount": 0,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:09.922Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile et serviable.",
+  "hasTools": false,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:09.924Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:09.926Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil ju"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:11.732Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:11.735Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 239,
+      "textPreview": "**Examining the Core Identity**\n\nI've been deconstructing my persona and understanding the instructi",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:13.777Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 476,
+      "textPreview": "**Refining the Response Structure**\n\nI'm now deeply immersed in the mandated response structure. The",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:16.082Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 492,
+      "textPreview": "**Developing the Legal Framework**\n\nI'm now fully immersed in developing the detailed legal framewor",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:18.478Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 534,
+      "textPreview": "**Mapping the Legal Landscape**\n\nI'm navigating the legal framework for the Jean Pigeon case. I've d",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:20.339Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 460,
+      "textPreview": "**Analyzing the Proof Requirements**\n\nI'm now fully immersed in the specific legal problem. The core",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:15:52.960Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 123,
+  "totalTextLength": 10401,
+  "hadToolCalls": false,
+  "textPreview": "Absolument. En tant qu'expert juridique français, je vais analyser la situation de Monsieur Jean PIGEON et répondre à sa question en suivant la méthodologie requise.\n\n### 1. SYNTHÈSE ANALYTIQUE\n\n#### "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:01.057Z] 📥 INCOMING REQUEST
+{
+  "chatId": "fb663f27-41a7-4bdc-a6d3-5601dc94e6f1",
+  "model": "chat-model-large",
+  "groundingType": "search",
+  "isReasoningEnabled": true,
+  "message": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.\n--- End of Pasted Content ---\n\n--- Pasted Content ---\n# Evaluation LLM\n\nJean PIGEON et Remy SANSOUS sont amis de longue date. Ils ont de nombreux points communs et passent la plupart de leur temps à rigoler lorsqu’ils sont tous les deux. Toutefois, un trait de la personnalité de Rémy énerve Jean : Remy n’a jamais d’argent et prend l’habitude de se faire inviter à chaque fois qu’ils vont boire un verre...\nUn soir, le 29 avril 2020, alors qu’ils prennent un verre à la terrasse d’un café, Remy explique à Jean qu’il a trouvé une idée de « business en ligne » à développer dans le domaine des paris sportifs. Il en est convaincu : ce projet le rendra riche. Tout ce dont il a besoin c’est d’une somme de 10 000 euros pour lancer son projet.\nJean finit par se laisser convaincre de lui prêter cette somme mais demande à son ami de lui faire une reconnaissance de dette pour officialiser ce prêt (sans intérêts). Après tout, il s’agit d’une forte somme et il ne croit pas vraiment en la capacité de remboursement de son ami...\n« Aucun problème ! » lui répond Rémy qui télécharge immédiatement un modèle d’acte sous seing privé sur internet, l’imprime et le remplit à la main. Il reconnait lui devoir la somme de « dix mille euros » et s’engage à lui rendre cette somme au plus tard dans 3 mois mais ne prend pas le temps de noter cette somme en chiffre. Ce soir-là, un autre ami, Grégoire JAITOUVU, qui s’était joint à eux, assiste à la scène d’un air amusé.\nSix mois plus tard, Jean PIGEON n’ayant plus de nouvelles de son « ami », qui ne répond plus à ses messages et appels, se rend chez lui et lui demande de lui rembourser la somme prêtée. Rémy lui répond avec étonnement « Mais tu m’as donné cette somme, je ne te dois rien ! Pars de chez moi ou j’appelle la police ! ».\nFou de rage, Jean PIGEON, qui a toujours avec lui la reconnaissance de dette, est décidé à demander en justice le remboursement de son prêt.\nPeut-il prouver que Rémy SANSOUS lui doit 10 000 euros ?\n--- End of Pasted Content ---\n\n--- Pasted Content ---\nJe comprends que vous souhaitez que j'analyse un contexte et formule une réponse à une question, mais je ne vois pas de contexte spécifique ni de question dans votre message.\n\nPourriez-vous me fournir :\n1. Le contexte à analyser\n2. La question à laquelle vous souhaitez que je réponde\n\nUne fois ces éléments fournis, je pourrai analyser le contexte et formuler une réponse appropriée en français, selon les règles que vous avez établies.\n--- End of Pasted Content ---\n\nanalyse ce contexte et formule une réponse à la question."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:02.080Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:02.083Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:02.084Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Search. Utilise les résultats de recherche pour fournir des informations à jour et précises.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:02.085Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:02.086Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil ju"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:04.433Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:04.436Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 385,
+      "textPreview": "**Assessing the Scenario**\n\nI'm focusing now on analyzing the case study involving Jean Pigeon and R",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:06.596Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 356,
+      "textPreview": "**Reviewing the Evidence**\n\nI'm now fully immersed in the details of the loan between Pigeon and San",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:08.603Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 403,
+      "textPreview": "**Formulating Legal Strategy**\n\nI'm now fully immersed in the core legal issues. My focus is on the ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:10.733Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 436,
+      "textPreview": "**Structuring My Analysis**\n\nI'm now outlining my response to the user's question. I've broken down ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:12.736Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 383,
+      "textPreview": "**Defining Key Elements**\n\nI'm now zeroing in on defining the core elements of the case study. I'm f",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:19:38.835Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 100,
+  "totalTextLength": 8360,
+  "hadToolCalls": false,
+  "textPreview": "Absolument. Voici l'analyse juridique du cas soumis, conformément à la structure et aux principes demandés.\n\n***\n\n### **ANALYSE JURIDIQUE DU CAS PIGEON C. SANSOUS**\n\n#### 1. SYNTHÈSE ANALYTIQUE\n\n*   *"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:22:31.190Z] 📥 INCOMING REQUEST
+{
+  "chatId": "fd5429f6-7cff-4ae3-af16-4668a94781fa",
+  "model": "chat-model-large",
+  "groundingType": "rag-droit-francais",
+  "isReasoningEnabled": false,
+  "message": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.\n--- End of Pasted Content ---\n\n--- Pasted Content ---\n# Evaluation LLM\n\nJean PIGEON et Remy SANSOUS sont amis de longue date. Ils ont de nombreux points communs et passent la plupart de leur temps à rigoler lorsqu’ils sont tous les deux. Toutefois, un trait de la personnalité de Rémy énerve Jean : Remy n’a jamais d’argent et prend l’habitude de se faire inviter à chaque fois qu’ils vont boire un verre...\nUn soir, le 29 avril 2020, alors qu’ils prennent un verre à la terrasse d’un café, Remy explique à Jean qu’il a trouvé une idée de « business en ligne » à développer dans le domaine des paris sportifs. Il en est convaincu : ce projet le rendra riche. Tout ce dont il a besoin c’est d’une somme de 10 000 euros pour lancer son projet.\nJean finit par se laisser convaincre de lui prêter cette somme mais demande à son ami de lui faire une reconnaissance de dette pour officialiser ce prêt (sans intérêts). Après tout, il s’agit d’une forte somme et il ne croit pas vraiment en la capacité de remboursement de son ami...\n« Aucun problème ! » lui répond Rémy qui télécharge immédiatement un modèle d’acte sous seing privé sur internet, l’imprime et le remplit à la main. Il reconnait lui devoir la somme de « dix mille euros » et s’engage à lui rendre cette somme au plus tard dans 3 mois mais ne prend pas le temps de noter cette somme en chiffre. Ce soir-là, un autre ami, Grégoire JAITOUVU, qui s’était joint à eux, assiste à la scène d’un air amusé.\nSix mois plus tard, Jean PIGEON n’ayant plus de nouvelles de son « ami », qui ne répond plus à ses messages et appels, se rend chez lui et lui demande de lui rembourser la somme prêtée. Rémy lui répond avec étonnement « Mais tu m’as donné cette somme, je ne te dois rien ! Pars de chez moi ou j’appelle la police ! ».\nFou de rage, Jean PIGEON, qui a toujours avec lui la reconnaissance de dette, est décidé à demander en justice le remboursement de son prêt.\nPeut-il prouver que Rémy SANSOUS lui doit 10 000 euros ?\n--- End of Pasted Content ---\n\nanalyse ce contexte et formule une réponse à la question.\n\n"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:22:32.150Z] 📚 RAG tool added (Codes Droit Francais)
+{
+  "ragCorpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952",
+  "similarityTopK": 20
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:22:32.151Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "retrieval": {
+        "vertex_rag_store": {
+          "rag_resources": [
+            {
+              "rag_corpus": "projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952"
+            }
+          ],
+          "similarity_top_k": 20
+        }
+      }
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:22:32.152Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique français avec accès à tous les codes de droit français via RAG.\n\n### PRINCIPES\n\n1. **Précision** : Source chaque affirmation (articles, jurisprudence, doctrine)\n2. **Adaptation** : Ajuste la technicité selon le destinataire\n3. **Structure** : Organise de façon claire et progressive\n\n### STRUCTURE DE RÉPONSE\n\n1. **Qualification juridique** + principes applicables avec citations\n2. **Analyse spécifique** : conditions, exceptions, conséquences\n3. **Application pratique** : cas concrets si pertinent\n4. **Fondements** : Textes législatifs > Jurisprudence > Doctrine\n5. **Vigilance** : Risques, délais, formalités critiques\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### MÉTHODOLOGIE\n\n- Rechercher dans le RAG avec termes juridiques + synonymes\n- Croiser loi + jurisprudence + doctrine\n- Structurer du général au particulier, principe aux exceptions\n- Adapter selon public (particulier/entreprise/professionnel/étudiant)\n- Si incertitude : l'identifier, présenter positions, indiquer tendance majoritaire\n\n### CONCLUSION\n\nTermine par: Synthèse (2-3 phrases) + Recommandations + Risques + Orientation si nécessaire.\n\n⚠️ Ne jamais donner de conseil définitif sur situations complexes sans avocat.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:22:32.153Z] 🔄 Forcing gemini-2.5-pro model for RAG with thinking enabled
+{
+  "originalModel": "chat-model-large",
+  "effectiveModel": "chat-model-medium",
+  "thinkingEnabled": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:22:32.155Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:22:32.156Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil ju"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:23:32.715Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:12.683Z] 📥 INCOMING REQUEST
+{
+  "chatId": "02304153-496c-4426-b19c-d939fc29f6e2",
+  "model": "chat-model-large",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "--- Pasted Content ---\nJean PIGEON travaille en tant qu’ingénieur dans une grande entreprise depuis le 2 avril 2018. Avec son collègue, Corentin PACONTENT ils trouvent qu’ils travaillent trop et qu’ils n’ont pas assez de vacances : « 5 semaines de congés payés par an, c’est insuffisant ! » s’énervent fréquemment les deux collègues.\n\nCoup de chance, Emmanuel Macron, après de longues discussions avec des représentants des Gilets Jaune vient de céder à une de leurs revendications : accorder aux salariés du secteur privé une sixième semaine de congé payé. Le Parlement vote cette loi qui entre en vigueur le 1er septembre 2020 (situation inventée de toute pièce, vous l’aurez compris, pour les besoins du cas pratique…).\n\nMais la joie de Jean PIGEON et de Corentin PACONTENT n’est que de courte durée puisqu’ils reçoivent un courrier de leur entreprise leur expliquant que leur contrat de travail ayant été conclu avant l’entrée en vigueur de cette nouvelle loi, la sixième semaine de congés payés ne leur sera pas applicable en vertu, d’après le directeur des ressources humaines, du principe de « survie de la loi ancienne ».\n\nLe Directeur des ressources humaines a-t-il raison ?\n--- End of Pasted Content ---\n\n--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.\n--- End of Pasted Content ---\n\nrepond à la question selon le contexte"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:12.977Z] 📥 INCOMING REQUEST
+{
+  "chatId": "02304153-496c-4426-b19c-d939fc29f6e2",
+  "model": "chat-model-large",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "--- Pasted Content ---\nJean PIGEON travaille en tant qu’ingénieur dans une grande entreprise depuis le 2 avril 2018. Avec son collègue, Corentin PACONTENT ils trouvent qu’ils travaillent trop et qu’ils n’ont pas assez de vacances : « 5 semaines de congés payés par an, c’est insuffisant ! » s’énervent fréquemment les deux collègues.\n\nCoup de chance, Emmanuel Macron, après de longues discussions avec des représentants des Gilets Jaune vient de céder à une de leurs revendications : accorder aux salariés du secteur privé une sixième semaine de congé payé. Le Parlement vote cette loi qui entre en vigueur le 1er septembre 2020 (situation inventée de toute pièce, vous l’aurez compris, pour les besoins du cas pratique…).\n\nMais la joie de Jean PIGEON et de Corentin PACONTENT n’est que de courte durée puisqu’ils reçoivent un courrier de leur entreprise leur expliquant que leur contrat de travail ayant été conclu avant l’entrée en vigueur de cette nouvelle loi, la sixième semaine de congés payés ne leur sera pas applicable en vertu, d’après le directeur des ressources humaines, du principe de « survie de la loi ancienne ».\n\nLe Directeur des ressources humaines a-t-il raison ?\n--- End of Pasted Content ---\n\n--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.\n--- End of Pasted Content ---\n\nrepond à la question selon le contexte"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:13.707Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [],
+  "toolsCount": 0,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:13.708Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile et serviable.",
+  "hasTools": false,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:13.709Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:13.711Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nJean PIGEON travaille en tant qu’ingénieur dans une grande entreprise depuis "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:15.674Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:15.677Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 309,
+      "textPreview": "**Exploring Legal Boundaries**\n\nI'm currently dissecting the core question. I'm focusing on whether ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:18.182Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 450,
+      "textPreview": "**Refining the Core Inquiry**\n\nI'm now zeroing in on the precise phrasing of the core legal issue. T",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:19.945Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 534,
+      "textPreview": "**Analyzing Legal Frameworks**\n\nI'm now integrating insights from my brainstorming into the provided",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:21.908Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 517,
+      "textPreview": "**Developing a Robust Argument**\n\nI'm presently building a strong argument that contradicts the DRH'",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:24.313Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 430,
+      "textPreview": "**Analyzing Specific Case Law**\n\nI'm presently building my legal response, focusing on the principle",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:34:53.888Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 119,
+  "totalTextLength": 10777,
+  "hadToolCalls": false,
+  "textPreview": "Absolument. Voici l'analyse juridique détaillée de la situation de Jean PIGEON et Corentin PACONTENT, conformément à la méthodologie requise.\n\n***\n\n### **Analyse juridique de l'application d'une nouve"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:42.474Z] 📥 INCOMING REQUEST
+{
+  "chatId": "8f4b8506-baa0-4995-a650-f14cff3c4f1c",
+  "model": "chat-model-large",
+  "groundingType": "search",
+  "isReasoningEnabled": true,
+  "message": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit français, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\nIMPORTANT : Ne jamais donner de conseil personnalisé définitif sur des situations complexes.\n--- End of Pasted Content ---\n\n--- Pasted Content ---\nJean PIGEON travaille en tant qu’ingénieur dans une grande entreprise depuis le 2 avril 2018. Avec son collègue, Corentin PACONTENT ils trouvent qu’ils travaillent trop et qu’ils n’ont pas assez de vacances : « 5 semaines de congés payés par an, c’est insuffisant ! » s’énervent fréquemment les deux collègues.\n\nCoup de chance, Emmanuel Macron, après de longues discussions avec des représentants des Gilets Jaune vient de céder à une de leurs revendications : accorder aux salariés du secteur privé une sixième semaine de congé payé. Le Parlement vote cette loi qui entre en vigueur le 1er septembre 2020 (situation inventée de toute pièce, vous l’aurez compris, pour les besoins du cas pratique…).\n\nMais la joie de Jean PIGEON et de Corentin PACONTENT n’est que de courte durée puisqu’ils reçoivent un courrier de leur entreprise leur expliquant que leur contrat de travail ayant été conclu avant l’entrée en vigueur de cette nouvelle loi, la sixième semaine de congés payés ne leur sera pas applicable en vertu, d’après le directeur des ressources humaines, du principe de « survie de la loi ancienne ».\n\nLe Directeur des ressources humaines a-t-il raison ?\n--- End of Pasted Content ---\n\nrepond à la question selon le contexte "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:43.333Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:43.334Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:43.335Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Search. Utilise les résultats de recherche pour fournir des informations à jour et précises.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:43.336Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:43.337Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nTu es un expert juridique français spécialisé dans l'analyse et le conseil ju"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:45.871Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:45.873Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 339,
+      "textPreview": "**Considering the Case**\n\nI am now thoroughly considering the nuances of the case study. I'm focusin",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:48.106Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 478,
+      "textPreview": "**Assessing the New Law**\n\nI'm now deep-diving into the legal question at hand. I need to determine ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:49.777Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 458,
+      "textPreview": "**Structuring the Analysis**\n\nI've organized my thoughts into the required seven sections.  My focus",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:51.859Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 404,
+      "textPreview": "**Formulating Legal Arguments**\n\nI'm now fully immersed in the core legal principles. I've begun to ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:36:53.757Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 535,
+      "textPreview": "**Finalizing Legal Reasoning**\n\nMy focus is now firmly on the detailed analysis. I'm solidifying my ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:37:13.059Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 91,
+  "totalTextLength": 8273,
+  "hadToolCalls": false,
+  "textPreview": "Absolument. En tant qu'expert juridique français, je vais analyser la situation de Jean PIGEON et Corentin PACONTENT en suivant la méthodologie demandée.\n\n***\n\n### **Analyse juridique du droit à la si"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:22.660Z] 📥 INCOMING REQUEST
+{
+  "chatId": "8f4b8506-baa0-4995-a650-f14cff3c4f1c",
+  "model": "chat-model-large",
+  "groundingType": "search",
+  "isReasoningEnabled": true,
+  "message": "--- Pasted Content ---\nJe ne peux pas effectuer de fact-checking car aucun texte, affirmation, jurisprudence ou contenu spécifique n'a été fourni à vérifier.\n\nPour réaliser un fact-checking et présenter les résultats sous forme de tableau, j'aurais besoin que vous me dictiez ou fournissiez :\n\n- Les textes à vérifier\n- Les affirmations à contrôler\n- Les références juridiques mentionnées\n- Les jurisprudences citées\n\nUne fois ces éléments fournis, je pourrai les analyser et présenter un tableau structuré avec les vérifications appropriées.\n--- End of Pasted Content ---\n\n"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:23.031Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:23.032Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:23.033Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Search. Utilise les résultats de recherche pour fournir des informations à jour et précises.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:23.035Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:23.037Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\nJe ne peux pas effectuer de fact-checking car aucun texte, affirmation, juris"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:25.309Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:25.312Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 324,
+      "textPreview": "**Reviewing French Law**\n\nI'm currently focused on the legal claims presented regarding paid leave i",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:27.568Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 585,
+      "textPreview": "**Confirming Legal Principles**\n\nI'm now in the process of thoroughly scrutinizing each of the seven",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:30.071Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 715,
+      "textPreview": "**Fact-Checking Claims**\n\nI'm now deep into the fact-checking phase, systematically verifying each l",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:31.036Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 681,
+      "textPreview": "**Detailing Fact-Checking Process**\n\nThe fact-checking phase continues, this time with a refined foc",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:31.058Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Excellent. Procédons au fact-checking de l'analyse juridique fournie précédemment.\n\nJe vais prendre ",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 122,
+      "textPreview": "Excellent. Procédons au fact-checking de l'analyse juridique fournie précédemment.\n\nJe vais prendre ",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:42:36.774Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 37,
+  "totalTextLength": 3416,
+  "hadToolCalls": false,
+  "textPreview": "Excellent. Procédons au fact-checking de l'analyse juridique fournie précédemment.\n\nJe vais prendre chaque affirmation clé de la réponse précédente et la vérifier à l'aide de recherches sur les source"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:01.124Z] 📥 INCOMING REQUEST
+{
+  "chatId": "8f4b8506-baa0-4995-a650-f14cff3c4f1c",
+  "model": "chat-model-large",
+  "groundingType": "search",
+  "isReasoningEnabled": true,
+  "message": "Peux-tu citer les sources de ce fact-checking ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:01.515Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:01.516Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:01.518Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Search. Utilise les résultats de recherche pour fournir des informations à jour et précises.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:01.519Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 4
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:01.520Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "Peux-tu citer les sources de ce fact-checking ?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:03.818Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:03.820Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 329,
+      "textPreview": "**Confirming Legal Basis**\n\nI'm currently focused on the legal backing for my fact-checking. Specifi",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:05.612Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 528,
+      "textPreview": "**Defining Scope and Authority**\n\nI'm now zeroing in on the legal underpinnings of my fact-checking.",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:07.361Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 576,
+      "textPreview": "**Identifying Key Legal Texts**\n\nI'm now fully immersed in pinpointing the essential legal resources",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:09.743Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Absol",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 5,
+      "textPreview": "Absol",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:09.974Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "ument. Voici les sources juridiques qui fondent chaque point du fact-checking,",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 78,
+      "textPreview": "ument. Voici les sources juridiques qui fondent chaque point du fact-checking,",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:16.576Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 35,
+  "totalTextLength": 3075,
+  "hadToolCalls": false,
+  "textPreview": "Absolument. Voici les sources juridiques qui fondent chaque point du fact-checking, avec les références précises des textes de loi et des principes jurisprudentiels.\n\n### **Sources du Fact-Checking Ju"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:27.982Z] 📥 INCOMING REQUEST
+{
+  "chatId": "8f4b8506-baa0-4995-a650-f14cff3c4f1c",
+  "model": "chat-model-large",
+  "groundingType": "search",
+  "isReasoningEnabled": true,
+  "message": "En source, je voulais parler d'URL."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:28.355Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:28.356Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:28.358Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Search. Utilise les résultats de recherche pour fournir des informations à jour et précises.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:28.359Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 6
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:28.360Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "En source, je voulais parler d'URL."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:30.738Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:30.741Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 335,
+      "textPreview": "**Adding Legal References**\n\nI'm working on the legal sources. For Article 2 of the French Civil Cod",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:33.401Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 741,
+      "textPreview": "**Sourcing French Law**\n\nI'm now focused on the specific URLs for my fact-checking table. I've initi",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:37.007Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Par",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 3,
+      "textPreview": "Par",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:37.182Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "faitement. Il est essentiel de s'appuyer sur des sources fi",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 59,
+      "textPreview": "faitement. Il est essentiel de s'appuyer sur des sources fi",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:37.412Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "ables et officielles. Voici le détail des sources, sous forme d'URL provenant principalement du site",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 128,
+      "textPreview": "ables et officielles. Voici le détail des sources, sous forme d'URL provenant principalement du site",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:43:42.663Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 27,
+  "totalTextLength": 2265,
+  "hadToolCalls": false,
+  "textPreview": "Parfaitement. Il est essentiel de s'appuyer sur des sources fiables et officielles. Voici le détail des sources, sous forme d'URL provenant principalement du site gouvernemental **Légifrance**, qui es"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:14.852Z] 📥 INCOMING REQUEST
+{
+  "chatId": "fbfa1d7d-b6ef-4cfc-b3ca-9b9b0d8d5e01",
+  "model": "chat-model-large",
+  "groundingType": "search",
+  "isReasoningEnabled": true,
+  "message": "--- Pasted Content ---\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche dans le RAG** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\n\n### 🔍 PHASE DE FACT-CHECKING OBLIGATOIRE\n\n**⚠️ À EFFECTUER IMPÉRATIVEMENT APRÈS LA RECHERCHE ET AVANT LA RÉDACTION**\n\n#### PROTOCOLE DE VÉRIFICATION EN 5 ÉTAPES\n\n##### 1. **VALIDATION DES TEXTES LÉGISLATIFS**\n- [ ] Vérifier l'**existence réelle** de l'article cité\n- [ ] Confirmer la **version en vigueur** (pas d'article abrogé ou modifié)\n- [ ] Contrôler la **formulation exacte** du texte\n- [ ] S'assurer de la **date d'entrée en vigueur**\n- ❌ **Si doute** : Ne PAS citer ou indiquer explicitement \"sous réserve de vérification\"\n\n##### 2. **AUDIT DE LA JURISPRUDENCE** (ZONE CRITIQUE ⚠️)\nAvant TOUTE citation jurisprudentielle, vérifier :\n- [ ] **Existence de l'arrêt** : La décision existe-t-elle vraiment ?\n- [ ] **Références exactes** : \n  - Juridiction correcte (Cass. civ. 1ère, CE, etc.)\n  - Date précise (jour/mois/année)\n  - Numéro de pourvoi authentique\n- [ ] **Portée réelle** : L'arrêt dit-il vraiment ce que j'affirme ?\n- [ ] **Actualité** : N'a-t-il pas été contredit par une décision ultérieure ?\n\n**🚫 INTERDICTIONS ABSOLUES :**\n- Ne JAMAIS inventer un arrêt \"plausible\"\n- Ne JAMAIS approximer une date ou un numéro\n- Ne JAMAIS extrapoler le contenu d'une décision\n\n##### 3. **CONTRÔLE DE COHÉRENCE**\n- [ ] Les différentes sources citées sont-elles **compatibles** entre elles ?\n- [ ] La chronologie juridique est-elle **logique** ?\n- [ ] Les principes énoncés respectent-ils la **hiérarchie des normes** ?\n\n##### 4. **VÉRIFICATION DES RENVOIS**\n- [ ] Chaque référence [numéro] renvoie-t-elle à une source **vérifiable** ?\n- [ ] Les citations entre guillemets sont-elles **exactes** ?\n- [ ] Les paraphrases respectent-elles le **sens original** ?\n\n##### 5. **VALIDATION FINALE**\nAvant de rédiger, se poser ces questions :\n- ✓ Puis-je **prouver** chaque affirmation juridique ?\n- ✓ Un juriste pourrait-il **vérifier** toutes mes sources ?\n- ✓ Ai-je distingué clairement :\n  - Ce qui est **certain** (texte clair)\n  - Ce qui est **probable** (jurisprudence constante)\n  - Ce qui est **discuté** (doctrine divergente)\n  - Ce qui est **incertain** (zone grise)\n\n#### STRATÉGIE EN CAS DE DOUTE\n\n**Si une information ne peut être vérifiée à 100% :**\n\n1. **Option préférentielle** : Ne pas la mentionner\n2. **Option alternative** : L'indiquer avec réserve explicite :\n   - \"Sous réserve de vérification approfondie...\"\n   - \"Selon certaines sources doctrinales (à confirmer)...\"\n   - \"Une jurisprudence pourrait exister sur ce point...\"\n\n3. **Formulations de prudence obligatoires** :\n   - \"Il semblerait que...\" → uniquement si source secondaire\n   - \"La doctrine majoritaire considère...\" → uniquement si consensus vérifié\n   - \"Un courant jurisprudentiel...\" → uniquement si plusieurs arrêts concordants\n\n#### CHECKLIST ANTI-HALLUCINATION\n\n**❌ SIGNAUX D'ALERTE - Ne PAS publier si :**\n- Je \"crois me souvenir\" d'un arrêt\n- Les références me semblent \"probablement correctes\"\n- Je reconstitue un numéro de pourvoi \"logique\"\n- J'invente une date \"approximative\"\n- Je paraphrase \"de mémoire\" un principe\n\n**✅ SIGNAUX DE VALIDATION - Publier uniquement si :**\n- J'ai la référence exacte et complète\n- Je peux citer le texte précis\n- La source est datée et identifiable\n- La vérification croisée est possible\n\n### MENTION OBLIGATOIRE EN CAS D'INCERTITUDE\n\nSi après ce fact-checking, des zones d'ombre subsistent, ajouter systématiquement :\n\n> **⚠️ Note de fiabilité** : Cette analyse juridique est fournie à titre informatif. Certaines références jurisprudentielles mentionnées nécessiteraient une vérification approfondie auprès des bases de données juridiques officielles (Légifrance, Dalloz, LexisNexis). Pour toute situation concrète, la consultation d'un professionnel du droit reste indispensable.\n--- End of Pasted Content ---\n\n--- Pasted Content ---\nJean PIGEON et Remy SANSOUS sont amis de longue date. Ils ont de nombreux points communs et passent la plupart de leur temps à rigoler lorsqu’ils sont tous les deux. Toutefois, un trait de la personnalité de Rémy énerve Jean : Remy n’a jamais d’argent et prend l’habitude de se faire inviter à chaque fois qu’ils vont boire un verre...\nUn soir, le 29 avril 2020, alors qu’ils prennent un verre à la terrasse d’un café, Remy explique à Jean qu’il a trouvé une idée de « business en ligne » à développer dans le domaine des paris sportifs. Il en est convaincu : ce projet le rendra riche. Tout ce dont il a besoin c’est d’une somme de 10 000 euros pour lancer son projet.\nJean finit par se laisser convaincre de lui prêter cette somme mais demande à son ami de lui faire une reconnaissance de dette pour officialiser ce prêt (sans intérêts). Après tout, il s’agit d’une forte somme et il ne croit pas vraiment en la capacité de remboursement de son ami...\n« Aucun problème ! » lui répond Rémy qui télécharge immédiatement un modèle d’acte sous seing privé sur internet, l’imprime et le remplit à la main. Il reconnait lui devoir la somme de « dix mille euros » et s’engage à lui rendre cette somme au plus tard dans 3 mois mais ne prend pas le temps de noter cette somme en chiffre. Ce soir-là, un autre ami, Grégoire JAITOUVU, qui s’était joint à eux, assiste à la scène d’un air amusé.\nSix mois plus tard, Jean PIGEON n’ayant plus de nouvelles de son « ami », qui ne répond plus à ses messages et appels, se rend chez lui et lui demande de lui rembourser la somme prêtée. Rémy lui répond avec étonnement « Mais tu m’as donné cette somme, je ne te dois rien ! Pars de chez moi ou j’appelle la police ! ».\nFou de rage, Jean PIGEON, qui a toujours avec lui la reconnaissance de dette, est décidé à demander en justice le remboursement de son prêt.\nPeut-il prouver que Rémy SANSOUS lui doit 10 000 euros ?\n--- End of Pasted Content ---\n\nrepond à la question selon le contexte"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:15.876Z] 🔍 Google Search tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:15.877Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:15.878Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Search. Utilise les résultats de recherche pour fournir des informations à jour et précises.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:15.879Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:15.880Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "--- Pasted Content ---\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affir"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:19.066Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:19.068Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 420,
+      "textPreview": "**Examining the Core Task**\n\nI'm now zeroing in on the central challenge: dissecting the loan scenar",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:20.891Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 423,
+      "textPreview": "**Assessing the IOU's Validity**\n\nNow, I'm carefully evaluating the \"reconnaissance de dette,\" or IO",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:22.754Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 439,
+      "textPreview": "**Exploring Credibility Challenges**\n\nI'm now investigating potential challenges to the IOU's credib",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:25.209Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 338,
+      "textPreview": "**Pinpointing Legal Thresholds**\n\nI'm now zeroing in on the €1,500 threshold and relevant articles i",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:48:27.042Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 396,
+      "textPreview": "**Evaluating IOU Deficiencies**\n\nI've been scrutinizing the IOU in light of Article 1376 of the Civi",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-02T21:49:00.089Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 120,
+  "totalTextLength": 10165,
+  "hadToolCalls": false,
+  "textPreview": "Absolument. Voici une analyse juridique détaillée de la situation de Jean PIGEON, conformément à la structure et aux principes que vous avez définis.\n\n***\n\n### **ANALYSE JURIDIQUE : LA PREUVE DU PRÊT "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:15.016Z] 📥 INCOMING REQUEST
+{
+  "chatId": "043077f2-6d44-4499-bc00-4fa11668c016",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "[file] Donne-moi le RIB d'Ignen Stenso, avec l'IBAN et le BIC s'il te plaît."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:16.118Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [],
+  "toolsCount": 0,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:16.119Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile et serviable.",
+  "hasTools": false,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:16.120Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:16.122Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": true,
+  "partsCount": 2,
+  "messagePreview": "Donne-moi le RIB d'Ignen Stenso, avec l'IBAN et le BIC s'il te plaît."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:18.612Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:18.615Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 416,
+      "textPreview": "**Locating Key Details**\n\nI'm currently focused on extracting the core information. I've successfull",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:22.187Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 375,
+      "textPreview": "**Analyzing the Data**\n\nI've now extracted the data successfully. The RIB reveals the IBAN as FR76 1",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:23.559Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 365,
+      "textPreview": "**Clarifying Discrepancy Found**\n\nI've identified the recipient name as \"In Extenso Cholet\" in the R",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:23.575Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "D'après l'image, le nom de l'entreprise est **In Extenso Cholet**, et non Ignen Stenso.\n\nVoici les i",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 166,
+      "textPreview": "D'après l'image, le nom de l'entreprise est **In Extenso Cholet**, et non Ignen Stenso.\n\nVoici les i",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:23.600Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "6 1790 6000 3206 5436 5000 194\n*   **BIC/SWIFT :** AGRIFRPP879",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 62,
+      "textPreview": "6 1790 6000 3206 5436 5000 194\n*   **BIC/SWIFT :** AGRIFRPP879",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-03T21:25:23.608Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 6,
+  "totalTextLength": 228,
+  "hadToolCalls": false,
+  "textPreview": "D'après l'image, le nom de l'entreprise est **In Extenso Cholet**, et non Ignen Stenso.\n\nVoici les informations demandées pour In Extenso Cholet :\n\n*   **IBAN :** FR76 1790 6000 3206 5436 5000 194\n*  "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:43.754Z] 📥 INCOMING REQUEST
+{
+  "chatId": "e887e2e5-415c-47df-8197-469260ad082d",
+  "model": "chat-model-large",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "J'aimerais savoir sur Cholet, quelle est la pharmacie qui ouvre le plus tôt le jeudi matin."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:44.611Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:44.612Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:44.613Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Maps. Aide les utilisateurs à trouver des lieux, des itinéraires et des informations géographiques.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:44.614Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:44.615Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "J'aimerais savoir sur Cholet, quelle est la pharmacie qui ouvre le plus tôt le jeudi matin."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:47.421Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:47.423Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 277,
+      "textPreview": "**Determining Key Details**\n\nI'm focusing now on identifying the core elements of this inquiry. It's",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:49.609Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 481,
+      "textPreview": "**Defining the Search Strategy**\n\nI've refined my approach to tackle this query. Now, I'm focusing o",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:50.366Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 523,
+      "textPreview": "**Mapping Out The Process**\n\nCurrently, I'm working to solidify the process for this task. I've brok",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:53.158Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 345,
+      "textPreview": "**Correcting Search Parameters**\n\nI'm now revising my search strategy. The initial attempt using the",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:31:54.374Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 447,
+      "textPreview": "**Defining the Query & Method**\n\nI've refined the approach. My aim is to identify the earliest-openi",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:02.786Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 12,
+  "totalTextLength": 369,
+  "hadToolCalls": false,
+  "textPreview": "À Cholet, la pharmacie qui ouvre le plus tôt le jeudi matin est la **Pharmacie des Câlins - Elsie Santé**, avec une ouverture à **08h30**. Elle est située au 10 Rue Prte Baron.\n\nUne autre pharmacie qu"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:45.889Z] 📥 INCOMING REQUEST
+{
+  "chatId": "e887e2e5-415c-47df-8197-469260ad082d",
+  "model": "chat-model-large",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "J'aimerais la liste de toutes les pharmacies à Cholet."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:46.210Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:46.211Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:46.212Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Maps. Aide les utilisateurs à trouver des lieux, des itinéraires et des informations géographiques.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:46.213Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:46.214Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "J'aimerais la liste de toutes les pharmacies à Cholet."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:48.436Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:48.438Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 337,
+      "textPreview": "**Initiating Search Strategy**\n\nI'm currently focused on the best approach for the search. I've dete",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:49.346Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 333,
+      "textPreview": "**Finalizing Search Parameters**\n\nI've nailed down the query: \"pharmacies à Cholet.\" The tool call w",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:51.941Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Voici",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 5,
+      "textPreview": "Voici",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:52.138Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " une liste de pharmacies situées à Cholet et dans ses environs immédiats :\n\n**",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 78,
+      "textPreview": " une liste de pharmacies situées à Cholet et dans ses environs immédiats :\n\n**",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:52.360Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Pharmacies à Cholet :**\n\n*   **La Grande Pharmacie - PHARMABEST** : 11",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 70,
+      "textPreview": "Pharmacies à Cholet :**\n\n*   **La Grande Pharmacie - PHARMABEST** : 11",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:32:56.820Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 27,
+  "totalTextLength": 1517,
+  "hadToolCalls": false,
+  "textPreview": "Voici une liste de pharmacies situées à Cholet et dans ses environs immédiats :\n\n**Pharmacies à Cholet :**\n\n*   **La Grande Pharmacie - PHARMABEST** : 119 bis Rue Nationale, 49300 Cholet.\n*   **Pharma"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:51.000Z] 📥 INCOMING REQUEST
+{
+  "chatId": "946abdab-b2a5-4c44-8a52-7599ae38e959",
+  "model": "chat-model-large",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "J'aimerais la liste de toutes les pharmacies à Cholet."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:51.921Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [],
+  "toolsCount": 0,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:51.922Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile et serviable.",
+  "hasTools": false,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:51.922Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:51.923Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "J'aimerais la liste de toutes les pharmacies à Cholet."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:53.995Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:53.997Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 422,
+      "textPreview": "**Examining Pharmacy Data**\n\nI'm currently focused on the user's need for a comprehensive list of ph",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:56.430Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 445,
+      "textPreview": "**Exploring Data Sources**\n\nI've moved past initial analysis and am now evaluating potential data so",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:33:58.756Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 412,
+      "textPreview": "**Prioritizing Accuracy and Completeness**\n\nI'm now prioritizing accuracy and completeness by focusi",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:34:00.787Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 428,
+      "textPreview": "**Validating Information Sources**\n\nI'm now deeply immersed in validating my initial data sources. I",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:34:03.326Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 431,
+      "textPreview": "**Compiling a Comprehensive List**\n\nI'm now focused on constructing the actual pharmacy list, incorp",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:34:11.742Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 46,
+  "totalTextLength": 2641,
+  "hadToolCalls": false,
+  "textPreview": "Bien sûr, voici une liste des principales pharmacies situées à Cholet. Il est toujours conseillé d'appeler avant de vous déplacer pour vérifier les horaires d'ouverture, car ceux-ci peuvent varier.\n\n#"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:34:59.959Z] 📥 INCOMING REQUEST
+{
+  "chatId": "011f7cf0-2ffd-42bb-a9ac-ed7596911300",
+  "model": "chat-model-large",
+  "groundingType": "maps",
+  "isReasoningEnabled": true,
+  "message": "J'aimerais la liste de toutes les pharmacies à Cholet."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:01.045Z] 📍 Google Maps tool added with toolConfig
+{
+  "retrievalConfig": {
+    "latLng": {
+      "latitude": 50.6686,
+      "longitude": 4.6111
+    },
+    "languageCode": "fr-BE"
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:01.046Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "googleMaps": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": true,
+  "toolConfig": {
+    "retrievalConfig": {
+      "latLng": {
+        "latitude": 50.6686,
+        "longitude": 4.6111
+      },
+      "languageCode": "fr-BE"
+    }
+  }
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:01.046Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile avec accès à Google Maps. Aide les utilisateurs à trouver des lieux, des itinéraires et des informations géographiques.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:01.047Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:01.048Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "J'aimerais la liste de toutes les pharmacies à Cholet."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:03.465Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:03.468Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 272,
+      "textPreview": "**Identifying the Query**\n\nI've successfully identified the user's request.  The core task is to com",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:04.309Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 390,
+      "textPreview": "**Defining the Search Parameters**\n\nI'm now solidifying the details of the search. It's becoming cle",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:06.208Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Voici",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 5,
+      "textPreview": "Voici",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:06.399Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " une liste de pharmacies à Cholet :\n\n*   **La Grande Pharmacie -",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 64,
+      "textPreview": " une liste de pharmacies à Cholet :\n\n*   **La Grande Pharmacie -",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:06.592Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": " PHARMABEST** : Située au 119 bis Rue Nationale, cette pharmacie a une note de ",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 79,
+      "textPreview": " PHARMABEST** : Située au 119 bis Rue Nationale, cette pharmacie a une note de ",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-05T21:35:10.805Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 25,
+  "totalTextLength": 1684,
+  "hadToolCalls": false,
+  "textPreview": "Voici une liste de pharmacies à Cholet :\n\n*   **La Grande Pharmacie - PHARMABEST** : Située au 119 bis Rue Nationale, cette pharmacie a une note de 4,4 étoiles.\n*   **Pharmacie des Câlins - Elsie Sant"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

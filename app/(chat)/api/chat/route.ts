@@ -20,11 +20,11 @@ import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
 import type { VisibilityType } from '@/components/visibility-selector';
-import { genaiClient, vertexAIClient, getModelName, type ChatModelId } from '@/lib/ai/providers';
+import { genaiClient, getModelName, type ChatModelId } from '@/lib/ai/providers';
 import { logToFile, } from '@/lib/logger';
 import { getSystemPrompt } from '@/lib/ai/system-prompts';
 
-export const maxDuration = 120; // Increased to 120s for RAG queries with long prompts
+export const maxDuration = 120;
 
 export async function POST(request: Request) {
   let requestBody: PostRequestBody;
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       message: ChatMessage;
       selectedChatModel: ChatModel['id'];
       selectedVisibilityType: VisibilityType;
-      groundingType?: 'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce' | 'rag-droit-francais';
+      groundingType?: 'none' | 'search' | 'maps';
       isReasoningEnabled?: boolean;
     } = requestBody;
 
@@ -61,9 +61,8 @@ export async function POST(request: Request) {
       message: message.parts.map(p => p.type === 'text' ? p.text : `[${p.type}]`).join(' '),
     });
 
-    // Determine which client to use based on grounding type
-    const isRAG = groundingType === 'rag-civil' || groundingType === 'rag-commerce' || groundingType === 'rag-droit-francais';
-    const activeClient = isRAG ? vertexAIClient : genaiClient;
+    // Use the standard genaiClient
+    const activeClient = genaiClient;
 
     if (!activeClient) {
       return new Response('GenAI client not initialized', { status: 500 });
@@ -235,37 +234,6 @@ export async function POST(request: Request) {
       };
 
       await logToFile('📍 Google Maps tool added with toolConfig', toolConfig);
-    } else if (groundingType === 'rag-civil' || groundingType === 'rag-commerce' || groundingType === 'rag-droit-francais') {
-      // RAG configuration with Vertex AI
-      let ragCorpus: string;
-      let ragName: string;
-
-      if (groundingType === 'rag-civil') {
-        ragCorpus = 'projects/total-apparatus-451215-g1/locations/europe-west3/ragCorpora/3379951520341557248';
-        ragName = 'Code Civil';
-      } else if (groundingType === 'rag-commerce') {
-        ragCorpus = 'projects/total-apparatus-451215-g1/locations/europe-west3/ragCorpora/2842897264777625600';
-        ragName = 'Code Commerce';
-      } else {
-        ragCorpus = 'projects/968778883206/locations/europe-west1/ragCorpora/2305843009213693952';
-        ragName = 'Codes Droit Francais';
-      }
-
-      tools.push({
-        retrieval: {
-          vertex_rag_store: {
-            rag_resources: [{
-              rag_corpus: ragCorpus,
-            }],
-            similarity_top_k: 20,
-          },
-        },
-      });
-
-      await logToFile(`📚 RAG tool added (${ragName})`, {
-        ragCorpus,
-        similarityTopK: 20,
-      });
     }
 
     // Note: Weather tool removed - it conflicts with Google GenAI SDK tool format
@@ -316,23 +284,8 @@ export async function POST(request: Request) {
     });
 
 
-    // Force gemini-2.5-pro when RAG is active for better analysis quality
-    let effectiveModel = selectedChatModel;
-    if (groundingType === 'rag-civil' || groundingType === 'rag-commerce' || groundingType === 'rag-droit-francais') {
-      effectiveModel = 'chat-model-medium'; // gemini-2.5-medium (required for thinking)
-
-      // Enable thinking by default for RAG queries
-      config.thinkingConfig = {
-        thinkingBudget: 8192,
-        includeThoughts: true,
-      };
-
-      await logToFile('🔄 Forcing gemini-2.5-pro model for RAG with thinking enabled', {
-        originalModel: selectedChatModel,
-        effectiveModel,
-        thinkingEnabled: true,
-      });
-    }
+    // Use the selected model directly
+    const effectiveModel = selectedChatModel;
 
 
     // Create streaming response

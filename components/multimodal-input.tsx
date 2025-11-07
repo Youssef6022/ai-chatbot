@@ -164,16 +164,15 @@ function PureMultimodalInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
-  const [groundingType, setGroundingType] = useLocalStorage<'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce' | 'rag-droit-francais'>(
+  const [groundingType, setGroundingType] = useLocalStorage<'none' | 'search' | 'maps'>(
     'grounding-type',
     'none',
   );
   const [isHydrated, setIsHydrated] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Enable reasoning automatically for medium and large models, but disable when RAG is active
-  const isReasoningEnabled = (selectedModelId.includes('medium') || selectedModelId.includes('large'))
-    && !groundingType.startsWith('rag-');
+  // Enable reasoning automatically for medium and large models
+  const isReasoningEnabled = (selectedModelId.includes('medium') || selectedModelId.includes('large'));
 
   useEffect(() => {
     setIsHydrated(true);
@@ -516,12 +515,6 @@ function PureMultimodalInput({
               status={status}
               isHydrated={isHydrated}
             />
-            <RAGButton
-              isEnabled={groundingType === 'rag-droit-francais'}
-              onToggle={(enabled) => setGroundingType(enabled ? 'rag-droit-francais' : 'none')}
-              status={status}
-              isHydrated={isHydrated}
-            />
           </PromptInputTools>
 
           <div className="flex items-center gap-1">
@@ -815,64 +808,3 @@ function PureGoogleMapsButton({
 }
 
 const GoogleMapsButton = memo(PureGoogleMapsButton);
-
-function PureRAGButton({
-  isEnabled,
-  onToggle,
-  status,
-  isHydrated,
-}: {
-  isEnabled: boolean;
-  onToggle: (enabled: boolean) => void;
-  status: UseChatHelpers<ChatMessage>['status'];
-  isHydrated: boolean;
-}) {
-  const title = isHydrated
-    ? isEnabled ? 'Désactiver RAG: Codes Droit FR' : 'Activer RAG: Codes Droit FR'
-    : 'RAG: Codes Droit FR';
-
-  return (
-    <TooltipProvider delayDuration={200}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            data-testid="rag-button"
-            className="aspect-square h-8 w-8 rounded-lg p-1.5 transition-all hover:bg-accent"
-            onClick={(event) => {
-              event.preventDefault();
-              console.log('📚 RAG clicked! Current:', isEnabled, '→ New:', !isEnabled);
-              onToggle(!isEnabled);
-            }}
-            disabled={status !== 'ready'}
-            variant="ghost"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-full w-full"
-              style={{
-                color: isEnabled && isHydrated ? '#8b5cf6' : 'currentColor',
-                opacity: isEnabled && isHydrated ? 1 : 0.5,
-                transition: 'color 0.2s ease, opacity 0.2s ease'
-              }}
-            >
-              {/* Book icon */}
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="bg-popover text-popover-foreground">
-          <p className="text-xs">{title}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-}
-
-const RAGButton = memo(PureRAGButton);

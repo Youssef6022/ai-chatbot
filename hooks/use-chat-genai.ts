@@ -12,7 +12,7 @@ export interface UseChatGenAIOptions {
   initialMessages: ChatMessage[];
   selectedModelId: string;
   selectedVisibilityType: 'public' | 'private';
-  groundingType?: 'none' | 'search' | 'maps' | 'rag-civil' | 'rag-commerce';
+  groundingType?: 'none' | 'search' | 'maps';
   isReasoningEnabled?: boolean;
   onFinish?: () => void;
   onError?: (error: Error) => void;
