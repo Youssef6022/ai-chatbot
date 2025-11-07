@@ -164,7 +164,7 @@ function PureMultimodalInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
-  const [groundingType, setGroundingType] = useLocalStorage<'none' | 'search' | 'maps'>(
+  const [groundingType, setGroundingType] = useLocalStorage<'none' | 'search' | 'maps' | 'legal'>(
     'grounding-type',
     'none',
   );
@@ -515,6 +515,12 @@ function PureMultimodalInput({
               status={status}
               isHydrated={isHydrated}
             />
+            <LegalButton
+              isEnabled={groundingType === 'legal'}
+              onToggle={(enabled) => setGroundingType(enabled ? 'legal' : 'none')}
+              status={status}
+              isHydrated={isHydrated}
+            />
           </PromptInputTools>
 
           <div className="flex items-center gap-1">
@@ -808,3 +814,67 @@ function PureGoogleMapsButton({
 }
 
 const GoogleMapsButton = memo(PureGoogleMapsButton);
+
+function PureLegalButton({
+  isEnabled,
+  onToggle,
+  status,
+  isHydrated,
+}: {
+  isEnabled: boolean;
+  onToggle: (enabled: boolean) => void;
+  status: UseChatHelpers<ChatMessage>['status'];
+  isHydrated: boolean;
+}) {
+  const title = isHydrated
+    ? isEnabled ? 'Désactiver le mode Expert Juridique' : 'Activer le mode Expert Juridique'
+    : 'Mode Expert Juridique';
+
+  return (
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            data-testid="legal-button"
+            className="aspect-square h-8 w-8 rounded-lg p-1.5 transition-all hover:bg-accent"
+            onClick={(event) => {
+              event.preventDefault();
+              console.log('⚖️ Legal mode clicked! Current:', isEnabled, '→ New:', !isEnabled);
+              onToggle(!isEnabled);
+            }}
+            disabled={status !== 'ready'}
+            variant="ghost"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-full w-full"
+              style={{
+                color: isEnabled && isHydrated ? '#dc2626' : 'currentColor',
+                opacity: isEnabled && isHydrated ? 1 : 0.5,
+                transition: 'color 0.2s ease, opacity 0.2s ease'
+              }}
+            >
+              {/* Scale of Justice icon */}
+              <path d="M12 3v18"/>
+              <path d="M5 9h14"/>
+              <path d="M5 9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3v0a3 3 0 0 0-3-3z"/>
+              <path d="M19 9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3v0a3 3 0 0 0-3-3z"/>
+              <path d="M8 21h8"/>
+            </svg>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-popover text-popover-foreground">
+          <p className="text-xs">{title}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+const LegalButton = memo(PureLegalButton);

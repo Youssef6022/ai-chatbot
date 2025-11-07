@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       message: ChatMessage;
       selectedChatModel: ChatModel['id'];
       selectedVisibilityType: VisibilityType;
-      groundingType?: 'none' | 'search' | 'maps';
+      groundingType?: 'none' | 'search' | 'maps' | 'legal';
       isReasoningEnabled?: boolean;
     } = requestBody;
 
@@ -234,6 +234,10 @@ export async function POST(request: Request) {
       };
 
       await logToFile('📍 Google Maps tool added with toolConfig', toolConfig);
+    } else if (groundingType === 'legal') {
+      // Legal mode automatically includes Google Search for up-to-date legal information
+      tools.push({ googleSearch: {} });
+      await logToFile('⚖️ Legal mode activated - Google Search automatically enabled');
     }
 
     // Note: Weather tool removed - it conflicts with Google GenAI SDK tool format
