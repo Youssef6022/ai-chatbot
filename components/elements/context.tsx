@@ -106,7 +106,7 @@ function InfoRow({
 export const Context = ({ className, usage, userQuota, selectedModelId, ...props }: ContextProps) => {
   // Use quota data when available, fallback to usage tokens
   const quotaText = userQuota 
-    ? `Small ${userQuota.smallUsed}/${userQuota.smallLimit}, Medium ${userQuota.mediumUsed}/${userQuota.mediumLimit}, Large PRO ${userQuota.largeUsed}/${userQuota.largeLimit}`
+    ? `Small ${userQuota.smallUsed}/${userQuota.smallLimit}, Medium ${userQuota.mediumUsed}/${userQuota.mediumLimit}, Large ${userQuota.largeUsed}/${userQuota.largeLimit}`
     : undefined;
 
   // Calculate percentage based on selected model's quota
@@ -175,7 +175,7 @@ export const Context = ({ className, usage, userQuota, selectedModelId, ...props
                   <span className="font-mono">{userQuota?.mediumUsed || 0}/{userQuota?.mediumLimit || 2000}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Large PRO</span>
+                  <span className="text-muted-foreground">Large</span>
                   <span className="font-mono">{userQuota?.largeUsed || 0}/{userQuota?.largeLimit || 500}</span>
                 </div>
               </div>
