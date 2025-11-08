@@ -150,6 +150,8 @@ export function Chat({
           selectedVisibilityType={initialVisibilityType}
           isReadonly={isReadonly}
           session={session}
+          selectedModelId={currentModelId}
+          onModelChange={setCurrentModelId}
         />
 
         <Messages

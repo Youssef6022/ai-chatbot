@@ -83,8 +83,8 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="flex flex-col">
-        {/* Section fixe - Navigation principale */}
-        <div className='flex-shrink-0 border-sidebar-border border-b'>
+        {/* Section fixe - Navigation principale (hidden on mobile) */}
+        <div className='hidden flex-shrink-0 border-sidebar-border border-b md:block'>
           <div className="flex flex-col gap-2 p-2">
             <SidebarMenu>
               <SidebarMenuItem>
@@ -165,11 +165,16 @@ export function AppSidebar() {
             </SidebarMenu>
           </div>
         </div>
-        
-        {/* Section défilante - Historique */}
+
+        {/* Section défilante - Historique (always visible on mobile, conditional on desktop) */}
+        <div className='flex-1 overflow-y-auto md:hidden [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-500 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-700/80 [&::-webkit-scrollbar]:w-2.5'>
+          <SidebarHistory user={user || undefined} isCollapsed={false} />
+        </div>
+
+        {/* Desktop history (hidden on mobile) */}
         {(!isClient || state !== 'collapsed') && (
-          <div className='flex-1 overflow-y-auto [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-500 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-700/80 [&::-webkit-scrollbar]:w-2.5'>
-            <SidebarHistory user={user} isCollapsed={isClient && state === 'collapsed'} />
+          <div className='hidden flex-1 overflow-y-auto md:block [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-500 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-700/80 [&::-webkit-scrollbar]:w-2.5'>
+            <SidebarHistory user={user || undefined} isCollapsed={isClient && state === 'collapsed'} />
           </div>
         )}
       </SidebarContent>
