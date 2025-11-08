@@ -524,7 +524,11 @@ function PureMultimodalInput({
           </PromptInputTools>
 
           <div className="flex items-center gap-1">
-            <ModelSelectorCompact selectedModelId={selectedModelId} onModelChange={onModelChange} />
+            <ModelSelectorCompact
+              selectedModelId={selectedModelId}
+              onModelChange={onModelChange}
+              groundingType={groundingType}
+            />
 
             {status === 'submitted' ? (
               <StopButton stop={stop} setMessages={setMessages} />
@@ -614,24 +618,46 @@ const AttachmentsButton = memo(PureAttachmentsButton);
 function PureModelSelectorCompact({
   selectedModelId,
   onModelChange,
+  groundingType = 'none',
 }: {
   selectedModelId: string;
   onModelChange?: (modelId: string) => void;
+  groundingType?: 'none' | 'search' | 'maps' | 'legal';
 }) {
   const [optimisticModelId, setOptimisticModelId] = useState(selectedModelId);
 
+  // Force large model when legal mode is active
   useEffect(() => {
-    setOptimisticModelId(selectedModelId);
-  }, [selectedModelId]);
+    if (groundingType === 'legal' && !selectedModelId.includes('large')) {
+      const largeModel = chatModels.find((m) => m.id === 'chat-model-large');
+      if (largeModel) {
+        setOptimisticModelId(largeModel.id);
+        onModelChange?.(largeModel.id);
+        startTransition(() => {
+          saveChatModelAsCookie(largeModel.id);
+        });
+      }
+    } else {
+      setOptimisticModelId(selectedModelId);
+    }
+  }, [selectedModelId, groundingType, onModelChange]);
 
   const selectedModel = chatModels.find(
     (model) => model.id === optimisticModelId,
   );
 
+  // Filter models based on grounding type
+  const availableModels = groundingType === 'legal'
+    ? chatModels.filter((m) => m.id === 'chat-model-large')
+    : chatModels;
+
+  const isDisabled = groundingType === 'legal';
+
   return (
     <PromptInputModelSelect
       value={selectedModel?.name}
       onValueChange={(modelName) => {
+        if (isDisabled) return; // Prevent model change in legal mode
         const model = chatModels.find((m) => m.name === modelName);
         if (model) {
           setOptimisticModelId(model.id);
@@ -641,20 +667,23 @@ function PureModelSelectorCompact({
           });
         }
       }}
+      disabled={isDisabled}
     >
       <SelectPrimitive.Trigger
         type="button"
-        className='flex h-8 items-center gap-2 rounded-lg border-0 bg-background px-2 text-foreground shadow-none transition-colors hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0'
+        disabled={isDisabled}
+        className='flex h-8 items-center gap-2 rounded-lg border-0 bg-background px-2 text-foreground shadow-none transition-colors hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
       >
         <CpuIcon size={16} />
         <span className='hidden font-medium text-xs sm:block'>
           {selectedModel?.name}
+          {groundingType === 'legal' && ' (Required)'}
         </span>
         <ChevronDownIcon size={16} />
       </SelectPrimitive.Trigger>
       <PromptInputModelSelectContent className="min-w-[260px] p-0">
         <div className="flex flex-col gap-px">
-          {chatModels.map((model) => (
+          {availableModels.map((model) => (
             <SelectItem
               key={model.id}
               value={model.name}
@@ -847,25 +876,24 @@ function PureLegalButton({
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              viewBox="0 0 512 512"
               className="h-full w-full"
               style={{
-                color: isEnabled && isHydrated ? '#dc2626' : 'currentColor',
+                fill: isEnabled && isHydrated ? '#a855f7' : 'currentColor',
                 opacity: isEnabled && isHydrated ? 1 : 0.5,
-                transition: 'color 0.2s ease, opacity 0.2s ease'
+                transition: 'fill 0.2s ease, opacity 0.2s ease'
               }}
             >
-              {/* Scale of Justice icon */}
-              <path d="M12 3v18"/>
-              <path d="M5 9h14"/>
-              <path d="M5 9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3v0a3 3 0 0 0-3-3z"/>
-              <path d="M19 9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3v0a3 3 0 0 0-3-3z"/>
-              <path d="M8 21h8"/>
+              {/* Courthouse icon */}
+              <path d="m0 467h512v45h-512z"/>
+              <path d="m46 392h420v45h-420z"/>
+              <path d="m0 95.6v25.4h512v-25.4l-256-95.6z"/>
+              <path d="m46 151h420v45h-420z"/>
+              <path d="m46 226h60v136h-60z"/>
+              <path d="m136 226h60v136h-60z"/>
+              <path d="m226 226h60v136h-60z"/>
+              <path d="m316 226h60v136h-60z"/>
+              <path d="m406 226h60v136h-60z"/>
             </svg>
           </Button>
         </TooltipTrigger>
