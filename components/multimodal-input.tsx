@@ -85,6 +85,12 @@ function PureMultimodalInput({
   const { width } = useWindowSize();
   const { quota, updateQuota } = useQuota();
 
+  // Détecter les URLs dans l'input
+  const detectedUrls = useMemo(() => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return input.match(urlRegex);
+  }, [input]);
+
   useEffect(() => {
     if (textareaRef.current) {
       adjustHeight();
@@ -418,6 +424,36 @@ function PureMultimodalInput({
 
   return (
     <div className='relative flex w-full flex-col gap-4'>
+      {/* Indicateur d'URLs détectées */}
+      {detectedUrls && detectedUrls.length > 0 && (
+        <TooltipProvider delayDuration={200}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className='flex w-fit cursor-help items-center gap-2 rounded-full border border-blue-500/30 bg-blue-50/50 px-3 py-1.5 text-sm transition-all hover:border-blue-500/50 hover:bg-blue-100/50 dark:bg-blue-950/20 dark:hover:bg-blue-900/30'>
+                <div className='flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white'>
+                  i
+                </div>
+                <span className='text-xs font-medium text-blue-700 dark:text-blue-300'>
+                  {detectedUrls.length > 1
+                    ? `${detectedUrls.length} liens seront consultés`
+                    : 'Un lien sera consulté'}
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-md bg-popover text-popover-foreground">
+              <div className='space-y-1'>
+                <p className='text-xs font-semibold'>Liens à consulter :</p>
+                {detectedUrls.map((url, index) => (
+                  <p key={index} className='truncate text-xs text-muted-foreground'>
+                    • {url}
+                  </p>
+                ))}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+
       <input
         type="file"
         className="-top-4 -left-4 pointer-events-none fixed size-0.5 opacity-0"
