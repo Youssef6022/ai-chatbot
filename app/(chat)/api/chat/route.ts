@@ -215,6 +215,10 @@ export async function POST(request: Request) {
     const tools: any[] = [];
     let toolConfig: any = undefined;
 
+    // Always add urlContext tool to allow the model to access URLs
+    tools.push({ urlContext: {} });
+    await logToFile('🔗 URL Context tool added');
+
     if (groundingType === 'search') {
       tools.push({ googleSearch: {} });
       await logToFile('🔍 Google Search tool added');
