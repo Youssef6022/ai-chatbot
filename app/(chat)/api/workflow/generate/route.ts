@@ -97,6 +97,9 @@ export async function POST(request: NextRequest) {
     const tools: any[] = [];
     let toolConfig: any = undefined;
 
+    // Always add urlContext tool to allow the model to access URLs
+    tools.push({ urlContext: {} });
+
     // Add Google Search tool if search grounding is enabled
     if (isSearchGroundingEnabled) {
       tools.push({ googleSearch: {} });
