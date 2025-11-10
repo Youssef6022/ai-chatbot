@@ -146,8 +146,8 @@ function PureMultimodalInput({
       return;
     }
 
-    // Si le texte collé est long (> 200 caractères), créer une pièce jointe
-    if (pastedText && pastedText.length > 200) {
+    // Si le texte collé est long (> 3000 caractères), créer une pièce jointe
+    if (pastedText && pastedText.length > 3000) {
       event.preventDefault(); // Empêcher le collage normal
 
       // Extraire un titre du texte (première ligne ou premiers mots)
