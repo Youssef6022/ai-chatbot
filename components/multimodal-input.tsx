@@ -416,11 +416,11 @@ function PureMultimodalInput({
 
   // Déterminer la couleur du contour selon le grounding type actif
   const borderColor = isHydrated && groundingType === 'search'
-    ? 'border-blue-500/50 focus-within:border-blue-500'
+    ? 'border-blue-500'
     : isHydrated && groundingType === 'maps'
-    ? 'border-green-500/50 focus-within:border-green-500'
+    ? 'border-green-500'
     : isHydrated && groundingType === 'legal'
-    ? 'border-purple-500/50 focus-within:border-purple-500'
+    ? 'border-purple-500'
     : 'border-border focus-within:border-border';
 
   // Drag and drop styles
