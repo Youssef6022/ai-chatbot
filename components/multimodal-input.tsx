@@ -419,6 +419,8 @@ function PureMultimodalInput({
     ? 'border-blue-500/50 focus-within:border-blue-500'
     : isHydrated && groundingType === 'maps'
     ? 'border-green-500/50 focus-within:border-green-500'
+    : isHydrated && groundingType === 'legal'
+    ? 'border-purple-500/50 focus-within:border-purple-500'
     : 'border-border focus-within:border-border';
 
   // Drag and drop styles
