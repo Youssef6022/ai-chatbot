@@ -77,7 +77,7 @@ export const Response = memo(
     return (
       <Streamdown
         className={cn(
-          'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_code]:whitespace-pre-wrap [&_code]:break-words [&_pre]:max-w-full [&_pre]:overflow-x-auto',
+          'size-full text-left [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_code]:whitespace-pre-wrap [&_code]:break-words [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_p]:text-left [&_div]:text-left [&_h1]:text-left [&_h2]:text-left [&_h3]:text-left [&_ul]:text-left [&_ol]:text-left',
           className,
         )}
         {...props}

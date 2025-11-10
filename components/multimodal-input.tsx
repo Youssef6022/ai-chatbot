@@ -150,19 +150,24 @@ function PureMultimodalInput({
     if (pastedText && pastedText.length > 200) {
       event.preventDefault(); // Empêcher le collage normal
 
+      // Extraire un titre du texte (première ligne ou premiers mots)
+      const firstLine = pastedText.split('\n')[0].trim();
+      const title = firstLine.length > 40 ? firstLine.substring(0, 40) + '...' : firstLine;
+      const fileName = title || 'Texte collé';
+
       // Créer une "pièce jointe" pour le texte collé
       const textBlob = new Blob([pastedText], { type: 'text/plain' });
       const textUrl = URL.createObjectURL(textBlob);
 
       const pastedAttachment: Attachment & { textContent?: string } = {
         url: textUrl,
-        name: `Pasted (${pastedText.length.toLocaleString()} chars)`,
+        name: `${fileName} (${pastedText.length.toLocaleString()} caractères)`,
         contentType: 'text/plain',
         textContent: pastedText, // Stocker le contenu directement
       };
 
       setAttachments((current) => [...current, pastedAttachment as Attachment]);
-      toast.success(`Texte collé ajouté (${pastedText.length.toLocaleString()} caractères)`);
+      toast.success(`Texte collé ajouté comme fichier (${pastedText.length.toLocaleString()} caractères)`);
     }
     // Si le texte est court, laisser le comportement par défaut
   }, [setAttachments]);
@@ -215,15 +220,17 @@ function PureMultimodalInput({
 
     // Construire les parts du message
     const messageParts = [];
-    let combinedText = '';
 
-    // Ajouter les fichiers et textes collés
+    // Ajouter tous les fichiers
     for (const attachment of attachments) {
-      if ((attachment as any).textContent) {
-        // Texte collé - ajouter au texte combiné
-        combinedText += `--- Pasted Content ---\n${(attachment as any).textContent}\n--- End of Pasted Content ---\n\n`;
+      // Si c'est un texte collé avec textContent, l'envoyer comme texte
+      if ((attachment as any).textContent && attachment.contentType === 'text/plain') {
+        messageParts.push({
+          type: 'text' as const,
+          text: `--- Fichier: ${attachment.name} ---\n${(attachment as any).textContent}\n--- Fin du fichier ---`,
+        });
       } else {
-        // Fichier normal (image, etc.)
+        // Fichier normal (image, PDF, etc.) - envoyer l'URL
         messageParts.push({
           type: 'file' as const,
           url: attachment.url,
@@ -233,14 +240,11 @@ function PureMultimodalInput({
       }
     }
 
-    // Ajouter le texte de saisie au texte combiné
-    combinedText += input;
-
-    // Ajouter le texte combiné comme une seule partie
-    if (combinedText.trim()) {
+    // Ajouter le texte de saisie
+    if (input.trim()) {
       messageParts.push({
         type: 'text',
-        text: combinedText,
+        text: input,
       });
     }
 
