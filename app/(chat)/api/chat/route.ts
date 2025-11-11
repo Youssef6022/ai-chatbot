@@ -32,7 +32,8 @@ export async function POST(request: Request) {
   try {
     const json = await request.json();
     requestBody = postRequestBodySchema.parse(json);
-  } catch (_) {
+  } catch (error) {
+    console.error('❌ Request body validation error:', error);
     return new ChatSDKError('bad_request:api').toResponse();
   }
 
@@ -171,35 +172,59 @@ export async function POST(request: Request) {
         console.log('📝 Adding text part:', part.text.substring(0, 50));
         currentMessageParts.push({ text: part.text });
       } else if (part.type === 'file') {
-        // Fetch the file data from the URL
-        console.log('🖼️ Processing file:', part.url, 'mediaType:', part.mediaType);
-        try {
-          const response = await fetch(part.url);
-          console.log('✅ Fetch response status:', response.status);
+        // Vérifier si c'est une vidéo YouTube
+        const isYouTubeVideo = part.mediaType === 'video/*' && (
+          part.url.includes('youtube.com') || part.url.includes('youtu.be')
+        );
 
-          if (!response.ok) {
-            console.error('❌ Fetch failed with status:', response.status);
-            continue;
-          }
-
-          const arrayBuffer = await response.arrayBuffer();
-          console.log('📦 ArrayBuffer size:', arrayBuffer.byteLength);
-
-          const base64Data = Buffer.from(arrayBuffer).toString('base64');
-          console.log('🔐 Base64 data length:', base64Data.length);
-
-          const imagePart = {
-            inlineData: {
-              mimeType: part.mediaType || 'image/jpeg',
-              data: base64Data,
+        if (isYouTubeVideo) {
+          console.log('🎥 Processing YouTube video:', part.url);
+          const videoPart: any = {
+            fileData: {
+              fileUri: part.url,
+              mimeType: 'video/*',
             },
           };
 
-          currentMessageParts.push(imagePart);
-          console.log('✅ Image part added successfully');
-        } catch (error) {
-          console.error('❌ Error fetching file:', error);
-          // Continue without this file if fetch fails
+          // Ajouter les métadonnées vidéo si présentes
+          if ((part as any).videoMetadata) {
+            videoPart.videoMetadata = (part as any).videoMetadata;
+            console.log('📹 Video metadata:', videoPart.videoMetadata);
+          }
+
+          currentMessageParts.push(videoPart);
+          console.log('✅ YouTube video part added successfully');
+        } else {
+          // Fichier normal - Fetch the file data from the URL
+          console.log('🖼️ Processing file:', part.url, 'mediaType:', part.mediaType);
+          try {
+            const response = await fetch(part.url);
+            console.log('✅ Fetch response status:', response.status);
+
+            if (!response.ok) {
+              console.error('❌ Fetch failed with status:', response.status);
+              continue;
+            }
+
+            const arrayBuffer = await response.arrayBuffer();
+            console.log('📦 ArrayBuffer size:', arrayBuffer.byteLength);
+
+            const base64Data = Buffer.from(arrayBuffer).toString('base64');
+            console.log('🔐 Base64 data length:', base64Data.length);
+
+            const imagePart = {
+              inlineData: {
+                mimeType: part.mediaType || 'image/jpeg',
+                data: base64Data,
+              },
+            };
+
+            currentMessageParts.push(imagePart);
+            console.log('✅ Image part added successfully');
+          } catch (error) {
+            console.error('❌ Error fetching file:', error);
+            // Continue without this file if fetch fails
+          }
         }
       }
     }
@@ -313,7 +338,7 @@ export async function POST(request: Request) {
             config: config,
           });
 
-          const hasFiles = currentMessageParts.some((p: any) => p.inlineData);
+          const hasFiles = currentMessageParts.some((p: any) => p.inlineData || p.fileData);
           await logToFile('📤 SENDING MESSAGE', {
             hasFiles,
             partsCount: currentMessageParts.length,
@@ -321,6 +346,23 @@ export async function POST(request: Request) {
           });
 
           console.log('🚀 Sending to AI - hasFiles:', hasFiles, 'parts count:', currentMessageParts.length);
+
+          // Log the exact message being sent for debugging
+          await logToFile('📋 MESSAGE PARTS DETAILS', {
+            parts: currentMessageParts.map((part: any, index: number) => ({
+              index,
+              type: part.text ? 'text' : part.inlineData ? 'inlineData' : part.fileData ? 'fileData' : 'unknown',
+              hasText: !!part.text,
+              textPreview: part.text ? part.text.substring(0, 100) : undefined,
+              hasInlineData: !!part.inlineData,
+              inlineDataMimeType: part.inlineData?.mimeType,
+              hasFileData: !!part.fileData,
+              fileDataUri: part.fileData?.fileUri,
+              fileDataMimeType: part.fileData?.mimeType,
+              hasVideoMetadata: !!part.videoMetadata,
+              videoMetadata: part.videoMetadata,
+            })),
+          });
 
           // Send message and stream response
           // Use parts if there are files, otherwise use text
@@ -476,6 +518,12 @@ export async function POST(request: Request) {
           }
         } catch (error: any) {
           console.error('GenAI streaming error:', error);
+          await logToFile('❌ STREAMING ERROR', {
+            errorMessage: error.message,
+            errorName: error.name,
+            errorStack: error.stack?.split('\n').slice(0, 5),
+            errorDetails: error.details || error.response || error.data,
+          });
           try {
             const errorData = {
               type: 'error',

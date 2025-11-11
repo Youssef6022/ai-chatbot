@@ -9,8 +9,8 @@ const filePartSchema = z.object({
   type: z.enum(['file']),
   mediaType: z.enum([
     // Images
-    'image/jpeg', 
-    'image/png', 
+    'image/jpeg',
+    'image/png',
     'image/gif',
     'image/webp',
     'image/heic',
@@ -41,10 +41,17 @@ const filePartSchema = z.object({
     'video/mpg',
     'video/webm',
     'video/wmv',
-    'video/3gpp'
+    'video/3gpp',
+    'video/*' // Wildcard for YouTube videos and other video types
   ]),
   name: z.string().min(1).max(100),
   url: z.string().url(),
+  // Optional videoMetadata for YouTube videos
+  videoMetadata: z.object({
+    startOffset: z.string().optional(),
+    endOffset: z.string().optional(),
+    fps: z.number().optional(),
+  }).optional(),
 });
 
 const partSchema = z.union([textPartSchema, filePartSchema]);

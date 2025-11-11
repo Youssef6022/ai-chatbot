@@ -157,6 +157,12 @@ export const PreviewAttachment = ({
               <text x="7" y="17" fontSize="6" fontWeight="bold" fill="currentColor">PDF</text>
             </svg>
           </div>
+        ) : contentType === 'video/*' && (url.includes('youtube.com') || url.includes('youtu.be')) ? (
+          <div className="flex size-full items-center justify-center bg-red-50 dark:bg-red-950/20">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="#FF0000" className="drop-shadow-sm">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </div>
         ) : (
           <div className="flex size-full flex-col items-center justify-center bg-muted/50 text-muted-foreground">
             {fileInfo.icon}

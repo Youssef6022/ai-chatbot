@@ -47,6 +47,22 @@ import { startTransition } from 'react';
 import { Context } from './elements/context';
 import { FileSelectionModal } from './library/file-selection-modal';
 import { useQuota } from '@/lib/hooks/use-quota';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 
 function PureMultimodalInput({
   chatId,
@@ -148,10 +164,55 @@ function PureMultimodalInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
+  const [isYoutubeModalOpen, setIsYoutubeModalOpen] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [youtubeStartTime, setYoutubeStartTime] = useState('');
+  const [youtubeEndTime, setYoutubeEndTime] = useState('');
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
   };
+
+  const handleYoutubeAdd = useCallback(() => {
+    if (!youtubeUrl) {
+      toast.error('Veuillez entrer une URL YouTube');
+      return;
+    }
+
+    // Créer une pièce jointe YouTube
+    const videoMetadata: any = { fps: 1 };
+
+    // Only add startOffset and endOffset if they have values
+    if (youtubeStartTime && youtubeStartTime.trim()) {
+      videoMetadata.startOffset = youtubeStartTime.trim();
+    }
+    if (youtubeEndTime && youtubeEndTime.trim()) {
+      videoMetadata.endOffset = youtubeEndTime.trim();
+    }
+
+    // Extract video ID for better display name
+    const videoIdMatch = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    const videoId = videoIdMatch ? videoIdMatch[1] : 'video';
+    const displayName = videoIdMatch ? `YouTube (${videoId})` : 'YouTube Video';
+
+    const youtubeAttachment: Attachment & { videoMetadata?: any } = {
+      url: youtubeUrl.trim(),
+      name: displayName,
+      contentType: 'video/*',
+      videoMetadata,
+    };
+
+    console.log('✅ Created YouTube attachment:', youtubeAttachment);
+
+    setAttachments((current) => [...current, youtubeAttachment as Attachment]);
+    toast.success('Vidéo YouTube ajoutée');
+
+    // Reset form
+    setYoutubeUrl('');
+    setYoutubeStartTime('');
+    setYoutubeEndTime('');
+    setIsYoutubeModalOpen(false);
+  }, [youtubeUrl, youtubeStartTime, youtubeEndTime, setAttachments]);
 
   const handlePaste = useCallback(async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
     // Vérifier s'il y a des fichiers/images dans le clipboard
@@ -271,12 +332,31 @@ function PureMultimodalInput({
 
     // Ajouter tous les fichiers
     for (const attachment of attachments) {
+      console.log('🔍 Processing attachment:', {
+        url: attachment.url,
+        name: attachment.name,
+        contentType: attachment.contentType,
+        hasVideoMetadata: !!(attachment as any).videoMetadata,
+        hasTextContent: !!(attachment as any).textContent,
+      });
+
       // Si c'est un texte collé avec textContent, l'envoyer comme texte
       if ((attachment as any).textContent && attachment.contentType === 'text/plain') {
         messageParts.push({
           type: 'text' as const,
           text: `--- Fichier: ${attachment.name} ---\n${(attachment as any).textContent}\n--- Fin du fichier ---`,
         });
+      } else if (attachment.contentType === 'video/*' && (attachment as any).videoMetadata) {
+        // Vidéo YouTube avec métadonnées
+        const videoPart = {
+          type: 'file' as const,
+          url: attachment.url,
+          name: attachment.name,
+          mediaType: attachment.contentType,
+          videoMetadata: (attachment as any).videoMetadata,
+        };
+        console.log('🎥 Adding YouTube video part:', videoPart);
+        messageParts.push(videoPart);
       } else {
         // Fichier normal (image, PDF, etc.) - envoyer l'URL
         messageParts.push({
@@ -296,11 +376,15 @@ function PureMultimodalInput({
       });
     }
 
-    sendMessage({
-      role: 'user',
+    const messageToSend = {
+      role: 'user' as const,
       parts: messageParts,
       data: messageData,
-    });
+    };
+
+    console.log('📨 Sending message to API:', JSON.stringify(messageToSend, null, 2));
+
+    sendMessage(messageToSend);
 
     setAttachments([]);
     setLocalStorageInput('');
@@ -594,6 +678,7 @@ function PureMultimodalInput({
               status={status}
               selectedModelId={selectedModelId}
               onFileModalOpen={() => setIsFileModalOpen(true)}
+              onYoutubeAdd={() => setIsYoutubeModalOpen(true)}
             />
             <GoogleSearchButton
               isEnabled={groundingType === 'search'}
@@ -658,6 +743,55 @@ function PureMultimodalInput({
         onFilesSelected={handleLibraryFilesSelected}
         fileInputRef={fileInputRef}
       />
+
+      {/* YouTube Video Modal */}
+      <Dialog open={isYoutubeModalOpen} onOpenChange={setIsYoutubeModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ajouter une vidéo YouTube</DialogTitle>
+            <DialogDescription>
+              Entrez l'URL de la vidéo YouTube et optionnellement les timestamps de début et fin.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="youtube-url">URL YouTube</Label>
+              <Input
+                id="youtube-url"
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="start-time">Début (optionnel)</Label>
+                <Input
+                  id="start-time"
+                  placeholder="ex: 70s ou 1m10s"
+                  value={youtubeStartTime}
+                  onChange={(e) => setYoutubeStartTime(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="end-time">Fin (optionnel)</Label>
+                <Input
+                  id="end-time"
+                  placeholder="ex: 150s ou 2m30s"
+                  value={youtubeEndTime}
+                  onChange={(e) => setYoutubeEndTime(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsYoutubeModalOpen(false)}>
+              Annuler
+            </Button>
+            <Button onClick={handleYoutubeAdd}>Ajouter</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -681,27 +815,59 @@ function PureAttachmentsButton({
   status,
   selectedModelId,
   onFileModalOpen,
+  onYoutubeAdd,
 }: {
   fileInputRef: React.MutableRefObject<HTMLInputElement | null>;
   status: UseChatHelpers<ChatMessage>['status'];
   selectedModelId: string;
   onFileModalOpen: () => void;
+  onYoutubeAdd: () => void;
 }) {
-  const isReasoningModel = false; // Tous les modèles supportent maintenant les attachements
+  const [isOpen, setIsOpen] = useState(false);
+  const isReasoningModel = false;
 
   return (
-    <Button
-      data-testid="attachments-button"
-      className='aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent'
-      onClick={(event) => {
-        event.preventDefault();
-        onFileModalOpen();
-      }}
-      disabled={status !== 'ready' || isReasoningModel}
-      variant="ghost"
-    >
-      <PaperclipIcon size={14} style={{ width: 14, height: 14 }} />
-    </Button>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          data-testid="attachments-button"
+          className='aspect-square h-8 rounded-lg p-1 transition-colors hover:bg-accent'
+          disabled={status !== 'ready' || isReasoningModel}
+          variant="ghost"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-48">
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            onFileModalOpen();
+            setIsOpen(false);
+          }}
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <PaperclipIcon size={14} />
+          <span>Fichiers</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            onYoutubeAdd();
+            setIsOpen(false);
+          }}
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+          <span>Vidéo YouTube</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
