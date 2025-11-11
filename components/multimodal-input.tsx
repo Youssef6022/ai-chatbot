@@ -145,11 +145,46 @@ function PureMultimodalInput({
     setLocalStorageInput(input);
   }, [input, setLocalStorageInput]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
+  const [isFileModalOpen, setIsFileModalOpen] = useState(false);
+
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
   };
 
-  const handlePaste = useCallback((event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const handlePaste = useCallback(async (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    // Vérifier s'il y a des fichiers/images dans le clipboard
+    const items = event.clipboardData.items;
+    const imageItems: DataTransferItem[] = [];
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        imageItems.push(items[i]);
+      }
+    }
+
+    // Si des images sont détectées, les traiter
+    if (imageItems.length > 0) {
+      event.preventDefault();
+
+      for (const item of imageItems) {
+        const file = item.getAsFile();
+        if (file) {
+          setUploadQueue((prev) => [...prev, file.name || 'image.png']);
+          const uploadedAttachment = await uploadFile(file);
+          setUploadQueue((prev) => prev.filter((name) => name !== (file.name || 'image.png')));
+
+          if (uploadedAttachment) {
+            setAttachments((current) => [...current, uploadedAttachment]);
+          }
+        }
+      }
+      toast.success(`${imageItems.length} image(s) collée(s)`);
+      return;
+    }
+
+    // Sinon, traiter le texte
     const pastedText = event.clipboardData.getData('text');
 
     // Limite maximale: 100 000 caractères (~25 000 tokens) - correspond à la limite de l'API
@@ -185,11 +220,9 @@ function PureMultimodalInput({
       toast.success(`Texte collé ajouté comme fichier (${pastedText.length.toLocaleString()} caractères)`);
     }
     // Si le texte est court, laisser le comportement par défaut
-  }, [setAttachments]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setAttachments, setUploadQueue]);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
-  const [isFileModalOpen, setIsFileModalOpen] = useState(false);
   const [groundingType, setGroundingType] = useLocalStorage<'none' | 'search' | 'maps' | 'legal'>(
     'grounding-type',
     'none',
@@ -484,6 +517,41 @@ function PureMultimodalInput({
         tabIndex={-1}
       />
 
+      {/* Affichage des pièces jointes au-dessus de la zone de saisie */}
+      {(attachments.length > 0 || uploadQueue.length > 0) && (
+        <div
+          data-testid="attachments-preview"
+          className='flex flex-row items-end gap-2 overflow-x-auto pb-2'
+        >
+          {attachments.map((attachment) => (
+            <PreviewAttachment
+              key={attachment.url}
+              attachment={attachment}
+              onRemove={() => {
+                setAttachments((currentAttachments) =>
+                  currentAttachments.filter((a) => a.url !== attachment.url),
+                );
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = '';
+                }
+              }}
+            />
+          ))}
+
+          {uploadQueue.map((filename) => (
+            <PreviewAttachment
+              key={filename}
+              attachment={{
+                url: '',
+                name: filename,
+                contentType: '',
+              }}
+              isUploading={true}
+            />
+          ))}
+        </div>
+      )}
+
       <div
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
@@ -502,39 +570,6 @@ function PureMultimodalInput({
             }
           }}
         >
-        {(attachments.length > 0 || uploadQueue.length > 0) && (
-          <div
-            data-testid="attachments-preview"
-            className='flex flex-row items-end gap-2 overflow-x-scroll'
-          >
-            {attachments.map((attachment) => (
-              <PreviewAttachment
-                key={attachment.url}
-                attachment={attachment}
-                onRemove={() => {
-                  setAttachments((currentAttachments) =>
-                    currentAttachments.filter((a) => a.url !== attachment.url),
-                  );
-                  if (fileInputRef.current) {
-                    fileInputRef.current.value = '';
-                  }
-                }}
-              />
-            ))}
-
-            {uploadQueue.map((filename) => (
-              <PreviewAttachment
-                key={filename}
-                attachment={{
-                  url: '',
-                  name: filename,
-                  contentType: '',
-                }}
-                isUploading={true}
-              />
-            ))}
-          </div>
-        )}
         <div className='flex flex-row items-start gap-1 sm:gap-2'>
           <PromptInputTextarea
             data-testid="multimodal-input"
@@ -732,7 +767,7 @@ function PureModelSelectorCompact({
         className='flex h-8 items-center gap-2 rounded-lg border-0 bg-background px-2 text-foreground shadow-none transition-colors hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
       >
         <CpuIcon size={16} />
-        <span className='hidden font-medium text-xs sm:block'>
+        <span className='hidden font-medium text-xs sm:block' suppressHydrationWarning>
           {selectedModel?.name}
           {groundingType === 'legal' && ' (Required)'}
         </span>
