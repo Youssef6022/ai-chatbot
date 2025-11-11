@@ -494,22 +494,28 @@ const RAGCommerceIcon = ({ size = 14, enabled = false }: { size?: number; enable
   </svg>
 );
 
-// RAG Book Icon - French Law (Purple)
-const RAGDroitIcon = ({ size = 14, enabled = false }: { size?: number; enabled?: boolean }) => (
+// Legal Icon - Courthouse (Purple)
+const LegalIcon = ({ size = 14, enabled = false }: { size?: number; enabled?: boolean }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
+    viewBox="0 0 512 512"
     width={size}
     height={size}
     style={{
-      filter: enabled ? 'none' : 'grayscale(100%)',
+      fill: enabled ? '#a855f7' : 'currentColor',
       opacity: enabled ? 1 : 0.5,
-      transition: 'filter 0.2s ease, opacity 0.2s ease'
+      transition: 'fill 0.2s ease, opacity 0.2s ease'
     }}
   >
-    <path fill="#6A1B9A" d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
-    <path fill="#7B1FA2" d="M8 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8V2z"/>
-    <path fill="#FFF" d="M10 8h6v1h-6zm0 3h6v1h-6zm0 3h4v1h-4z" opacity="0.9"/>
+    <path d="m0 467h512v45h-512z"/>
+    <path d="m46 392h420v45h-420z"/>
+    <path d="m271 90h-30v302h30z"/>
+    <path d="m91 180h60v212h-60z"/>
+    <path d="m181 180h60v212h-60z"/>
+    <path d="m361 180h60v212h-60z"/>
+    <path d="m271 180h60v212h-60z"/>
+    <path d="m31 150h450v60h-450z"/>
+    <path d="m256 0-225 120h450z"/>
   </svg>
 );
 
@@ -538,9 +544,7 @@ const initialNodes = [
       userPrompt: '',
       isSearchGroundingEnabled: false,
       isMapsGroundingEnabled: false,
-      isRAGCivilEnabled: false,
-      isRAGCommerceEnabled: false,
-      isRAGDroitEnabled: false,
+      isLegalEnabled: false,
       onModelChange: () => {},
       onVariableNameChange: () => {},
       onSystemPromptChange: () => {},
@@ -1302,9 +1306,7 @@ export default function WorkflowsPage() {
           selectedFiles: node.data.selectedFiles || [],
           isSearchGroundingEnabled: node.data.isSearchGroundingEnabled || false,
           isMapsGroundingEnabled: node.data.isMapsGroundingEnabled || false,
-          isRAGCivilEnabled: node.data.isRAGCivilEnabled || false,
-          isRAGCommerceEnabled: node.data.isRAGCommerceEnabled || false,
-          isRAGDroitEnabled: node.data.isRAGDroitEnabled || false,
+          isLegalEnabled: node.data.isLegalEnabled || false,
           // Decision node specific fields
           instructions: node.data.instructions || '',
           choices: node.data.choices || [],
@@ -1933,9 +1935,7 @@ export default function WorkflowsPage() {
         userPrompt: '',
         isSearchGroundingEnabled: false,
         isMapsGroundingEnabled: false,
-        isRAGCivilEnabled: false,
-        isRAGCommerceEnabled: false,
-        isRAGDroitEnabled: false,
+        isLegalEnabled: false,
         onModelChange: () => {},
         onVariableNameChange: () => {},
         onSystemPromptChange: () => {},
@@ -2567,7 +2567,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           files: allFiles.length > 0 ? allFiles : undefined,
           isSearchGroundingEnabled: generateNode.data.isSearchGroundingEnabled || false,
           isMapsGroundingEnabled: generateNode.data.isMapsGroundingEnabled || false,
-          ragCorpus: generateNode.data.isRAGDroitEnabled ? 'rag-droit-francais' : 'none',
+          isLegalEnabled: generateNode.data.isLegalEnabled || false,
         }),
       });
       
@@ -3206,37 +3206,49 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
             <div className="space-y-4">
               {editingNode.type === 'generate' && !showResults && (
                 <>
-                  {/* System Prompt */}
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <Label className='font-medium text-muted-foreground text-xs'>System Prompt</Label>
-                      <button 
-                        onClick={() => {
-                          setExpandedField('systemPrompt');
-                          setExpandedContent(editingNode.data.systemPrompt || '');
+                  {/* System Prompt - Masqué en mode juridique */}
+                  {!editingNode.data.isLegalEnabled && (
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className='font-medium text-muted-foreground text-xs'>System Prompt</Label>
+                        <button
+                          onClick={() => {
+                            setExpandedField('systemPrompt');
+                            setExpandedContent(editingNode.data.systemPrompt || '');
+                          }}
+                          className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                          </svg>
+                        </button>
+                      </div>
+                      <HighlightedTextarea
+                        value={editingNode.data.systemPrompt || ''}
+                        onChange={(value) => {
+                          updateNodeData(editingNode.id, { systemPrompt: value });
+                          setEditingNode({
+                            ...editingNode,
+                            data: { ...editingNode.data, systemPrompt: value }
+                          });
                         }}
-                        className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                        </svg>
-                      </button>
+                        placeholder="You are a helpful assistant."
+                        className="min-h-[80px] resize-none text-sm"
+                        variables={getAllAvailableVariables(editingNode.id)}
+                        onVariableValidation={handleSystemPromptValidation}
+                      />
                     </div>
-                    <HighlightedTextarea
-                      value={editingNode.data.systemPrompt || ''}
-                      onChange={(value) => {
-                        updateNodeData(editingNode.id, { systemPrompt: value });
-                        setEditingNode({
-                          ...editingNode,
-                          data: { ...editingNode.data, systemPrompt: value }
-                        });
-                      }}
-                      placeholder="You are a helpful assistant."
-                      className="min-h-[80px] resize-none text-sm"
-                      variables={getAllAvailableVariables(editingNode.id)}
-                      onVariableValidation={handleSystemPromptValidation}
-                    />
-                  </div>
+                  )}
+
+                  {/* Message informatif en mode juridique */}
+                  {editingNode.data.isLegalEnabled && (
+                    <div className="flex items-center gap-2 rounded-lg border border-purple-500/30 bg-purple-50/50 px-3 py-2 text-xs dark:bg-purple-950/20">
+                      <LegalIcon size={12} enabled={true} />
+                      <span className="text-purple-700 dark:text-purple-300">
+                        Mode juridique activé - Système prompt prédéfini appliqué automatiquement
+                      </span>
+                    </div>
+                  )}
 
                   {/* User Prompt */}
                   <div className="space-y-1">
@@ -3317,7 +3329,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           const newValue = !editingNode.data.isSearchGroundingEnabled;
                           // Si on active Google Search, on désactive Google Maps et RAG
                           const updates = newValue
-                            ? { isSearchGroundingEnabled: true, isMapsGroundingEnabled: false, isRAGDroitEnabled: false }
+                            ? { isSearchGroundingEnabled: true, isMapsGroundingEnabled: false, isLegalEnabled: false }
                             : { isSearchGroundingEnabled: false };
                           updateNodeData(editingNode.id, updates);
                           setEditingNode({
@@ -3348,7 +3360,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           const newValue = !editingNode.data.isMapsGroundingEnabled;
                           // Si on active Google Maps, on désactive Google Search et RAG
                           const updates = newValue
-                            ? { isMapsGroundingEnabled: true, isSearchGroundingEnabled: false, isRAGDroitEnabled: false }
+                            ? { isMapsGroundingEnabled: true, isSearchGroundingEnabled: false, isLegalEnabled: false }
                             : { isMapsGroundingEnabled: false };
                           updateNodeData(editingNode.id, updates);
                           setEditingNode({
@@ -3368,19 +3380,19 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                       </button>
                     </div>
 
-                    {/* RAG Codes Droit Français Toggle */}
+                    {/* Mode Juridique (Legal) Toggle */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <RAGDroitIcon size={14} enabled={editingNode.data.isRAGDroitEnabled} />
-                        <span className='font-medium text-muted-foreground text-xs'>Codes Droit FR</span>
+                        <LegalIcon size={14} enabled={editingNode.data.isLegalEnabled} />
+                        <span className='font-medium text-muted-foreground text-xs'>Mode Juridique</span>
                       </div>
                       <button
                         onClick={() => {
-                          const newValue = !editingNode.data.isRAGDroitEnabled;
-                          // Si on active RAG Droit, désactiver Google Search et Google Maps
+                          const newValue = !editingNode.data.isLegalEnabled;
+                          // Si on active Legal, désactiver Google Search et Google Maps (Legal active automatiquement Google Search)
                           const updates = newValue
-                            ? { isRAGDroitEnabled: true, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
-                            : { isRAGDroitEnabled: false };
+                            ? { isLegalEnabled: true, isSearchGroundingEnabled: false, isMapsGroundingEnabled: false }
+                            : { isLegalEnabled: false };
                           updateNodeData(editingNode.id, updates);
                           setEditingNode({
                             ...editingNode,
@@ -3388,13 +3400,13 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           });
                         }}
                         className={`relative h-5 w-10 rounded-full border transition-colors ${
-                          editingNode.data.isRAGDroitEnabled
+                          editingNode.data.isLegalEnabled
                             ? 'border-purple-700 bg-purple-700'
                             : 'border-border bg-muted'
                         }`}
                       >
                         <div className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                          editingNode.data.isRAGDroitEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                          editingNode.data.isLegalEnabled ? 'translate-x-5' : 'translate-x-0.5'
                         }`} />
                       </button>
                     </div>
