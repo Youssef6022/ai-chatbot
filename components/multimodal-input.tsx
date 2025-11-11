@@ -85,11 +85,26 @@ function PureMultimodalInput({
   const { width } = useWindowSize();
   const { quota, updateQuota } = useQuota();
 
-  // Détecter les URLs dans l'input
+  // Détecter les URLs dans l'input ET dans les fichiers texte collés
   const detectedUrls = useMemo(() => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return input.match(urlRegex);
-  }, [input]);
+    const urlsFromInput = input.match(urlRegex) || [];
+
+    // Chercher les URLs dans les textes collés (attachments avec textContent)
+    const urlsFromAttachments: string[] = [];
+    for (const attachment of attachments) {
+      if ((attachment as any).textContent) {
+        const urlsInAttachment = (attachment as any).textContent.match(urlRegex);
+        if (urlsInAttachment) {
+          urlsFromAttachments.push(...urlsInAttachment);
+        }
+      }
+    }
+
+    // Combiner et dédupliquer les URLs
+    const allUrls = [...urlsFromInput, ...urlsFromAttachments];
+    return allUrls.length > 0 ? Array.from(new Set(allUrls)) : null;
+  }, [input, attachments]);
 
   useEffect(() => {
     if (textareaRef.current) {
