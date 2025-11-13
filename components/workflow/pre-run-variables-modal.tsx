@@ -44,6 +44,7 @@ export function PreRunVariablesModal({
   const [tempFiles, setTempFiles] = useState<Map<string, Array<{ url: string; name: string; contentType: string }>>>(new Map());
   const [expandedVariable, setExpandedVariable] = useState<string | null>(null);
   const [filePickerNodeId, setFilePickerNodeId] = useState<string | null>(null);
+  const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
 
   // Filter to only show variables that should be asked before run
   const variablesToAsk = variables.filter(v => v.askBeforeRun);
@@ -65,6 +66,57 @@ export function PreRunVariablesModal({
       setTempFiles(initialFiles);
     }
   }, [isOpen, variables, filesNodes]);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, nodeId: string) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    // Mark this node as uploading
+    setUploadingFiles(prev => new Set(prev).add(nodeId));
+
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/files/upload/', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        const data = await response.json();
+        return {
+          url: data.url,
+          name: file.name,
+          contentType: file.type,
+        };
+      });
+
+      const uploadedFiles = await Promise.all(uploadPromises);
+
+      // Add uploaded files to the node's file list
+      const currentFiles = tempFiles.get(nodeId) || [];
+      const newTempFiles = new Map(tempFiles);
+      newTempFiles.set(nodeId, [...currentFiles, ...uploadedFiles]);
+      setTempFiles(newTempFiles);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      alert('Erreur lors de l\'upload des fichiers');
+    } finally {
+      // Remove uploading state
+      setUploadingFiles(prev => {
+        const next = new Set(prev);
+        next.delete(nodeId);
+        return next;
+      });
+      // Reset file input
+      event.target.value = '';
+    }
+  };
 
   const handleConfirm = () => {
     // Update variables with new values
@@ -163,6 +215,12 @@ export function PreRunVariablesModal({
 
                   {/* File selection UI */}
                   <div className='space-y-2 rounded-lg border border-border bg-muted/30 p-3'>
+                    {uploadingFiles.has(node.id) && (
+                      <div className='flex items-center gap-2 rounded bg-blue-50 px-2 py-1.5 dark:bg-blue-900/20'>
+                        <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
+                        <span className='text-blue-600 text-xs dark:text-blue-400'>Upload en cours...</span>
+                      </div>
+                    )}
                     {tempFiles.get(node.id) && tempFiles.get(node.id)?.length > 0 ? (
                       <div className="space-y-1.5">
                         <div className='text-muted-foreground text-xs'>
@@ -193,16 +251,33 @@ export function PreRunVariablesModal({
                       </div>
                     )}
 
-                    {/* Add Files Button */}
-                    <button
-                      onClick={() => setFilePickerNodeId(node.id)}
-                      className='flex w-full items-center justify-center gap-2 rounded border border-border border-dashed bg-background px-3 py-1.5 text-muted-foreground text-xs transition-colors hover:bg-muted/40'
-                    >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 5v14M5 12h14"/>
-                      </svg>
-                      Sélectionner des fichiers
-                    </button>
+                    {/* Add Files Buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setFilePickerNodeId(node.id)}
+                        className='flex flex-1 items-center justify-center gap-2 rounded border border-border border-dashed bg-background px-3 py-1.5 text-muted-foreground text-xs transition-colors hover:bg-muted/40'
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                          <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                        Depuis bibliothèque
+                      </button>
+                      <label className='flex flex-1 cursor-pointer items-center justify-center gap-2 rounded border border-border border-dashed bg-background px-3 py-1.5 text-muted-foreground text-xs transition-colors hover:bg-muted/40'>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                          <polyline points="17 8 12 3 7 8"/>
+                          <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        Upload
+                        <input
+                          type="file"
+                          multiple
+                          className="hidden"
+                          onChange={(e) => handleFileUpload(e, node.id)}
+                        />
+                      </label>
+                    </div>
                   </div>
 
                   {node.description && (
