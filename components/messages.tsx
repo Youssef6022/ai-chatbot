@@ -64,23 +64,35 @@ function PureMessages({
         <ConversationContent className="flex flex-col gap-4 px-2 py-4 md:gap-6 md:px-4">
           {messages.length === 0 && <Greeting />}
 
-          {messages.map((message, index) => (
-            <PreviewMessage
-              key={message.id}
-              chatId={chatId}
-              message={message}
-              isLoading={
-                status === 'streaming' && messages.length - 1 === index
-              }
-              setMessages={setMessages}
-              regenerate={regenerate}
-              isReadonly={isReadonly}
-              requiresScrollPadding={
-                hasSentMessage && index === messages.length - 1
-              }
-              isArtifactVisible={isArtifactVisible}
-            />
-          ))}
+          {messages.map((message, index) => {
+            // Vérifier si le message user précédent contient une vidéo YouTube
+            const previousMessage = index > 0 ? messages[index - 1] : null;
+            const hasYouTubeVideo = previousMessage?.role === 'user' &&
+              previousMessage.parts?.some(
+                (part) => part.type === 'file' &&
+                  part.mediaType === 'video/*' &&
+                  (part.url?.includes('youtube.com') || part.url?.includes('youtu.be'))
+              );
+
+            return (
+              <PreviewMessage
+                key={message.id}
+                chatId={chatId}
+                message={message}
+                isLoading={
+                  status === 'streaming' && messages.length - 1 === index
+                }
+                setMessages={setMessages}
+                regenerate={regenerate}
+                isReadonly={isReadonly}
+                requiresScrollPadding={
+                  hasSentMessage && index === messages.length - 1
+                }
+                isArtifactVisible={isArtifactVisible}
+                hasYouTubeVideo={hasYouTubeVideo}
+              />
+            );
+          })}
 
           {status === 'submitted' &&
             messages.length > 0 &&

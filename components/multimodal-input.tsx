@@ -883,6 +883,11 @@ function PureModelSelectorCompact({
   groundingType?: 'none' | 'search' | 'maps' | 'legal';
 }) {
   const [optimisticModelId, setOptimisticModelId] = useState(selectedModelId);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Force large model when legal mode is active
   useEffect(() => {
@@ -904,12 +909,12 @@ function PureModelSelectorCompact({
     (model) => model.id === optimisticModelId,
   );
 
-  // Filter models based on grounding type
-  const availableModels = groundingType === 'legal'
+  // Filter models based on grounding type (only after hydration)
+  const availableModels = isHydrated && groundingType === 'legal'
     ? chatModels.filter((m) => m.id === 'chat-model-large')
     : chatModels;
 
-  const isDisabled = groundingType === 'legal';
+  const isDisabled = isHydrated && groundingType === 'legal';
 
   return (
     <PromptInputModelSelect

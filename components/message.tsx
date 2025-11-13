@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { DocumentToolResult } from './document';
 import { AnimatedSparklesIcon } from './icons';
 import { Response } from './elements/response';
@@ -24,6 +24,36 @@ import type { UseChatHelpers } from '@ai-sdk/react';
 import type { ChatMessage } from '@/lib/types';
 import { useDataStream } from './data-stream-provider';
 import { ChevronDownIcon } from './icons';
+
+// Composant pour afficher l'analyse de vidéo avec compteur de temps
+function VideoAnalysisIndicator() {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const seconds = (Date.now() - startTime) / 1000;
+      setElapsed(seconds);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-red-500">
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+        <span className="font-medium">Analyse de la vidéo</span>
+      </div>
+      <div className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 font-mono text-xs">
+        <div className="size-1.5 animate-pulse rounded-full bg-red-500" />
+        <span>{elapsed.toFixed(1)}s</span>
+      </div>
+    </div>
+  );
+}
 
 // Composant pour afficher un texte collé avec option de pliage/dépliage
 function CollapsibleText({ text }: { text: string }) {
@@ -93,6 +123,7 @@ const PurePreviewMessage = ({
   isReadonly,
   requiresScrollPadding,
   isArtifactVisible,
+  hasYouTubeVideo,
 }: {
   chatId: string;
   message: ChatMessage;
@@ -102,6 +133,7 @@ const PurePreviewMessage = ({
   isReadonly: boolean;
   requiresScrollPadding: boolean;
   isArtifactVisible: boolean;
+  hasYouTubeVideo?: boolean;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
 
@@ -110,6 +142,23 @@ const PurePreviewMessage = ({
   );
 
   useDataStream();
+
+  // Afficher l'indicateur d'analyse vidéo si on est en loading sans contenu et qu'il y a une vidéo YouTube
+  const showVideoAnalysis = message.role === 'assistant' &&
+    isLoading &&
+    hasYouTubeVideo &&
+    !message.parts?.some(p => (p.type === 'text' && p.text) || (p.type === 'reasoning' && p.text));
+
+  // Debug logs
+  if (message.role === 'assistant' && isLoading) {
+    console.log('🎬 Video Analysis Check:', {
+      isLoading,
+      hasYouTubeVideo,
+      hasParts: message.parts?.length,
+      hasTextOrReasoning: message.parts?.some(p => (p.type === 'text' && p.text) || (p.type === 'reasoning' && p.text)),
+      showVideoAnalysis,
+    });
+  }
 
   return (
     <motion.div
@@ -126,11 +175,14 @@ const PurePreviewMessage = ({
         })}
       >
         {message.role === 'assistant' && (
-          <div className="-mt-1 flex size-8 shrink-0 items-center justify-center">
-            <AnimatedSparklesIcon
-              size={16}
-              animated={isLoading && !message.parts?.some(p => (p.type === 'text' && p.text) || (p.type === 'reasoning' && p.text))}
-            />
+          <div className="-mt-1 flex shrink-0 items-center gap-3">
+            <div className="flex size-8 items-center justify-center">
+              <AnimatedSparklesIcon
+                size={16}
+                animated={isLoading && !message.parts?.some(p => (p.type === 'text' && p.text) || (p.type === 'reasoning' && p.text))}
+              />
+            </div>
+            {showVideoAnalysis && <VideoAnalysisIndicator />}
           </div>
         )}
 
@@ -360,6 +412,7 @@ export const PreviewMessage = memo(
     if (prevProps.message.id !== nextProps.message.id) return false;
     if (prevProps.requiresScrollPadding !== nextProps.requiresScrollPadding)
       return false;
+    if (prevProps.hasYouTubeVideo !== nextProps.hasYouTubeVideo) return false;
     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
 
     return false;
