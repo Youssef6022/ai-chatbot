@@ -721,9 +721,30 @@ export default function WorkflowsPage() {
     return ancestors;
   }, [edges]);
 
-  // Get all available variables (global + AI Generator results)
+  // Get predefined variables (system variables that cannot be edited)
+  const getPredefinedVariables = useCallback((): Variable[] => {
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    return [
+      {
+        id: 'predefined-date',
+        name: 'date',
+        value: formattedDate,
+        defaultValue: formattedDate,
+        askBeforeRun: false
+      }
+    ];
+  }, []);
+
+  // Get all available variables (predefined + global + AI Generator results)
   const getAllAvailableVariables = useCallback((currentNodeId?: string) => {
-    const allVariables: Variable[] = [...variables];
+    const allVariables: Variable[] = [...getPredefinedVariables(), ...variables];
     
     if (currentNodeId) {
       // Get all ancestor nodes (nodes that the current node depends on)
@@ -761,7 +782,7 @@ export default function WorkflowsPage() {
     }
     
     return allVariables;
-  }, [variables, nodes, edges, getNodeAncestors]);
+  }, [getPredefinedVariables, variables, nodes, edges, getNodeAncestors]);
   
   // Save state to history
   const saveToHistory = useCallback((newNodes: any[], newEdges: any[]) => {
@@ -2047,9 +2068,9 @@ export default function WorkflowsPage() {
     // Use provided variables or fall back to state variables
     const currentVariables = variablesToUse || variables;
 
-    // Update the ref so processPromptText uses the latest values
-    currentVariablesRef.current = currentVariables;
-    console.log('[executeWorkflow] Using variables:', currentVariables);
+    // Update the ref so processPromptText uses the latest values (including predefined variables)
+    currentVariablesRef.current = [...getPredefinedVariables(), ...currentVariables];
+    console.log('[executeWorkflow] Using variables:', currentVariablesRef.current);
 
     // Validate that all AI Generators and Decision Nodes have prompts/instructions
     const generateNodes = nodes.filter(node => node.type === 'generate');
@@ -4168,7 +4189,46 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                 <div className='w-80 border-border border-l p-6 pl-3'>
                   <div className='flex h-full flex-col'>
                     <h3 className='mb-4 font-semibold text-lg'>Variables disponibles</h3>
-                    
+
+                    {/* Predefined Variables */}
+                    <div className='mb-6'>
+                      <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Variables prédéfinies</h4>
+                      <div className='space-y-1'>
+                        {getPredefinedVariables().map((variable) => (
+                          <button
+                            key={variable.id}
+                            onClick={() => {
+                              const placeholder = `{{${variable.name}}}`;
+                              setExpandedContent(expandedContent + placeholder);
+                              if (expandedField === 'userPrompt') {
+                                const newValue = expandedContent + placeholder;
+                                updateNodeData(editingNode.id, { userPrompt: newValue });
+                                setEditingNode({
+                                  ...editingNode,
+                                  data: { ...editingNode.data, userPrompt: newValue }
+                                });
+                              } else if (expandedField === 'systemPrompt') {
+                                const newValue = expandedContent + placeholder;
+                                updateNodeData(editingNode.id, { systemPrompt: newValue });
+                                setEditingNode({
+                                  ...editingNode,
+                                  data: { ...editingNode.data, systemPrompt: newValue }
+                                });
+                              }
+                            }}
+                            className='w-full rounded border border-purple-300 border-dashed bg-purple-50 p-2 text-left transition-colors hover:bg-purple-100 dark:border-purple-600 dark:bg-purple-900/20 dark:hover:bg-purple-900/30'
+                          >
+                            <div className='font-mono text-purple-700 text-sm dark:text-purple-300'>
+                              {`{{${variable.name}}}`}
+                            </div>
+                            <div className='truncate text-purple-600 text-xs dark:text-purple-400'>
+                              {variable.value}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* Global Variables */}
                     <div className='mb-6'>
                       <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Variables globales</h4>
@@ -4358,6 +4418,26 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                   <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
               </button>
+            </div>
+
+            {/* Variables prédéfinies */}
+            <div className='mb-6'>
+              <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Variables prédéfinies</h4>
+              <div className='space-y-1'>
+                {getPredefinedVariables().map((variable) => (
+                  <button
+                    key={variable.id}
+                    className='w-full rounded border border-purple-300 border-dashed bg-purple-50 p-2 text-left transition-colors hover:bg-purple-100 dark:border-purple-600 dark:bg-purple-900/20 dark:hover:bg-purple-900/30'
+                  >
+                    <div className='font-mono text-purple-700 text-sm dark:text-purple-300'>
+                      {`{{${variable.name}}}`}
+                    </div>
+                    <div className='truncate text-purple-600 text-xs dark:text-purple-400'>
+                      {variable.value}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Variables globales */}
