@@ -34,12 +34,31 @@ export function NoteNode({ data, selected }: NodeProps<NoteNodeData>) {
   }, []);
 
   return (
-    <div 
-      className={`relative h-40 w-64 rounded-lg border-2 border-yellow-300 bg-yellow-50 shadow-lg transition-all duration-200 dark:border-yellow-400 dark:bg-yellow-100 ${selected ? 'ring-2 ring-blue-500' : ''}`}
+    <div
+      className={`group relative h-40 w-64 rounded-lg border-2 border-yellow-300 bg-yellow-50 shadow-lg transition-all duration-200 dark:border-yellow-400 dark:bg-yellow-100 ${selected ? 'ring-2 ring-blue-500' : ''}`}
       onClick={handleClick}
     >
+      {/* Delete button - only show when selected or on hover */}
+      {data.onDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            data.onDelete?.();
+          }}
+          className={`absolute top-1 right-1 z-10 flex h-5 w-5 items-center justify-center rounded bg-red-500 text-white transition-opacity hover:bg-red-600 ${
+            selected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          }`}
+          title="Supprimer la note"
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
+
       {/* Content area */}
-      <div 
+      <div
         className="h-full p-3"
         onMouseDown={(e) => e.stopPropagation()}
       >
