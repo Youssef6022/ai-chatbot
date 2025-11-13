@@ -612,6 +612,7 @@ export default function WorkflowsPage() {
   const [workflowTitle, setWorkflowTitle] = useState<string>('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState('');
+  const [isVariablesModalOpen, setIsVariablesModalOpen] = useState(false);
   const searchParams = useSearchParams();
   
   // Connection highlighting state
@@ -3033,6 +3034,18 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                 </div>
                 <span className="font-medium text-foreground">Files</span>
               </button>
+
+              <button
+                onClick={() => setIsVariablesModalOpen(true)}
+                className='group flex w-full cursor-pointer items-center gap-3 rounded-lg border border-transparent p-3 text-sm transition-all duration-200 hover:scale-[1.02] hover:border-teal-200 hover:bg-teal-50 hover:shadow-md dark:hover:border-teal-800 dark:hover:bg-teal-950/30'
+              >
+                <div className='flex h-6 w-6 items-center justify-center rounded-lg bg-teal-100 shadow-sm transition-shadow group-hover:shadow-md dark:bg-teal-200'>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-700 dark:text-teal-800">
+                    <path d="M7 8h10M7 12h10M7 16h10M3 8h0M3 12h0M3 16h0"/>
+                  </svg>
+                </div>
+                <span className="font-medium text-foreground">Variables</span>
+              </button>
             </div>
           </div>
         </div>
@@ -4160,57 +4173,76 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                     <div className='mb-6'>
                       <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Variables globales</h4>
                       <div className='space-y-1'>
-                        {variables.map((variable) => (
-                          <div key={variable.id} className='group relative'>
-                            <button
-                              onClick={() => {
-                                const placeholder = `{{${variable.name}}}`;
-                                setExpandedContent(expandedContent + placeholder);
-                                if (expandedField === 'userPrompt') {
-                                  const newValue = expandedContent + placeholder;
-                                  updateNodeData(editingNode.id, { userPrompt: newValue });
-                                  setEditingNode({
-                                    ...editingNode,
-                                    data: { ...editingNode.data, userPrompt: newValue }
+                        {variables.map((variable) => {
+                          const isAskBeforeRun = variable.askBeforeRun;
+                          return (
+                            <div key={variable.id} className='group relative'>
+                              <button
+                                onClick={() => {
+                                  const placeholder = `{{${variable.name}}}`;
+                                  setExpandedContent(expandedContent + placeholder);
+                                  if (expandedField === 'userPrompt') {
+                                    const newValue = expandedContent + placeholder;
+                                    updateNodeData(editingNode.id, { userPrompt: newValue });
+                                    setEditingNode({
+                                      ...editingNode,
+                                      data: { ...editingNode.data, userPrompt: newValue }
+                                    });
+                                  } else if (expandedField === 'systemPrompt') {
+                                    const newValue = expandedContent + placeholder;
+                                    updateNodeData(editingNode.id, { systemPrompt: newValue });
+                                    setEditingNode({
+                                      ...editingNode,
+                                      data: { ...editingNode.data, systemPrompt: newValue }
+                                    });
+                                  }
+                                }}
+                                className={`w-full rounded border border-dashed p-2 text-left transition-colors ${
+                                  isAskBeforeRun
+                                    ? 'border-orange-300 bg-orange-50 hover:bg-orange-100 dark:border-orange-600 dark:bg-orange-900/20 dark:hover:bg-orange-900/30'
+                                    : 'border-green-300 bg-green-50 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/20 dark:hover:bg-green-900/30'
+                                }`}
+                              >
+                                <div className={`font-mono text-sm ${
+                                  isAskBeforeRun
+                                    ? 'text-orange-700 dark:text-orange-300'
+                                    : 'text-green-700 dark:text-green-300'
+                                }`}>
+                                  {`{{${variable.name}}}`}
+                                </div>
+                                <div className={`truncate text-xs ${
+                                  isAskBeforeRun
+                                    ? 'text-orange-600 dark:text-orange-400'
+                                    : 'text-green-600 dark:text-green-400'
+                                }`}>
+                                  {variable.value || 'Aucune valeur'}
+                                </div>
+                              </button>
+                              {/* Edit pencil icon */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setVariableModal({
+                                    isOpen: true,
+                                    mode: 'edit',
+                                    variable: variable
                                   });
-                                } else if (expandedField === 'systemPrompt') {
-                                  const newValue = expandedContent + placeholder;
-                                  updateNodeData(editingNode.id, { systemPrompt: newValue });
-                                  setEditingNode({
-                                    ...editingNode,
-                                    data: { ...editingNode.data, systemPrompt: newValue }
-                                  });
-                                }
-                              }}
-                              className='w-full rounded border border-green-300 border-dashed bg-green-50 p-2 text-left transition-colors hover:bg-green-100 dark:border-green-600 dark:bg-green-900/20 dark:hover:bg-green-900/30'
-                            >
-                              <div className='font-mono text-green-700 text-sm dark:text-green-300'>
-                                {`{{${variable.name}}}`}
-                              </div>
-                              <div className='truncate text-green-600 text-xs dark:text-green-400'>
-                                {variable.value || 'Aucune valeur'}
-                              </div>
-                            </button>
-                            {/* Edit pencil icon */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setVariableModal({
-                                  isOpen: true,
-                                  mode: 'edit',
-                                  variable: variable
-                                });
-                                setModalAskBeforeRun(variable.askBeforeRun || false);
-                              }}
-                              className='absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded bg-green-100 text-green-600 opacity-0 transition-opacity hover:bg-green-200 group-hover:opacity-100 dark:bg-green-800 dark:text-green-400 dark:hover:bg-green-700'
-                            >
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                              </svg>
-                            </button>
-                          </div>
-                        ))}
+                                  setModalAskBeforeRun(variable.askBeforeRun || false);
+                                }}
+                                className={`absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-100 ${
+                                  isAskBeforeRun
+                                    ? 'bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-400 dark:hover:bg-orange-700'
+                                    : 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-800 dark:text-green-400 dark:hover:bg-green-700'
+                                }`}
+                              >
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                  <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                              </button>
+                            </div>
+                          );
+                        })}
                         
                         {/* Add Global Variable Button */}
                         <button
@@ -4299,6 +4331,117 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
               className='-z-10 fixed inset-0'
               onClick={() => setExpandedField(null)}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Variables Management Modal */}
+      {isVariablesModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsVariablesModalOpen(false)}
+          />
+
+          {/* Modal */}
+          <div className='zoom-in-95 relative max-h-[80vh] w-96 max-w-[90vw] animate-in overflow-y-auto rounded-xl border-2 border-border/60 bg-background/95 p-6 shadow-2xl backdrop-blur-sm duration-200'>
+            {/* Header */}
+            <div className='mb-4 flex items-center justify-between'>
+              <h3 className='font-semibold text-lg'>Variables disponibles</h3>
+              <button
+                onClick={() => setIsVariablesModalOpen(false)}
+                className='flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-muted/30'
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Variables globales */}
+            <div className='mb-6'>
+              <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Variables globales</h4>
+              <div className='space-y-1'>
+                {variables.map((variable) => {
+                  const isAskBeforeRun = variable.askBeforeRun;
+                  return (
+                    <div key={variable.id} className='group relative'>
+                      <button
+                        className={`w-full rounded border border-dashed p-2 text-left transition-colors ${
+                          isAskBeforeRun
+                            ? 'border-orange-300 bg-orange-50 hover:bg-orange-100 dark:border-orange-600 dark:bg-orange-900/20 dark:hover:bg-orange-900/30'
+                            : 'border-green-300 bg-green-50 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/20 dark:hover:bg-green-900/30'
+                        }`}
+                      >
+                        <div className={`font-mono text-sm ${
+                          isAskBeforeRun
+                            ? 'text-orange-700 dark:text-orange-300'
+                            : 'text-green-700 dark:text-green-300'
+                        }`}>
+                          {`{{${variable.name}}}`}
+                        </div>
+                        <div className={`truncate text-xs ${
+                          isAskBeforeRun
+                            ? 'text-orange-600 dark:text-orange-400'
+                            : 'text-green-600 dark:text-green-400'
+                        }`}>
+                          {variable.value || variable.defaultValue || 'Aucune valeur'}
+                        </div>
+                      </button>
+                      {/* Edit pencil icon */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setVariableModal({
+                            isOpen: true,
+                            mode: 'edit',
+                            variable: variable
+                          });
+                          setModalAskBeforeRun(variable.askBeforeRun || false);
+                          setIsVariablesModalOpen(false);
+                        }}
+                        className={`absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-100 ${
+                          isAskBeforeRun
+                            ? 'bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-400 dark:hover:bg-orange-700'
+                            : 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-800 dark:text-green-400 dark:hover:bg-green-700'
+                        }`}
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  );
+                })}
+
+                {/* Add Global Variable Button */}
+                <button
+                  onClick={() => {
+                    setVariableModal({ isOpen: true, mode: 'add' });
+                    setIsVariablesModalOpen(false);
+                  }}
+                  className='flex w-full items-center justify-center gap-2 rounded border border-gray-300 border-dashed bg-gray-50 p-2 text-left transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-900/20 dark:hover:bg-gray-900/30'
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  <span className='text-muted-foreground text-sm'>Ajouter dans variable globale</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Footer button */}
+            <Button
+              onClick={() => setIsVariablesModalOpen(false)}
+              className="w-full"
+              variant="outline"
+            >
+              Fermer
+            </Button>
           </div>
         </div>
       )}
