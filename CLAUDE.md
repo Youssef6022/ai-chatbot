@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The project demonstrates a full-featured chat application with authentication, database persistence, file uploads, and multi-provider AI integration.
+This is a Next.js 15 AI chatbot application built with the Vercel AI SDK and Google Gemini models. The project demonstrates a full-featured chat application with Supabase authentication, PostgreSQL database persistence, dual file storage systems (Vercel Blob + Supabase Storage), and a visual workflow builder powered by ReactFlow.
 
 ## Development Commands
 
@@ -30,10 +30,14 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Up migrations**: `pnpm run db:up`
 
 ### Testing
-- **Run tests**: `pnpm test` (Playwright end-to-end tests)
+- **Run all tests**: `pnpm test` (Playwright end-to-end tests with PLAYWRIGHT=True)
+- **Run single test**: `pnpm exec playwright test tests/e2e/your-test.spec.ts`
+- **Run single test with UI**: `pnpm exec playwright test tests/e2e/your-test.spec.ts --ui`
+- **Run specific test project**: `pnpm exec playwright test --project=e2e` or `--project=routes`
 - **Test RAG**: `pnpm run test:rag` (test Vertex AI RAG integration)
 - **Test RAG Simple**: `pnpm run test:rag-simple` (simple RAG test)
 - **Test Environment Variable**: Set `PLAYWRIGHT=True` to enable test mode with mock AI models
+- **View test report**: `pnpm exec playwright show-report` (after running tests)
 
 ### Utilities
 - **Kill port process**: `pnpm run killp` or `./scripts/kill-port.sh` (kills process on port 9627)
@@ -103,7 +107,7 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Framework**: Next.js 15 with App Router and Turbopack for development
   - Experimental PPR (Partial Prerendering) enabled
   - TypeScript build errors ignored (`typescript.ignoreBuildErrors: true`)
-  - Webpack configured with Node.js module fallbacks for client-side compatibility
+  - Webpack configured with Node.js module fallbacks for client-side compatibility (net, tls, fs, crypto, etc.)
 - **App Directory Structure**: Uses Next.js route groups for organization:
   - `app/(auth)/` - Authentication routes (login, register) with shared auth layout
   - `app/(chat)/` - Main chat interface, workflows, library, and chat-related APIs
@@ -117,16 +121,19 @@ This is a Next.js 15 AI chatbot application built with the Vercel AI SDK. The pr
 - **Data Fetching**: SWR for client-side data management
 - **Animations**: Framer Motion for smooth UI transitions
 - **Image Optimization**: Next.js Image with remote patterns for Vercel Blob, Supabase, Gravatar, and avatar.vercel.sh
+- **React Version**: React 19 RC (`react@19.0.0-rc-45804af1-20241021`)
 
 ## Environment Variables
 
 Required environment variables (see `.env.example`):
 
+**Note**: This application uses **Supabase for authentication** (not Auth.js/NextAuth). Supabase credentials are mandatory for user authentication to work.
+
 ```env
 # Authentication
 AUTH_SECRET=**** # Generate with: openssl rand -base64 32
 
-# Supabase Authentication (required)
+# Supabase Authentication (required - used instead of Auth.js)
 NEXT_PUBLIC_SUPABASE_URL=**** # Your Supabase project URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=**** # Your Supabase anon/public key
 
@@ -181,14 +188,17 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 
 ### Workflow Builder
 - Visual workflow designer using ReactFlow (`@xyflow/react`)
-- **Node Types**:
-  - Generate Node: AI text generation with model selection
-  - Files Node: File attachment and context management
-  - Note Node: Text annotations and documentation
+- **Node Types** (components in `components/workflow/`):
+  - **Generate Node** (`generate-node.tsx`): AI text generation with model selection (small/medium/large)
+  - **Decision Node** (`decision-node.tsx`): Conditional branching logic for workflows
+  - **Files Node** (`files-node.tsx`): File attachment and context management
+  - **Note Node** (`note-node.tsx`): Text annotations and documentation
+  - **Prompt Node** (`prompt-node.tsx`): Custom prompt templates
 - **Variable System**:
-  - Global variables with pre-run configuration modal
-  - Variable highlighting in prompts with syntax: `{{variableName}}`
-  - Connected node results available as variables
+  - Global variables with pre-run configuration modal (`pre-run-variables-modal.tsx`)
+  - Variable highlighting in prompts with syntax: `{{variableName}}` (uses `highlighted-textarea.tsx`)
+  - Connected node results available as variables in downstream nodes
+  - Variables panel (`variables-panel.tsx`) for managing workflow variables
 - **AI Grounding Options** (per Generate Node):
   - Google Search: Web search integration for up-to-date information
   - Google Maps: Location-based queries and geographical information
@@ -200,14 +210,16 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 - **Features**:
   - JSON export/import for workflow persistence
   - Real-time execution with API integration at `/api/workflow/generate`
-  - Workflow console for execution logs and debugging
-  - Custom edge styling and connection validation
+  - Workflow console (`workflow-console.tsx`) for execution logs and debugging
+  - Custom edge styling (`custom-edge.tsx`) and connection validation
+  - Alignment guides (`alignment-guides.tsx`) for visual workflow organization
   - Database persistence via `Workflow` table with public/private visibility
 - **Routes**:
   - `/workflows` - Workflow builder and editor interface
   - `/workflows-library` - Browse and manage saved workflows
-  - `/api/workflows` - List all workflows
-  - `/api/workflows/[id]` - Get/update/delete specific workflow
+  - `/api/workflows` - List all workflows (in `app/api/`)
+  - `/api/workflows/[id]` - Get/update/delete specific workflow (in `app/api/`)
+  - `/api/workflow/generate` - Execute workflow (in `app/(chat)/api/`)
 
 ### Advanced AI Features
 - Multi-turn conversations with context preservation
@@ -227,26 +239,50 @@ PLAYWRIGHT=True # Set to enable test environment with mock AI models
 
 ## Development Workflow
 
-1. **Setup Environment**: Copy `.env.example` to `.env.local` and fill in values
-2. **Install Dependencies**: `pnpm install`
+1. **Setup Environment**: Copy `.env.example` to `.env.local` and fill in required values
+2. **Install Dependencies**: `pnpm install` (pnpm is required - see `packageManager` in package.json)
 3. **Database Setup**: `pnpm run db:generate && pnpm run db:migrate`
-4. **Start Development**: `pnpm dev`
+4. **Start Development**: `pnpm dev` (runs on [http://localhost:9627](http://localhost:9627))
 5. **Code Quality**: Run `pnpm run lint:fix` before commits
+
+**First-time Setup**:
+- Ensure you have `pnpm` installed: `npm install -g pnpm` or `corepack enable`
+- Configure Supabase project and add credentials to `.env.local`
+- Configure Google Gemini API key for AI functionality
+- Set up PostgreSQL database (Neon or Vercel Postgres recommended)
+- Optional: Configure Vercel Blob for file uploads, Redis for caching
 
 ## Code Quality and Standards
 
 ### Biome Configuration
-- **Linting and Formatting**: Uses Biome instead of ESLint/Prettier
+- **Linting and Formatting**: Uses Biome instead of ESLint/Prettier (though ESLint packages remain for compatibility)
 - **Configuration**: `biome.jsonc` with custom rules for accessibility, complexity, and style
+  - Line width: 80 characters
+  - Indentation: 2 spaces
+  - Single quotes for JS/TS, double quotes for JSX
+  - Trailing commas: always
+  - Semicolons: always
 - **Pre-commit**: Run `pnpm run lint:fix` to auto-fix issues before commits
 - **Accessibility**: Custom a11y rules with intentional exceptions for UX patterns
+  - `noAutofocus: off` - Intentional autofocus usage
+  - `useFocusableInteractive: off` - Custom interactive patterns
+  - `useKeyWithClickEvents: off` - Click handlers without keyboard events allowed
+- **Ignored Paths**: `lib/db/migrations`, `lib/editor/react-renderer.tsx`, `.next`, `node_modules`
+- **Special Rules**: Sorted Tailwind classes enforced (`useSortedClasses: error`)
 
 ### Testing Strategy
 - **E2E Testing**: Playwright tests with environment variable `PLAYWRIGHT=True`
 - **Test Organization**: Tests are organized into `tests/e2e/` (end-to-end) and `tests/routes/` (API routes)
 - **Mock AI Models**: Test environment automatically uses mock providers (`lib/ai/models.mock.ts`)
 - **Test Routes**: `/ping` endpoint for Playwright health checks
-- **Test Configuration**: `playwright.config.ts` with 240s timeout, Chrome browser, parallelization settings
+- **Test Configuration**: `playwright.config.ts` with:
+  - 240s timeout for tests and expect assertions
+  - Desktop Chrome browser (configurable for Firefox, WebKit, mobile viewports)
+  - 8 workers locally, 2 workers on CI
+  - Full parallelization enabled
+  - HTML reporter for test results
+  - Automatic dev server startup on `http://localhost:3000/ping` (or custom PORT)
+  - Trace collection on failure for debugging
 
 ## Key Architectural Patterns
 
@@ -287,10 +323,12 @@ APIs are organized into two directories:
 ## Important Development Notes
 
 ### Core Architecture
-- Port 9627 is used for development/production to avoid conflicts with other services
+- Port 9627 is used for development/production (configured in `pnpm dev` and `pnpm start` scripts)
+  - **Note**: Playwright tests default to port 3000 unless `PORT` env var is set to 9627
 - React 19 RC is used (`react@19.0.0-rc-45804af1-20241021`)
 - Next.js route groups organize code: `(auth)`, `(chat)`, and standalone `api/` directory
 - TypeScript build errors are ignored (`typescript.ignoreBuildErrors: true`)
+- Webpack client-side build excludes Node.js modules (net, tls, fs, crypto, stream, etc.) via fallback configuration
 
 ### Database & Migrations
 - Always run database migrations after schema changes (`pnpm run db:migrate`)

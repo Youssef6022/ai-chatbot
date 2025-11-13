@@ -63,41 +63,50 @@ export function HighlightedTextarea({
     };
   }, [variables, extractVariables]);
 
+  // Helper function to escape HTML
+  const escapeHtml = (text: string) => {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+
   // Create highlighted HTML
   const createHighlightedText = useCallback((text: string) => {
     const { foundVariables, invalidVariables } = validateVariables(text);
-    
+
     if (foundVariables.length === 0) {
-      return text.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;');
+      // Escape HTML and add trailing newline
+      return escapeHtml(text) + '\n';
     }
 
     let highlightedText = '';
     let lastIndex = 0;
 
     foundVariables.forEach(variable => {
-      // Add text before variable
-      highlightedText += text
-        .slice(lastIndex, variable.start)
-        .replace(/\n/g, '<br>')
-        .replace(/ /g, '&nbsp;');
+      // Add text before variable (escape HTML)
+      const beforeText = text.slice(lastIndex, variable.start);
+      highlightedText += escapeHtml(beforeText);
 
-      // Add highlighted variable
+      // Add highlighted variable (escape HTML)
       const variableText = text.slice(variable.start, variable.end);
       const isInvalid = invalidVariables.includes(variable.name);
-      const colorClass = isInvalid 
-        ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' 
+      const colorClass = isInvalid
+        ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
         : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
-      
-      highlightedText += `<span class="rounded px-1 ${colorClass}">${variableText}</span>`;
-      
+
+      highlightedText += `<span class="rounded px-0.5 ${colorClass}">${escapeHtml(variableText)}</span>`;
+
       lastIndex = variable.end;
     });
 
-    // Add remaining text
-    highlightedText += text
-      .slice(lastIndex)
-      .replace(/\n/g, '<br>')
-      .replace(/ /g, '&nbsp;');
+    // Add remaining text (escape HTML)
+    highlightedText += escapeHtml(text.slice(lastIndex));
+
+    // Add trailing newline to match textarea behavior
+    highlightedText += '\n';
 
     return highlightedText;
   }, [validateVariables]);
@@ -149,7 +158,7 @@ export function HighlightedTextarea({
       <div
         ref={highlightRef}
         className={cn(
-          'pointer-events-none absolute inset-0 z-10 overflow-hidden whitespace-pre-wrap break-words rounded-md bg-transparent px-3 py-2 text-foreground text-sm',
+          'pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-md bg-transparent px-3 py-2 text-foreground text-sm',
           noBorder ? '' : 'border border-input'
         )}
         style={{
@@ -158,6 +167,9 @@ export function HighlightedTextarea({
           lineHeight: 'inherit',
           letterSpacing: 'inherit',
           wordSpacing: 'inherit',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
           scrollTop: scrollTop,
           scrollLeft: scrollLeft,
         }}
@@ -185,6 +197,9 @@ export function HighlightedTextarea({
           lineHeight: 'inherit',
           letterSpacing: 'inherit',
           wordSpacing: 'inherit',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
         }}
       />
     </div>
