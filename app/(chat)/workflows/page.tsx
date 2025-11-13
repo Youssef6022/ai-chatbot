@@ -610,6 +610,8 @@ export default function WorkflowsPage() {
   const [currentWorkflowId, setCurrentWorkflowId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [workflowTitle, setWorkflowTitle] = useState<string>('');
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [tempTitle, setTempTitle] = useState('');
   const searchParams = useSearchParams();
   
   // Connection highlighting state
@@ -2902,9 +2904,43 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
             </svg>
           </Button>
           <div className='flex items-center rounded-full border-2 border-border/60 bg-background/60 px-4 py-2 shadow-lg backdrop-blur-sm'>
-            <h1 className='font-semibold text-lg'>
-              {workflowTitle || 'New Workflow'}
-            </h1>
+            {isEditingTitle ? (
+              <input
+                type="text"
+                value={tempTitle}
+                onChange={(e) => setTempTitle(e.target.value)}
+                onBlur={() => {
+                  if (tempTitle.trim()) {
+                    setWorkflowTitle(tempTitle.trim());
+                  }
+                  setIsEditingTitle(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (tempTitle.trim()) {
+                      setWorkflowTitle(tempTitle.trim());
+                    }
+                    setIsEditingTitle(false);
+                  } else if (e.key === 'Escape') {
+                    setIsEditingTitle(false);
+                  }
+                }}
+                autoFocus
+                className='w-full bg-transparent font-semibold text-lg outline-none'
+                placeholder='Titre du workflow'
+              />
+            ) : (
+              <h1
+                className='cursor-pointer font-semibold text-lg transition-opacity hover:opacity-70'
+                onClick={() => {
+                  setTempTitle(workflowTitle || 'New Workflow');
+                  setIsEditingTitle(true);
+                }}
+                title='Cliquer pour modifier le titre'
+              >
+                {workflowTitle || 'New Workflow'}
+              </h1>
+            )}
           </div>
         </div>
 
