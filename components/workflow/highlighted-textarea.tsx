@@ -97,7 +97,7 @@ export function HighlightedTextarea({
         ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
         : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
 
-      highlightedText += `<span class="rounded px-0.5 ${colorClass}">${escapeHtml(variableText)}</span>`;
+      highlightedText += `<span class="rounded ${colorClass}" style="padding: 0 2px; margin: 0 -2px; box-decoration-break: clone; -webkit-box-decoration-break: clone;">${escapeHtml(variableText)}</span>`;
 
       lastIndex = variable.end;
     });
