@@ -119,17 +119,12 @@ export function VariablesPanel({ variables, onVariablesChange, nodes = [] }: Var
 
     const usedInNodes = findVariableUsage(variable.name);
 
-    if (usedInNodes.length > 0) {
-      // Variable is used, show confirmation modal
-      setDeleteConfirmation({
-        variableId: id,
-        variableName: variable.name,
-        usedInNodes,
-      });
-    } else {
-      // Variable is not used, delete directly
-      onVariablesChange(variables.filter(variable => variable.id !== id));
-    }
+    // Always show confirmation modal (whether used or not)
+    setDeleteConfirmation({
+      variableId: id,
+      variableName: variable.name,
+      usedInNodes,
+    });
   };
 
   const confirmDelete = () => {
@@ -306,9 +301,19 @@ export function VariablesPanel({ variables, onVariablesChange, nodes = [] }: Var
           {/* Modal */}
           <div className="zoom-in-95 relative w-[500px] max-w-[90vw] animate-in overflow-hidden rounded-xl border border-red-500/20 bg-background shadow-2xl duration-200">
             {/* Header */}
-            <div className='flex items-center gap-3 border-red-500/20 border-b bg-red-500/5 px-5 py-4'>
-              <AlertCircle className="h-5 w-5 text-red-500" />
-              <h3 className="flex-1 font-semibold text-sm">Variable en cours d'utilisation</h3>
+            <div className={`flex items-center gap-3 border-b px-5 py-4 ${
+              deleteConfirmation.usedInNodes.length > 0
+                ? 'border-red-500/20 bg-red-500/5'
+                : 'border-orange-500/20 bg-orange-500/5'
+            }`}>
+              <AlertCircle className={`h-5 w-5 ${
+                deleteConfirmation.usedInNodes.length > 0 ? 'text-red-500' : 'text-orange-500'
+              }`} />
+              <h3 className="flex-1 font-semibold text-sm">
+                {deleteConfirmation.usedInNodes.length > 0
+                  ? 'Variable en cours d\'utilisation'
+                  : 'Confirmer la suppression'}
+              </h3>
               <button
                 onClick={() => setDeleteConfirmation(null)}
                 className="flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-red-500/10"
@@ -319,33 +324,48 @@ export function VariablesPanel({ variables, onVariablesChange, nodes = [] }: Var
 
             {/* Content */}
             <div className="space-y-4 px-5 py-4">
-              <p className="text-sm leading-relaxed">
-                La variable <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{`{{${deleteConfirmation.variableName}}}`}</span> est utilisée dans <strong>{deleteConfirmation.usedInNodes.length}</strong> bloc{deleteConfirmation.usedInNodes.length > 1 ? 's' : ''} :
-              </p>
+              {deleteConfirmation.usedInNodes.length > 0 ? (
+                <>
+                  <p className="text-sm leading-relaxed">
+                    La variable <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{`{{${deleteConfirmation.variableName}}}`}</span> est utilisée dans <strong>{deleteConfirmation.usedInNodes.length}</strong> bloc{deleteConfirmation.usedInNodes.length > 1 ? 's' : ''} :
+                  </p>
 
-              {/* List of nodes using the variable */}
-              <div className="max-h-[200px] space-y-1.5 overflow-y-auto rounded-lg border border-border bg-muted/30 p-3">
-                {deleteConfirmation.usedInNodes.map((node, index) => (
-                  <div
-                    key={node.id}
-                    className="flex items-center gap-2 rounded bg-background px-3 py-2 text-xs"
-                  >
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 font-semibold text-[10px] text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-                      {index + 1}
-                    </span>
-                    <span className="flex-1 font-medium">{node.label}</span>
-                    <span className="rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-                      {node.type}
-                    </span>
+                  {/* List of nodes using the variable */}
+                  <div className="max-h-[200px] space-y-1.5 overflow-y-auto rounded-lg border border-border bg-muted/30 p-3">
+                    {deleteConfirmation.usedInNodes.map((node, index) => (
+                      <div
+                        key={node.id}
+                        className="flex items-center gap-2 rounded bg-background px-3 py-2 text-xs"
+                      >
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 font-semibold text-[10px] text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                          {index + 1}
+                        </span>
+                        <span className="flex-1 font-medium">{node.label}</span>
+                        <span className="rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                          {node.type}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-              <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
-                <p className="text-muted-foreground text-xs leading-relaxed">
-                  ⚠️ Vous devez d'abord retirer cette variable des blocs listés ci-dessus avant de pouvoir la supprimer.
-                </p>
-              </div>
+                  <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+                    <p className="text-muted-foreground text-xs leading-relaxed">
+                      ⚠️ Vous devez d'abord retirer cette variable des blocs listés ci-dessus avant de pouvoir la supprimer.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm leading-relaxed">
+                    Êtes-vous sûr de vouloir supprimer la variable <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{`{{${deleteConfirmation.variableName}}}`}</span> ?
+                  </p>
+                  <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+                    <p className="text-muted-foreground text-xs leading-relaxed">
+                      ⚠️ Cette action est irréversible.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Footer */}
@@ -358,6 +378,19 @@ export function VariablesPanel({ variables, onVariablesChange, nodes = [] }: Var
               >
                 Annuler
               </Button>
+              {deleteConfirmation.usedInNodes.length === 0 && (
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    onVariablesChange(variables.filter(variable => variable.id !== deleteConfirmation.variableId));
+                    setDeleteConfirmation(null);
+                  }}
+                  size="sm"
+                  className="flex-1"
+                >
+                  Supprimer
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -2468,18 +2468,12 @@ export default function WorkflowsPage() {
   const handleDeleteVariable = (variableId: string, variableName: string) => {
     const usedInNodes = findVariableUsage(variableName);
 
-    if (usedInNodes.length > 0) {
-      // Variable is used, show confirmation modal
-      setDeleteVariableConfirmation({
-        variableId,
-        variableName,
-        usedInNodes,
-      });
-    } else {
-      // Variable is not used, delete directly
-      setVariables(variables.filter(v => v.id !== variableId));
-      toast.success(`Variable "${variableName}" supprimée`);
-    }
+    // Always show confirmation modal (whether used or not)
+    setDeleteVariableConfirmation({
+      variableId,
+      variableName,
+      usedInNodes,
+    });
   };
 
   // Helper function to process prompt text with variables
@@ -4645,13 +4639,23 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           {/* Modal */}
           <div className="zoom-in-95 relative w-[500px] max-w-[90vw] animate-in overflow-hidden rounded-xl border border-red-500/20 bg-background shadow-2xl duration-200">
             {/* Header */}
-            <div className='flex items-center gap-3 border-red-500/20 border-b bg-red-500/5 px-5 py-4'>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-500">
+            <div className={`flex items-center gap-3 border-b px-5 py-4 ${
+              deleteVariableConfirmation.usedInNodes.length > 0
+                ? 'border-red-500/20 bg-red-500/5'
+                : 'border-orange-500/20 bg-orange-500/5'
+            }`}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={
+                deleteVariableConfirmation.usedInNodes.length > 0 ? 'text-red-500' : 'text-orange-500'
+              }>
                 <circle cx="12" cy="12" r="10"/>
                 <line x1="12" y1="8" x2="12" y2="12"/>
                 <line x1="12" y1="16" x2="12.01" y2="16"/>
               </svg>
-              <h3 className="flex-1 font-semibold text-sm">Variable en cours d'utilisation</h3>
+              <h3 className="flex-1 font-semibold text-sm">
+                {deleteVariableConfirmation.usedInNodes.length > 0
+                  ? 'Variable en cours d\'utilisation'
+                  : 'Confirmer la suppression'}
+              </h3>
               <button
                 onClick={() => setDeleteVariableConfirmation(null)}
                 className="flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-red-500/10"
@@ -4665,33 +4669,48 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
 
             {/* Content */}
             <div className="space-y-4 px-5 py-4">
-              <p className="text-sm leading-relaxed">
-                La variable <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{`{{${deleteVariableConfirmation.variableName}}}`}</span> est utilisée dans <strong>{deleteVariableConfirmation.usedInNodes.length}</strong> bloc{deleteVariableConfirmation.usedInNodes.length > 1 ? 's' : ''} :
-              </p>
+              {deleteVariableConfirmation.usedInNodes.length > 0 ? (
+                <>
+                  <p className="text-sm leading-relaxed">
+                    La variable <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{`{{${deleteVariableConfirmation.variableName}}}`}</span> est utilisée dans <strong>{deleteVariableConfirmation.usedInNodes.length}</strong> bloc{deleteVariableConfirmation.usedInNodes.length > 1 ? 's' : ''} :
+                  </p>
 
-              {/* List of nodes using the variable */}
-              <div className="max-h-[200px] space-y-1.5 overflow-y-auto rounded-lg border border-border bg-muted/30 p-3">
-                {deleteVariableConfirmation.usedInNodes.map((node, index) => (
-                  <div
-                    key={node.id}
-                    className="flex items-center gap-2 rounded bg-background px-3 py-2 text-xs"
-                  >
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 font-semibold text-[10px] text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-                      {index + 1}
-                    </span>
-                    <span className="flex-1 font-medium">{node.label}</span>
-                    <span className="rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-                      {node.type}
-                    </span>
+                  {/* List of nodes using the variable */}
+                  <div className="max-h-[200px] space-y-1.5 overflow-y-auto rounded-lg border border-border bg-muted/30 p-3">
+                    {deleteVariableConfirmation.usedInNodes.map((node, index) => (
+                      <div
+                        key={node.id}
+                        className="flex items-center gap-2 rounded bg-background px-3 py-2 text-xs"
+                      >
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 font-semibold text-[10px] text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                          {index + 1}
+                        </span>
+                        <span className="flex-1 font-medium">{node.label}</span>
+                        <span className="rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                          {node.type}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-              <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
-                <p className="text-muted-foreground text-xs leading-relaxed">
-                  ⚠️ Vous devez d'abord retirer cette variable des blocs listés ci-dessus avant de pouvoir la supprimer.
-                </p>
-              </div>
+                  <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+                    <p className="text-muted-foreground text-xs leading-relaxed">
+                      ⚠️ Vous devez d'abord retirer cette variable des blocs listés ci-dessus avant de pouvoir la supprimer.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm leading-relaxed">
+                    Êtes-vous sûr de vouloir supprimer la variable <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{`{{${deleteVariableConfirmation.variableName}}}`}</span> ?
+                  </p>
+                  <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+                    <p className="text-muted-foreground text-xs leading-relaxed">
+                      ⚠️ Cette action est irréversible.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Footer */}
@@ -4702,8 +4721,22 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                 size="sm"
                 className="flex-1"
               >
-                Compris
+                Annuler
               </Button>
+              {deleteVariableConfirmation.usedInNodes.length === 0 && (
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setVariables(variables.filter(v => v.id !== deleteVariableConfirmation.variableId));
+                    toast.success(`Variable "${deleteVariableConfirmation.variableName}" supprimée`);
+                    setDeleteVariableConfirmation(null);
+                  }}
+                  size="sm"
+                  className="flex-1"
+                >
+                  Supprimer
+                </Button>
+              )}
             </div>
           </div>
         </div>
