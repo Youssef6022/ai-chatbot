@@ -722,7 +722,7 @@ export default function WorkflowsPage() {
   }, [edges]);
 
   // Get predefined variables (system variables that cannot be edited)
-  const getPredefinedVariables = useCallback((): Variable[] => {
+  const predefinedVariables = useMemo((): Variable[] => {
     const today = new Date();
     const formattedDate = today.toLocaleDateString('fr-FR', {
       weekday: 'long',
@@ -744,7 +744,7 @@ export default function WorkflowsPage() {
 
   // Get all available variables (predefined + global + AI Generator results)
   const getAllAvailableVariables = useCallback((currentNodeId?: string) => {
-    const allVariables: Variable[] = [...getPredefinedVariables(), ...variables];
+    const allVariables: Variable[] = [...predefinedVariables, ...variables];
     
     if (currentNodeId) {
       // Get all ancestor nodes (nodes that the current node depends on)
@@ -782,7 +782,7 @@ export default function WorkflowsPage() {
     }
     
     return allVariables;
-  }, [getPredefinedVariables, variables, nodes, edges, getNodeAncestors]);
+  }, [predefinedVariables, variables, nodes, edges, getNodeAncestors]);
   
   // Save state to history
   const saveToHistory = useCallback((newNodes: any[], newEdges: any[]) => {
@@ -2069,7 +2069,7 @@ export default function WorkflowsPage() {
     const currentVariables = variablesToUse || variables;
 
     // Update the ref so processPromptText uses the latest values (including predefined variables)
-    currentVariablesRef.current = [...getPredefinedVariables(), ...currentVariables];
+    currentVariablesRef.current = [...predefinedVariables, ...currentVariables];
     console.log('[executeWorkflow] Using variables:', currentVariablesRef.current);
 
     // Validate that all AI Generators and Decision Nodes have prompts/instructions
@@ -4194,7 +4194,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                     <div className='mb-6'>
                       <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Variables prédéfinies</h4>
                       <div className='space-y-1'>
-                        {getPredefinedVariables().map((variable) => (
+                        {predefinedVariables.map((variable) => (
                           <button
                             key={variable.id}
                             onClick={() => {
@@ -4424,7 +4424,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
             <div className='mb-6'>
               <h4 className='mb-2 font-medium text-muted-foreground text-sm'>Variables prédéfinies</h4>
               <div className='space-y-1'>
-                {getPredefinedVariables().map((variable) => (
+                {predefinedVariables.map((variable) => (
                   <button
                     key={variable.id}
                     className='w-full rounded border border-purple-300 border-dashed bg-purple-50 p-2 text-left transition-colors hover:bg-purple-100 dark:border-purple-600 dark:bg-purple-900/20 dark:hover:bg-purple-900/30'
