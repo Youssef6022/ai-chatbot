@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { PlusIcon, TrashIcon } from '@/components/icons';
+import { AlertCircle, X } from 'lucide-react';
 
 export interface Variable {
   id: string;
@@ -20,14 +21,20 @@ export interface Variable {
 interface VariablesPanelProps {
   variables: Variable[];
   onVariablesChange: (variables: Variable[]) => void;
+  nodes?: any[]; // Nodes from workflow to check variable usage
 }
 
-export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelProps) {
+export function VariablesPanel({ variables, onVariablesChange, nodes = [] }: VariablesPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [newVarName, setNewVarName] = useState('');
   const [newVarValue, setNewVarValue] = useState('');
   const [newVarDescription, setNewVarDescription] = useState('');
   const [newVarAskBeforeRun, setNewVarAskBeforeRun] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    variableId: string;
+    variableName: string;
+    usedInNodes: Array<{ id: string; label: string; type: string }>;
+  } | null>(null);
 
   const addVariable = () => {
     if (newVarName.trim() && newVarValue.trim()) {
@@ -56,8 +63,80 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
     );
   };
 
-  const deleteVariable = (id: string) => {
-    onVariablesChange(variables.filter(variable => variable.id !== id));
+  // Check where a variable is used in the workflow
+  const findVariableUsage = (variableName: string): Array<{ id: string; label: string; type: string }> => {
+    const usedInNodes: Array<{ id: string; label: string; type: string }> = [];
+    const variablePattern = new RegExp(`\\{\\{\\s*${variableName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\}\\}`, 'g');
+
+    nodes.forEach((node) => {
+      let isUsed = false;
+
+      // Get the best label for the node - prioritize variableName for all node types
+      let nodeLabel = node.data?.variableName;
+
+      // If no variableName, use type-specific defaults
+      if (!nodeLabel) {
+        if (node.type === 'generate') {
+          nodeLabel = 'Generate Node';
+        } else if (node.type === 'files') {
+          nodeLabel = 'Files Node';
+        } else if (node.type === 'note') {
+          nodeLabel = node.data?.content?.substring(0, 30) || 'Note Node';
+        } else if (node.type === 'decision') {
+          nodeLabel = 'Decision Node';
+        } else {
+          nodeLabel = node.data?.label || node.id;
+        }
+      }
+
+      const nodeType = node.type || 'unknown';
+
+      // Check in different node properties where variables might be used
+      if (node.data?.userPrompt && variablePattern.test(node.data.userPrompt)) {
+        isUsed = true;
+      }
+      if (node.data?.systemPrompt && variablePattern.test(node.data.systemPrompt)) {
+        isUsed = true;
+      }
+      if (node.data?.prompt && variablePattern.test(node.data.prompt)) {
+        isUsed = true;
+      }
+      if (node.data?.content && variablePattern.test(node.data.content)) {
+        isUsed = true;
+      }
+
+      if (isUsed) {
+        usedInNodes.push({ id: node.id, label: nodeLabel, type: nodeType });
+      }
+    });
+
+    return usedInNodes;
+  };
+
+  const handleDeleteClick = (id: string) => {
+    const variable = variables.find(v => v.id === id);
+    if (!variable) return;
+
+    const usedInNodes = findVariableUsage(variable.name);
+
+    if (usedInNodes.length > 0) {
+      // Variable is used, show confirmation modal
+      setDeleteConfirmation({
+        variableId: id,
+        variableName: variable.name,
+        usedInNodes,
+      });
+    } else {
+      // Variable is not used, delete directly
+      onVariablesChange(variables.filter(variable => variable.id !== id));
+    }
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirmation) {
+      onVariablesChange(variables.filter(variable => variable.id !== deleteConfirmation.variableId));
+      setDeleteConfirmation(null);
+    }
   };
 
   return (
@@ -179,7 +258,7 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => deleteVariable(variable.id)}
+                          onClick={() => handleDeleteClick(variable.id)}
                           className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
                         >
                           <TrashIcon size={14} />
@@ -213,6 +292,75 @@ export function VariablesPanel({ variables, onVariablesChange }: VariablesPanelP
           </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmation && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setDeleteConfirmation(null)}
+          />
+
+          {/* Modal */}
+          <div className="zoom-in-95 relative w-[500px] max-w-[90vw] animate-in overflow-hidden rounded-xl border border-red-500/20 bg-background shadow-2xl duration-200">
+            {/* Header */}
+            <div className='flex items-center gap-3 border-red-500/20 border-b bg-red-500/5 px-5 py-4'>
+              <AlertCircle className="h-5 w-5 text-red-500" />
+              <h3 className="flex-1 font-semibold text-sm">Variable en cours d'utilisation</h3>
+              <button
+                onClick={() => setDeleteConfirmation(null)}
+                className="flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-red-500/10"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="space-y-4 px-5 py-4">
+              <p className="text-sm leading-relaxed">
+                La variable <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{`{{${deleteConfirmation.variableName}}}`}</span> est utilisée dans <strong>{deleteConfirmation.usedInNodes.length}</strong> bloc{deleteConfirmation.usedInNodes.length > 1 ? 's' : ''} :
+              </p>
+
+              {/* List of nodes using the variable */}
+              <div className="max-h-[200px] space-y-1.5 overflow-y-auto rounded-lg border border-border bg-muted/30 p-3">
+                {deleteConfirmation.usedInNodes.map((node, index) => (
+                  <div
+                    key={node.id}
+                    className="flex items-center gap-2 rounded bg-background px-3 py-2 text-xs"
+                  >
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 font-semibold text-[10px] text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                      {index + 1}
+                    </span>
+                    <span className="flex-1 font-medium">{node.label}</span>
+                    <span className="rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                      {node.type}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  ⚠️ Vous devez d'abord retirer cette variable des blocs listés ci-dessus avant de pouvoir la supprimer.
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className='flex gap-2 border-border border-t px-5 py-3'>
+              <Button
+                variant="outline"
+                onClick={() => setDeleteConfirmation(null)}
+                size="sm"
+                className="flex-1"
+              >
+                Annuler
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

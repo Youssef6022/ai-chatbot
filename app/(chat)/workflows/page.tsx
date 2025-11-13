@@ -639,6 +639,13 @@ export default function WorkflowsPage() {
   // Pre-run variables modal state
   const [showPreRunModal, setShowPreRunModal] = useState(false);
 
+  // Delete variable confirmation state
+  const [deleteVariableConfirmation, setDeleteVariableConfirmation] = useState<{
+    variableId: string;
+    variableName: string;
+    usedInNodes: Array<{ id: string; label: string; type: string }>;
+  } | null>(null);
+
   // Flag to prevent double execution
   const isExecutingRef = useRef(false);
 
@@ -2405,6 +2412,74 @@ export default function WorkflowsPage() {
       return result.text || result.content || result.message || result.userPrompt || String(result);
     }
     return String(result || '');
+  };
+
+  // Check where a variable is used in the workflow
+  const findVariableUsage = (variableName: string): Array<{ id: string; label: string; type: string }> => {
+    const usedInNodes: Array<{ id: string; label: string; type: string }> = [];
+    const variablePattern = new RegExp(`\\{\\{\\s*${variableName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\}\\}`, 'g');
+
+    nodes.forEach((node) => {
+      let isUsed = false;
+
+      // Get the best label for the node - prioritize variableName for all node types
+      let nodeLabel = node.data?.variableName;
+
+      // If no variableName, use type-specific defaults
+      if (!nodeLabel) {
+        if (node.type === 'generate') {
+          nodeLabel = 'Generate Node';
+        } else if (node.type === 'files') {
+          nodeLabel = 'Files Node';
+        } else if (node.type === 'note') {
+          nodeLabel = node.data?.content?.substring(0, 30) || 'Note Node';
+        } else if (node.type === 'decision') {
+          nodeLabel = 'Decision Node';
+        } else {
+          nodeLabel = node.data?.label || node.id;
+        }
+      }
+
+      const nodeType = node.type || 'unknown';
+
+      // Check in different node properties where variables might be used
+      if (node.data?.userPrompt && variablePattern.test(node.data.userPrompt)) {
+        isUsed = true;
+      }
+      if (node.data?.systemPrompt && variablePattern.test(node.data.systemPrompt)) {
+        isUsed = true;
+      }
+      if (node.data?.prompt && variablePattern.test(node.data.prompt)) {
+        isUsed = true;
+      }
+      if (node.data?.content && variablePattern.test(node.data.content)) {
+        isUsed = true;
+      }
+
+      if (isUsed) {
+        usedInNodes.push({ id: node.id, label: nodeLabel, type: nodeType });
+      }
+    });
+
+    return usedInNodes;
+  };
+
+  // Handle delete variable button click
+  const handleDeleteVariable = (variableId: string, variableName: string) => {
+    const usedInNodes = findVariableUsage(variableName);
+
+    if (usedInNodes.length > 0) {
+      // Variable is used, show confirmation modal
+      setDeleteVariableConfirmation({
+        variableId,
+        variableName,
+        usedInNodes,
+      });
+    } else {
+      // Variable is not used, delete directly
+      setVariables(variables.filter(v => v.id !== variableId));
+      toast.success(`Variable "${variableName}" supprimée`);
+    }
   };
 
   // Helper function to process prompt text with variables
@@ -4470,29 +4545,44 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                           {variable.value || variable.defaultValue || 'Aucune valeur'}
                         </div>
                       </button>
-                      {/* Edit pencil icon */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setVariableModal({
-                            isOpen: true,
-                            mode: 'edit',
-                            variable: variable
-                          });
-                          setModalAskBeforeRun(variable.askBeforeRun || false);
-                          setIsVariablesModalOpen(false);
-                        }}
-                        className={`absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-100 ${
-                          isAskBeforeRun
-                            ? 'bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-400 dark:hover:bg-orange-700'
-                            : 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-800 dark:text-green-400 dark:hover:bg-green-700'
-                        }`}
-                      >
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                          <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                      </button>
+                      {/* Edit and Delete icons */}
+                      <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setVariableModal({
+                              isOpen: true,
+                              mode: 'edit',
+                              variable: variable
+                            });
+                            setModalAskBeforeRun(variable.askBeforeRun || false);
+                            setIsVariablesModalOpen(false);
+                          }}
+                          className={`flex h-5 w-5 items-center justify-center rounded transition-opacity hover:opacity-100 ${
+                            isAskBeforeRun
+                              ? 'bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-400 dark:hover:bg-orange-700'
+                              : 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-800 dark:text-green-400 dark:hover:bg-green-700'
+                          }`}
+                          title="Modifier"
+                        >
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteVariable(variable.id, variable.name);
+                          }}
+                          className="flex h-5 w-5 items-center justify-center rounded bg-red-100 text-red-600 transition-colors hover:bg-red-200 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900/70"
+                          title="Supprimer"
+                        >
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -4542,6 +4632,82 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
         }
         onConfirm={handlePreRunConfirm}
       />
+
+      {/* Delete Variable Confirmation Modal */}
+      {deleteVariableConfirmation && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setDeleteVariableConfirmation(null)}
+          />
+
+          {/* Modal */}
+          <div className="zoom-in-95 relative w-[500px] max-w-[90vw] animate-in overflow-hidden rounded-xl border border-red-500/20 bg-background shadow-2xl duration-200">
+            {/* Header */}
+            <div className='flex items-center gap-3 border-red-500/20 border-b bg-red-500/5 px-5 py-4'>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-500">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <h3 className="flex-1 font-semibold text-sm">Variable en cours d'utilisation</h3>
+              <button
+                onClick={() => setDeleteVariableConfirmation(null)}
+                className="flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-red-500/10"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="space-y-4 px-5 py-4">
+              <p className="text-sm leading-relaxed">
+                La variable <span className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{`{{${deleteVariableConfirmation.variableName}}}`}</span> est utilisée dans <strong>{deleteVariableConfirmation.usedInNodes.length}</strong> bloc{deleteVariableConfirmation.usedInNodes.length > 1 ? 's' : ''} :
+              </p>
+
+              {/* List of nodes using the variable */}
+              <div className="max-h-[200px] space-y-1.5 overflow-y-auto rounded-lg border border-border bg-muted/30 p-3">
+                {deleteVariableConfirmation.usedInNodes.map((node, index) => (
+                  <div
+                    key={node.id}
+                    className="flex items-center gap-2 rounded bg-background px-3 py-2 text-xs"
+                  >
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 font-semibold text-[10px] text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                      {index + 1}
+                    </span>
+                    <span className="flex-1 font-medium">{node.label}</span>
+                    <span className="rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                      {node.type}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  ⚠️ Vous devez d'abord retirer cette variable des blocs listés ci-dessus avant de pouvoir la supprimer.
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className='flex gap-2 border-border border-t px-5 py-3'>
+              <Button
+                variant="outline"
+                onClick={() => setDeleteVariableConfirmation(null)}
+                size="sm"
+                className="flex-1"
+              >
+                Compris
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

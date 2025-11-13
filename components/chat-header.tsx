@@ -34,7 +34,7 @@ function ModelSelectorCompact({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-9 w-full justify-between px-3 text-sm font-medium"
+          className='h-9 w-full justify-between px-3 font-medium text-sm'
         >
           <span className="truncate">{selectedModel?.name || 'Select model'}</span>
           <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />

@@ -183,10 +183,10 @@ function PureMultimodalInput({
     const videoMetadata: any = { fps: 1 };
 
     // Only add startOffset and endOffset if they have values
-    if (youtubeStartTime && youtubeStartTime.trim()) {
+    if (youtubeStartTime?.trim()) {
       videoMetadata.startOffset = youtubeStartTime.trim();
     }
-    if (youtubeEndTime && youtubeEndTime.trim()) {
+    if (youtubeEndTime?.trim()) {
       videoMetadata.endOffset = youtubeEndTime.trim();
     }
 
@@ -263,7 +263,7 @@ function PureMultimodalInput({
 
       // Extraire un titre du texte (première ligne ou premiers mots)
       const firstLine = pastedText.split('\n')[0].trim();
-      const title = firstLine.length > 40 ? firstLine.substring(0, 40) + '...' : firstLine;
+      const title = firstLine.length > 40 ? `${firstLine.substring(0, 40)}...` : firstLine;
       const fileName = title || 'Texte collé';
 
       // Créer une "pièce jointe" pour le texte collé
@@ -568,10 +568,10 @@ function PureMultimodalInput({
           <Tooltip>
             <TooltipTrigger asChild>
               <div className='flex w-fit cursor-help items-center gap-2 rounded-full border border-blue-500/30 bg-blue-50/50 px-3 py-1.5 text-sm transition-all hover:border-blue-500/50 hover:bg-blue-100/50 dark:bg-blue-950/20 dark:hover:bg-blue-900/30'>
-                <div className='flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white'>
+                <div className='flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 font-bold text-[10px] text-white'>
                   i
                 </div>
-                <span className='text-xs font-medium text-blue-700 dark:text-blue-300'>
+                <span className='font-medium text-blue-700 text-xs dark:text-blue-300'>
                   {detectedUrls.length > 1
                     ? `${detectedUrls.length} liens seront consultés`
                     : 'Un lien sera consulté'}
@@ -580,9 +580,9 @@ function PureMultimodalInput({
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-md bg-popover text-popover-foreground">
               <div className='space-y-1'>
-                <p className='text-xs font-semibold'>Liens à consulter :</p>
+                <p className='font-semibold text-xs'>Liens à consulter :</p>
                 {detectedUrls.map((url, index) => (
-                  <p key={index} className='truncate text-xs text-muted-foreground'>
+                  <p key={index} className='truncate text-muted-foreground text-xs'>
                     • {url}
                   </p>
                 ))}
@@ -848,7 +848,7 @@ function PureAttachmentsButton({
             onFileModalOpen();
             setIsOpen(false);
           }}
-          className="flex items-center gap-2 cursor-pointer"
+          className='flex cursor-pointer items-center gap-2'
         >
           <PaperclipIcon size={14} />
           <span>Fichiers</span>
@@ -859,7 +859,7 @@ function PureAttachmentsButton({
             onYoutubeAdd();
             setIsOpen(false);
           }}
-          className="flex items-center gap-2 cursor-pointer"
+          className='flex cursor-pointer items-center gap-2'
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -935,7 +935,7 @@ function PureModelSelectorCompact({
       <SelectPrimitive.Trigger
         type="button"
         disabled={isDisabled}
-        className='flex h-8 items-center gap-2 rounded-lg border-0 bg-background px-2 text-foreground shadow-none transition-colors hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed'
+        className='flex h-8 items-center gap-2 rounded-lg border-0 bg-background px-2 text-foreground shadow-none transition-colors hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50'
       >
         <CpuIcon size={16} />
         <span className='hidden font-medium text-xs sm:block' suppressHydrationWarning>

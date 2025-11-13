@@ -79,7 +79,7 @@ export function HighlightedTextarea({
 
     if (foundVariables.length === 0) {
       // Escape HTML and add trailing newline
-      return escapeHtml(text) + '\n';
+      return `${escapeHtml(text)}\n`;
     }
 
     let highlightedText = '';
