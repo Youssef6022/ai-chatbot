@@ -2142,8 +2142,11 @@ export default function WorkflowsPage() {
 
     setEditingNode(node);
     setIsEditPanelOpen(true);
-    setShowResults(false); // Reset to edit view when switching nodes
-  }, []);
+
+    // If workflow is running, show results automatically
+    // Otherwise, reset to edit view when switching nodes
+    setShowResults(isRunning);
+  }, [isRunning]);
 
   // Add execution log
   const addExecutionLog = useCallback((type: 'info' | 'success' | 'error' | 'warning', message: string, nodeId?: string, nodeName?: string) => {
@@ -4161,6 +4164,31 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                       </div>
                     </div>
                   </div>
+
+                  {/* Decision Details - Show if a choice has been selected */}
+                  {editingNode.data.selectedChoice && (
+                    <div className='mt-4 rounded-lg border border-border/40 bg-background/50 p-3'>
+                      <h4 className='mb-2 font-medium text-foreground text-xs'>Decision Details</h4>
+                      <div className='space-y-2'>
+                        <div className="flex justify-between text-muted-foreground text-xs">
+                          <span>Available Choices:</span>
+                          <span>{(editingNode.data.choices || []).length}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground text-xs">Decision Made:</span>
+                          <div className="flex items-center gap-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-green-600 dark:text-green-400">
+                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                              <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <span className="font-semibold text-green-600 text-sm dark:text-green-400">
+                              {editingNode.data.selectedChoice}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
 
