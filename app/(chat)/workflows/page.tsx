@@ -64,9 +64,9 @@ interface UserFile {
 function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+  const uploadFiles = async (files: FileList | File[]) => {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
@@ -102,13 +102,59 @@ function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
       alert('Erreur lors de l\'upload des fichiers');
     } finally {
       setIsUploading(false);
-      // Reset file input
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      await uploadFiles(files);
       event.target.value = '';
     }
   };
 
+  // Drag & Drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+
+    const files = e.dataTransfer.files;
+    if (files) {
+      await uploadFiles(files);
+    }
+  };
+
   return (
-    <div className="space-y-2">
+    <div
+      className={`space-y-2 rounded-lg border-2 border-dashed p-3 transition-colors ${
+        isDraggingOver
+          ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20'
+          : 'border-transparent'
+      }`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Drag & Drop Hint */}
+      {isDraggingOver && (
+        <div className='rounded bg-blue-100 py-2 text-center font-medium text-blue-600 text-xs dark:bg-blue-900/40 dark:text-blue-400'>
+          Déposez les fichiers ici
+        </div>
+      )}
+
       {/* Selected Files Display */}
       {selectedFiles.length > 0 && (
         <div className="space-y-1">
@@ -136,6 +182,13 @@ function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
         <div className='flex items-center gap-2 rounded bg-blue-50 px-2 py-1.5 dark:bg-blue-900/20'>
           <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
           <span className='text-blue-600 text-xs dark:text-blue-400'>Upload en cours...</span>
+        </div>
+      )}
+
+      {/* Drag & Drop Instruction (when not dragging) */}
+      {!isDraggingOver && selectedFiles.length === 0 && !isUploading && (
+        <div className='py-1 text-center text-muted-foreground text-xs'>
+          Glissez-déposez des fichiers ou utilisez les boutons ci-dessous
         </div>
       )}
 

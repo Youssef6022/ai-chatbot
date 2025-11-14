@@ -87,8 +87,8 @@ export function PreRunVariablesModal({
     }
   }, [isOpen, variables, filesNodes, hasInitialized, tempValues, tempFiles, variablesToAsk]);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, nodeId: string) => {
-    const files = event.target.files;
+  // Helper function to upload files
+  const uploadFilesToNode = async (files: FileList | File[], nodeId: string) => {
     if (!files || files.length === 0) return;
 
     // Mark this node as uploading
@@ -133,8 +133,41 @@ export function PreRunVariablesModal({
         next.delete(nodeId);
         return next;
       });
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, nodeId: string) => {
+    const files = event.target.files;
+    if (files) {
+      await uploadFilesToNode(files, nodeId);
       // Reset file input
       event.target.value = '';
+    }
+  };
+
+  // Drag & Drop handlers
+  const [dragOverNode, setDragOverNode] = useState<string | null>(null);
+
+  const handleDragOver = (e: React.DragEvent, nodeId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverNode(nodeId);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverNode(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, nodeId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverNode(null);
+
+    const files = e.dataTransfer.files;
+    if (files) {
+      await uploadFilesToNode(files, nodeId);
     }
   };
 
@@ -234,7 +267,16 @@ export function PreRunVariablesModal({
                   </div>
 
                   {/* File selection UI */}
-                  <div className='space-y-2 rounded-lg border border-border bg-muted/30 p-3'>
+                  <div
+                    className={`space-y-2 rounded-lg border p-3 transition-colors ${
+                      dragOverNode === node.id
+                        ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/20'
+                        : 'border-border bg-muted/30'
+                    }`}
+                    onDragOver={(e) => handleDragOver(e, node.id)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, node.id)}
+                  >
                     {uploadingFiles.has(node.id) && (
                       <div className='flex items-center gap-2 rounded bg-blue-50 px-2 py-1.5 dark:bg-blue-900/20'>
                         <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
@@ -266,8 +308,12 @@ export function PreRunVariablesModal({
                         </div>
                       </div>
                     ) : (
-                      <div className='py-1 text-center text-muted-foreground text-xs'>
-                        Aucun fichier sélectionné
+                      <div className='py-2 text-center text-muted-foreground text-xs'>
+                        {dragOverNode === node.id ? (
+                          <span className='font-medium text-blue-600 dark:text-blue-400'>Déposez les fichiers ici</span>
+                        ) : (
+                          <span>Glissez-déposez des fichiers ou utilisez les boutons ci-dessous</span>
+                        )}
                       </div>
                     )}
 
