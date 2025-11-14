@@ -1981,14 +1981,19 @@ export default function WorkflowsPage() {
 
 
   const updateNodeData = useCallback((nodeId: string, data: any) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === nodeId) {
-          return { ...node, data: { ...node.data, ...data } };
-        }
-        return node;
-      })
-    );
+    return new Promise<void>((resolve) => {
+      setNodes((nds) => {
+        const updated = nds.map((node) => {
+          if (node.id === nodeId) {
+            return { ...node, data: { ...node.data, ...data } };
+          }
+          return node;
+        });
+        // Resolve after state update is queued
+        setTimeout(() => resolve(), 0);
+        return updated;
+      });
+    });
   }, [setNodes]);
 
   const deleteNode = useCallback((nodeId: string) => {
@@ -2250,12 +2255,12 @@ export default function WorkflowsPage() {
     
     try {
       // First, clear all previous results from Generate and Decision nodes before starting
-      [...generateNodes, ...decisionNodes].forEach(node => {
-        updateNodeData(node.id, { result: '', isLoading: false, executionState: 'idle', selectedChoice: undefined });
-      });
+      for (const node of [...generateNodes, ...decisionNodes]) {
+        await updateNodeData(node.id, { result: '', isLoading: false, executionState: 'idle', selectedChoice: undefined });
+      }
 
       // Wait for state to update
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Create initial execution order (only root nodes without incoming edges)
       const rootNodes = nodes.filter(node => {
@@ -2635,9 +2640,9 @@ export default function WorkflowsPage() {
   };
   
   const processGenerateNode = async (generateNode: any, currentNodes: any[], inputEdge?: any, filesEdges?: any[]) => {
-    try {
-      const nodeName = generateNode.data.variableName || generateNode.data.label || 'AI Agent';
+    const nodeName = generateNode.data.variableName || generateNode.data.label || 'AI Agent';
 
+    try {
       console.log(`[processGenerateNode] Called for node ${generateNode.id} (${nodeName})`);
 
       // Check if node is in processing set - CRITICAL CHECK
@@ -2650,7 +2655,7 @@ export default function WorkflowsPage() {
       addExecutionLog('info', `Starting generation...`, generateNode.id, nodeName);
 
       // Set processing state (orange)
-      updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true, executionState: 'processing' });
+      await updateNodeData(generateNode.id, { result: 'Generating...', isLoading: true, executionState: 'processing' });
 
       // Get the latest node state to ensure fresh data
       const latestNodes = await new Promise<any[]>(resolve => {
@@ -2725,8 +2730,26 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
       }
 
       console.log(`[processGenerateNode] Making API call for node ${generateNode.id}`);
+      console.log(`[processGenerateNode] Model: ${generateNode.data.selectedModel}, Files: ${allFiles.length}`);
+
+      // Map ragCorpus from node data
+      let ragCorpus = 'none';
+      if (generateNode.data.isLegalEnabled) {
+        // Determine which RAG corpus based on the selected legal type
+        if (generateNode.data.legalCorpus === 'rag-civil') {
+          ragCorpus = 'rag-civil';
+        } else if (generateNode.data.legalCorpus === 'rag-commerce') {
+          ragCorpus = 'rag-commerce';
+        } else if (generateNode.data.legalCorpus === 'rag-droit-francais') {
+          ragCorpus = 'rag-droit-francais';
+        } else {
+          // Default to civil if legal is enabled but no specific corpus selected
+          ragCorpus = 'rag-civil';
+        }
+      }
 
       // Call the AI API with system and user prompts and files
+      const startTime = Date.now();
       const response = await fetch('/api/workflow/generate', {
         method: 'POST',
         headers: {
@@ -2739,12 +2762,76 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           files: allFiles.length > 0 ? allFiles : undefined,
           isSearchGroundingEnabled: generateNode.data.isSearchGroundingEnabled || false,
           isMapsGroundingEnabled: generateNode.data.isMapsGroundingEnabled || false,
-          isLegalEnabled: generateNode.data.isLegalEnabled || false,
+          ragCorpus: ragCorpus,
         }),
       });
-      
+
+      console.log(`[processGenerateNode] Response received after ${Date.now() - startTime}ms, status: ${response.status}`);
+
       if (response.ok) {
-        const result = await response.text();
+        console.log(`[processGenerateNode] Reading SSE stream for node ${generateNode.id}...`);
+
+        // Read SSE stream in real-time
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let result = '';
+        let thinking = '';
+
+        if (reader) {
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+
+              const chunk = decoder.decode(value);
+              const lines = chunk.split('\n');
+
+              for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                  const data = JSON.parse(line.slice(6));
+
+                  if (data.type === 'text-delta') {
+                    // Append text and update node in real-time
+                    result += data.textDelta;
+                    await updateNodeData(generateNode.id, {
+                      result: result,
+                      isLoading: true,
+                      executionState: 'processing'
+                    });
+                  } else if (data.type === 'thinking-delta') {
+                    // Append thinking and update node in real-time
+                    thinking += data.thinkingDelta;
+                    await updateNodeData(generateNode.id, {
+                      thinking: thinking,
+                      isLoading: true,
+                      executionState: 'processing'
+                    });
+                  } else if (data.type === 'finish') {
+                    // Final data
+                    result = data.text || result;
+                    thinking = data.thinking || thinking;
+                  } else if (data.type === 'error') {
+                    throw new Error(data.error);
+                  }
+                }
+              }
+            }
+          } finally {
+            reader.releaseLock();
+          }
+        }
+
+        const totalTime = Date.now() - startTime;
+        console.log(`[processGenerateNode] Got result (${result.length} chars) and thinking (${thinking.length} chars) after ${totalTime}ms total`);
+        console.log(`[processGenerateNode] First 100 chars of result: ${result.substring(0, 100)}...`);
+        if (thinking) {
+          console.log(`[processGenerateNode] First 100 chars of thinking: ${thinking.substring(0, 100)}...`);
+        }
+
+        // Log if this took longer than expected
+        if (totalTime > 15000) {
+          console.warn(`[processGenerateNode] ⚠️  Long generation time: ${totalTime}ms for node ${generateNode.id}`);
+        }
 
         // For decision nodes, parse the response to determine the selected choice
         if (currentGenerateNode?.type === 'decision') {
@@ -2778,8 +2865,9 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           }
 
           // Set completed state with selected choice
-          updateNodeData(generateNode.id, {
+          await updateNodeData(generateNode.id, {
             result,
+            thinking,
             selectedChoice,
             isLoading: false,
             executionState: 'completed'
@@ -2788,34 +2876,51 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
           // Log success
           addExecutionLog('success', `Decision made: ${selectedChoice}`, generateNode.id, nodeName);
         } else {
-          // For generate nodes, just set the result
-          updateNodeData(generateNode.id, { result, isLoading: false, executionState: 'completed' });
+          // For generate nodes, just set the result and thinking
+          await updateNodeData(generateNode.id, {
+            result,
+            thinking,
+            isLoading: false,
+            executionState: 'completed'
+          });
 
           // Log success
           addExecutionLog('success', `Generation completed successfully`, generateNode.id, nodeName);
         }
       } else {
-        const errorMsg = 'Error: Failed to generate content';
-        updateNodeData(generateNode.id, { 
-          result: errorMsg, 
+        // Try to get error message from response
+        let errorDetails = `${response.status} ${response.statusText}`;
+        try {
+          const errorText = await response.text();
+          if (errorText) {
+            errorDetails += `: ${errorText.substring(0, 200)}`;
+          }
+        } catch (e) {
+          // Ignore error reading error message
+        }
+
+        const errorMsg = `Error: Failed to generate content (${errorDetails})`;
+        console.error(`[processGenerateNode] ${errorMsg}`);
+        await updateNodeData(generateNode.id, {
+          result: errorMsg,
           isLoading: false,
           executionState: 'error'
         });
-        
+
         // Log error
-        addExecutionLog('error', `Generation failed: ${response.status} ${response.statusText}`, generateNode.id, nodeName);
+        addExecutionLog('error', `Generation failed: ${errorDetails}`, generateNode.id, nodeName);
       }
     } catch (error) {
-      console.error('Error processing generate node:', error);
-      const errorMsg = 'Error: Failed to generate content';
-      updateNodeData(generateNode.id, { 
-        result: errorMsg, 
+      console.error('[processGenerateNode] Error processing generate node:', error);
+      const errorMsg = `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      await updateNodeData(generateNode.id, {
+        result: errorMsg,
         isLoading: false,
         executionState: 'error'
       });
-      
+
       // Log error
-      addExecutionLog('error', `Generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`, generateNode.id, nodeName);
+      addExecutionLog('error', `Generation failed: ${errorMsg}`, generateNode.id, nodeName);
     }
   };
 
@@ -3912,7 +4017,40 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                       </div>
                     </div>
                   </div>
-                  
+
+                  {/* Thinking/Reasoning Block */}
+                  {editingNode.data.thinking && editingNode.data.thinking.trim() && (
+                    <div className='rounded-lg border border-purple-500/40 bg-purple-50/30 dark:bg-purple-950/30'>
+                      <div className='flex items-center justify-between border-border/40 border-b p-3'>
+                        <div className="flex items-center gap-2">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-600 dark:text-purple-400">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                          </svg>
+                          <span className='font-medium text-purple-700 text-xs dark:text-purple-300'>Thinking & Reasoning</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setExpandedField('thinking');
+                            setExpandedContent(editingNode.data.thinking || '');
+                          }}
+                          className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-purple-100/50 dark:hover:bg-purple-900/50'
+                          title="Expand"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-600 dark:text-purple-400">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="p-4">
+                        <div className='max-h-48 overflow-y-auto whitespace-pre-wrap italic text-purple-800 text-sm leading-relaxed dark:text-purple-200'>
+                          {editingNode.data.thinking}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Metadata */}
                   <div className='rounded-lg border border-border/40 bg-background/50 p-3'>
                     <h4 className='mb-2 font-medium text-foreground text-xs'>Generation Details</h4>

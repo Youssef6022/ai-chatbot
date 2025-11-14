@@ -100,7 +100,12 @@ export function WorkflowConsole({
       }
       
       markdownContent += `## Result\n\n${node.data.result}\n`;
-      
+
+      // Add thinking if available
+      if (node.data.thinking) {
+        markdownContent += `\n## Thinking/Reasoning\n\n${node.data.thinking}\n`;
+      }
+
       // Add file to ZIP
       zip.file(`${cleanFileName}.md`, markdownContent);
     });

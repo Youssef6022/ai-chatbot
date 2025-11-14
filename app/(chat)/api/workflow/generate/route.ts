@@ -152,8 +152,15 @@ export async function POST(request: NextRequest) {
     // Configure generation
     const config: any = {
       temperature: 0.7,
-      maxOutputTokens: 1000,
+      maxOutputTokens: 8192, // Increased from 1000 to allow full responses
       systemInstruction: systemInstruction,
+    };
+
+    // Enable thinking/reasoning for better quality responses
+    // (can be disabled or made configurable in the future)
+    config.thinkingConfig = {
+      thinkingBudget: 8192,
+      includeThoughts: true,
     };
 
     if (tools.length > 0) {
@@ -187,19 +194,83 @@ export async function POST(request: NextRequest) {
       finalMessage = currentMessage;
     }
 
-    // Send message and get response
-    const response = await chat.sendMessage({
+    // Send message and stream response (same as /chat-genai)
+    const response = await chat.sendMessageStream({
       message: finalMessage,
     });
 
-    console.log('✅ Message sent to AI, got response');
+    console.log('✅ Message sent to AI, streaming response...');
 
-    // Extract text from response
-    const fullText = response.text || '';
+    // Create SSE stream for real-time updates
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          let fullText = '';
+          let fullThinkingText = '';
 
-    return new Response(fullText, {
+          for await (const chunk of response) {
+            // Check for thinking in parts (same as /api/chat)
+            const rawChunk = chunk as any;
+            if (rawChunk.candidates?.[0]?.content?.parts) {
+              for (const part of rawChunk.candidates[0].content.parts) {
+                // If this part is marked as a thought, stream it separately
+                if (part.thought && part.text) {
+                  fullThinkingText += part.text;
+                  console.log('💭 Thinking chunk:', part.text.substring(0, 100));
+
+                  // Send thinking delta
+                  const thinkingData = {
+                    type: 'thinking-delta',
+                    thinkingDelta: part.text,
+                  };
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify(thinkingData)}\n\n`));
+                }
+              }
+            }
+
+            // Stream regular text
+            if (chunk.text) {
+              fullText += chunk.text;
+
+              // Send text delta
+              const textData = {
+                type: 'text-delta',
+                textDelta: chunk.text,
+              };
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(textData)}\n\n`));
+            }
+          }
+
+          console.log('📄 Full text length:', fullText.length, 'first 200 chars:', fullText.substring(0, 200));
+          console.log('💭 Thinking text length:', fullThinkingText.length);
+
+          // Send finish event with complete data
+          const finishData = {
+            type: 'finish',
+            text: fullText,
+            thinking: fullThinkingText,
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(finishData)}\n\n`));
+
+          controller.close();
+        } catch (error: any) {
+          console.error('Workflow streaming error:', error);
+          const errorData = {
+            type: 'error',
+            error: error.message || 'Unknown error',
+          };
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorData)}\n\n`));
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
       headers: {
-        'Content-Type': 'text/plain',
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
       },
     });
   } catch (error) {
