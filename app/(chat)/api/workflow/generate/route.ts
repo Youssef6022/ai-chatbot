@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
     // Configure generation
     const config: any = {
       temperature: 0.7,
-      maxOutputTokens: 8192, // Increased from 1000 to allow full responses
+      maxOutputTokens: 65536, // Maximum tokens for very long responses
       systemInstruction: systemInstruction,
     };
 
