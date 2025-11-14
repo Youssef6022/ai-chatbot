@@ -646,6 +646,9 @@ export default function WorkflowsPage() {
     usedInNodes: Array<{ id: string; label: string; type: string }>;
   } | null>(null);
 
+  // Auto-save indicator state
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
   // Flag to prevent double execution
   const isExecutingRef = useRef(false);
 
@@ -1446,8 +1449,9 @@ export default function WorkflowsPage() {
     if (!currentWorkflowId) return;
 
     try {
+      setAutoSaveStatus('saving');
       const workflowData = prepareWorkflowData();
-      
+
       const response = await fetch(`/api/workflows/${currentWorkflowId}`, {
         method: 'PUT',
         headers: {
@@ -1463,9 +1467,15 @@ export default function WorkflowsPage() {
 
       if (response.ok) {
         console.log('Workflow auto-saved successfully');
+        setAutoSaveStatus('saved');
+        // Reset to idle after 2 seconds
+        setTimeout(() => setAutoSaveStatus('idle'), 2000);
+      } else {
+        setAutoSaveStatus('idle');
       }
     } catch (error) {
       console.error('Auto-save failed:', error);
+      setAutoSaveStatus('idle');
     }
   }, [currentWorkflowId, workflowTitle, prepareWorkflowData]);
 
@@ -3037,7 +3047,28 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
 
         {/* Right side - Action buttons floating */}
         <div className='flex items-center gap-3'>
-
+          {/* Auto-save indicator */}
+          {currentWorkflowId && (
+            <div className='flex items-center gap-2 rounded-full border-2 border-border/60 bg-background/60 px-3 py-2 shadow-sm backdrop-blur-sm'>
+              {autoSaveStatus === 'saving' && (
+                <>
+                  <div className="h-2 w-2 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+                  <span className='text-muted-foreground text-xs'>Sauvegarde...</span>
+                </>
+              )}
+              {autoSaveStatus === 'saved' && (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-500">
+                    <polyline points="20,6 9,17 4,12"/>
+                  </svg>
+                  <span className='text-green-600 text-xs dark:text-green-500'>Sauvegardé</span>
+                </>
+              )}
+              {autoSaveStatus === 'idle' && (
+                <span className='text-muted-foreground text-xs'>Auto-save activé</span>
+              )}
+            </div>
+          )}
 
           {/* Run Button */}
           <Button
