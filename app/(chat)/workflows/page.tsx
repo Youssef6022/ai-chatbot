@@ -36,6 +36,7 @@ import { GenerateNode } from '@/components/workflow/generate-node';
 import { FilesNode } from '@/components/workflow/files-node';
 import { NoteNode } from '@/components/workflow/note-node';
 import { DecisionNode } from '@/components/workflow/decision-node';
+import { StartNode } from '@/components/workflow/start-node';
 import { CustomEdge } from '@/components/workflow/custom-edge';
 import type { Variable } from '@/components/workflow/variables-panel';
 import { WorkflowConsole } from '@/components/workflow/workflow-console';
@@ -646,6 +647,7 @@ const nodeTypes = {
   files: FilesNode,
   note: NoteNode,
   decision: DecisionNode,
+  start: StartNode,
 };
 
 const edgeTypes = {
@@ -654,10 +656,18 @@ const edgeTypes = {
 
 const initialNodes = [
   {
+    id: 'start-default',
+    type: 'start',
+    position: { x: 250, y: 100 },
+    data: {
+      label: 'Start',
+    },
+  } as any,
+  {
     id: '1',
     type: 'generate',
-    position: { x: 300, y: 200 },
-    data: { 
+    position: { x: 250, y: 250 },
+    data: {
       label: 'Generate Text',
       selectedModel: 'chat-model-medium',
       result: '',
@@ -676,7 +686,14 @@ const initialNodes = [
   },
 ];
 
-const initialEdges: Edge[] = [];
+const initialEdges: Edge[] = [
+  {
+    id: 'start-default-1',
+    source: 'start-default',
+    target: '1',
+    type: 'custom',
+  } as any,
+];
 
 // Component to handle auto-fit view when nodes change
 function AutoFitView({ nodes }: { nodes: any[] }) {
@@ -982,13 +999,25 @@ export default function WorkflowsPage() {
   
   // Custom onNodesChange that saves to history for position changes
   const onNodesChange = useCallback((changes: any[]) => {
-    onNodesChangeInternal(changes);
-    
+    // Filter out any removal attempts on the Start node
+    const filteredChanges = changes.filter(change => {
+      if (change.type === 'remove') {
+        const nodeToRemove = nodes.find(node => node.id === change.id);
+        if (nodeToRemove?.type === 'start') {
+          toast.error('Le bloc Start ne peut pas être supprimé');
+          return false; // Block this change
+        }
+      }
+      return true;
+    });
+
+    onNodesChangeInternal(filteredChanges);
+
     // Check if this is a position change (drag end)
-    const positionChanges = changes.filter(change => 
+    const positionChanges = filteredChanges.filter(change =>
       change.type === 'position' && change.dragging === false
     );
-    
+
     if (positionChanges.length > 0) {
       // Save to history after position change
       setTimeout(() => {
@@ -998,7 +1027,7 @@ export default function WorkflowsPage() {
         });
       }, 50);
     }
-  }, [onNodesChangeInternal, edges, saveToHistory]);
+  }, [onNodesChangeInternal, edges, saveToHistory, nodes]);
   
   // Use the internal onEdgesChange directly
   const onEdgesChange = onEdgesChangeInternal;
@@ -1121,7 +1150,7 @@ export default function WorkflowsPage() {
         
         if (workflowData?.nodes && workflowData.edges) {
           // Restore nodes with proper callback functions
-          const importedNodes = workflowData.nodes.map((node: any) => ({
+          let importedNodes = workflowData.nodes.map((node: any) => ({
             id: node.id,
             type: node.type,
             position: node.position,
@@ -1134,6 +1163,21 @@ export default function WorkflowsPage() {
               onDelete: () => {},
             }
           }));
+
+          // Ensure a Start node exists
+          const hasStartNode = importedNodes.some((node: any) => node.type === 'start');
+          if (!hasStartNode) {
+            // Add default Start node if missing
+            const startNode = {
+              id: 'start-default',
+              type: 'start',
+              position: { x: 250, y: 100 },
+              data: {
+                label: 'Start',
+              },
+            } as any;
+            importedNodes = [startNode, ...importedNodes];
+          }
 
           // Restore edges
           const importedEdges = workflowData.edges.map((edge: any) => ({
@@ -1182,7 +1226,7 @@ export default function WorkflowsPage() {
       
       if (workflowData?.nodes && workflowData.edges) {
         // Restore nodes with proper callback functions
-        const importedNodes = workflowData.nodes.map((node: any) => ({
+        let importedNodes = workflowData.nodes.map((node: any) => ({
           id: node.id,
           type: node.type,
           position: node.position,
@@ -1195,16 +1239,31 @@ export default function WorkflowsPage() {
             onDelete: () => {},
           }
         }));
-        
+
+        // Ensure a Start node exists
+        const hasStartNode = importedNodes.some((node: any) => node.type === 'start');
+        if (!hasStartNode) {
+          // Add default Start node if missing
+          const startNode = {
+            id: 'start-default',
+            type: 'start',
+            position: { x: 250, y: 100 },
+            data: {
+              label: 'Start',
+            },
+          } as any;
+          importedNodes = [startNode, ...importedNodes];
+        }
+
         // Restore edges
         const importedEdges = workflowData.edges.map((edge: any) => ({
           ...edge,
           type: 'custom'
         }));
-        
+
         // Restore variables if they exist
         const importedVariables = workflowData.variables || [];
-        
+
         setNodes(importedNodes);
         setEdges(importedEdges);
         setVariables(importedVariables);
@@ -1617,7 +1676,7 @@ export default function WorkflowsPage() {
         }
 
         // Restore nodes with proper callback functions
-        const importedNodes = workflowData.nodes.map((node: any) => ({
+        let importedNodes = workflowData.nodes.map((node: any) => ({
           id: node.id,
           type: node.type,
           position: node.position,
@@ -1630,6 +1689,21 @@ export default function WorkflowsPage() {
             onDelete: () => {},
           }
         }));
+
+        // Ensure a Start node exists
+        const hasStartNode = importedNodes.some((node: any) => node.type === 'start');
+        if (!hasStartNode) {
+          // Add default Start node if missing
+          const startNode = {
+            id: 'start-default',
+            type: 'start',
+            position: { x: 250, y: 100 },
+            data: {
+              label: 'Start',
+            },
+          } as any;
+          importedNodes = [startNode, ...importedNodes];
+        }
 
         // Restore edges
         const importedEdges = workflowData.edges.map((edge: any) => ({
@@ -1803,6 +1877,18 @@ export default function WorkflowsPage() {
           connectingFrom.handleId === 'files' && handleId === 'files') {
         return true;
       }
+
+      // Start output → Generate input
+      if (sourceNode.type === 'start' && targetNode.type === 'generate' &&
+          connectingFrom.handleId === 'output' && handleId === 'input') {
+        return true;
+      }
+
+      // Start output → Decision input
+      if (sourceNode.type === 'start' && targetNode.type === 'decision' &&
+          connectingFrom.handleId === 'output' && handleId === 'input') {
+        return true;
+      }
     }
 
     return false;
@@ -1910,6 +1996,37 @@ export default function WorkflowsPage() {
         };
         newEdges = addEdge(newEdge, edges);
       }
+      // Cas 7: Start → Generate (chaînage via input)
+      else if (sourceNode.type === 'start' && targetNode.type === 'generate' &&
+               params.sourceHandle === 'output' && params.targetHandle === 'input') {
+        // Supprimer toute connexion existante vers le même handle du même nœud Generate
+        const edgesWithoutTargetConnection = edges.filter(edge =>
+          !(edge.target === params.target && edge.targetHandle === params.targetHandle)
+        );
+        const newEdge = {
+          ...params,
+          className: 'generate-to-generate',
+          data: {
+            sourceType: sourceNode.type,
+            targetType: targetNode.type
+          }
+        };
+        newEdges = addEdge(newEdge, edgesWithoutTargetConnection);
+      }
+      // Cas 8: Start → Decision (chaînage via input - permet connexions multiples)
+      else if (sourceNode.type === 'start' && targetNode.type === 'decision' &&
+               params.sourceHandle === 'output' && params.targetHandle === 'input') {
+        // Permettre plusieurs connexions vers le handle input du Decision node
+        const newEdge = {
+          ...params,
+          className: 'generate-to-generate',
+          data: {
+            sourceType: sourceNode.type,
+            targetType: targetNode.type
+          }
+        };
+        newEdges = addEdge(newEdge, edges);
+      }
 
       if (newEdges !== edges) {
         setEdges(newEdges);
@@ -1964,6 +2081,18 @@ export default function WorkflowsPage() {
     // Files → Decision (files)
     if (sourceNode.type === 'files' && targetNode.type === 'decision' &&
         connection.sourceHandle === 'files' && connection.targetHandle === 'files') {
+      return true;
+    }
+
+    // Start → Generate (chaînage via input)
+    if (sourceNode.type === 'start' && targetNode.type === 'generate' &&
+        connection.sourceHandle === 'output' && connection.targetHandle === 'input') {
+      return true;
+    }
+
+    // Start → Decision (chaînage via input)
+    if (sourceNode.type === 'start' && targetNode.type === 'decision' &&
+        connection.sourceHandle === 'output' && connection.targetHandle === 'input') {
       return true;
     }
 
@@ -2050,6 +2179,13 @@ export default function WorkflowsPage() {
   }, [setNodes]);
 
   const deleteNode = useCallback((nodeId: string) => {
+    // Prevent deletion of the Start node
+    const nodeToDelete = nodes.find(node => node.id === nodeId);
+    if (nodeToDelete?.type === 'start') {
+      toast.error('Le bloc Start ne peut pas être supprimé');
+      return;
+    }
+
     const newNodes = nodes.filter(node => node.id !== nodeId);
     const newEdges = edges.filter(edge => edge.source !== nodeId && edge.target !== nodeId);
     setNodes(newNodes);
@@ -2198,6 +2334,12 @@ export default function WorkflowsPage() {
     saveToHistory(newNodes, edges);
   }, [setNodes, nodes, edges, saveToHistory]);
 
+  // Start node is created by default and cannot be added manually
+  // const addStartNode = useCallback(() => {
+  //   toast.error('Le bloc Start est déjà présent et ne peut pas être ajouté');
+  // }, []);
+
+
   // Function that actually executes the workflow
   const executeWorkflow = useCallback(async (variablesToUse?: Variable[]) => {
     // Prevent double execution
@@ -2315,13 +2457,34 @@ export default function WorkflowsPage() {
       // Wait for state to update
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Create initial execution order (only root nodes without incoming edges)
-      const rootNodes = nodes.filter(node => {
-        const hasIncomingEdge = edges.some(edge => edge.target === node.id);
-        return !hasIncomingEdge && (node.type === 'generate' || node.type === 'decision' || node.type === 'files');
-      });
+      // Find the Start node - execution MUST begin from Start
+      const startNode = nodes.find(node => node.type === 'start');
 
-      console.log('[executeWorkflow] Root nodes:', rootNodes.map(n => n.id));
+      if (!startNode) {
+        addExecutionLog('error', 'Le workflow doit commencer par un bloc Start');
+        showNotification('Le workflow doit commencer par un bloc Start', 'error');
+        isExecutingRef.current = false;
+        setIsRunning(false);
+        return;
+      }
+
+      // Get nodes connected directly from Start node
+      const startOutputEdges = edges.filter(edge => edge.source === startNode.id && edge.sourceHandle === 'output');
+
+      if (startOutputEdges.length === 0) {
+        addExecutionLog('error', 'Le bloc Start doit être connecté à au moins un nœud');
+        showNotification('Le bloc Start doit être connecté à au moins un nœud', 'error');
+        isExecutingRef.current = false;
+        setIsRunning(false);
+        return;
+      }
+
+      // Root nodes are the nodes directly connected from Start
+      const rootNodes = startOutputEdges
+        .map(edge => nodes.find(n => n.id === edge.target))
+        .filter(Boolean);
+
+      console.log('[executeWorkflow] Starting from Start node, root nodes:', rootNodes.map(n => n.id));
 
       // Process nodes recursively starting from root nodes
       const processedNodes = new Set<string>();
