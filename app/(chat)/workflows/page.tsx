@@ -3968,87 +3968,155 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
               {/* Results View - replaces content in same section */}
               {showResults && editingNode.type === 'generate' && editingNode.data.result && (
                 <div className="space-y-4">
-                  {/* Full Results Content */}
-                  <div className='rounded-lg border border-border/40 bg-muted/30'>
-                    <div className='flex items-center justify-between border-border/40 border-b p-3'>
-                      <span className='font-medium text-muted-foreground text-xs'>Generated Content</span>
-                      <div className="flex items-center gap-2">
-                        <button 
-                          onClick={() => {
-                            // Create and download markdown file
-                            const content = editingNode.data.result || '';
-                            const fileName = `${editingNode.data.variableName || 'ai-result'}-${Date.now()}.md`;
-                            const blob = new Blob([content], { type: 'text/markdown' });
-                            const url = URL.createObjectURL(blob);
-                            const link = document.createElement('a');
-                            link.href = url;
-                            link.download = fileName;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
-                          }}
-                          className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
-                          title="Download as Markdown"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7,10 12,15 17,10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                          </svg>
-                        </button>
-                        <button 
-                          onClick={() => {
-                            setExpandedField('result');
-                            setExpandedContent(editingNode.data.result || '');
-                          }}
-                          className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
-                          title="Expand"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <div className='max-h-48 overflow-y-auto whitespace-pre-wrap text-foreground text-sm leading-relaxed'>
-                        {editingNode.data.result}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Thinking/Reasoning Block */}
+                  {/* Thinking/Reasoning Block - Show first during generation, collapse when done */}
                   {editingNode.data.thinking && editingNode.data.thinking.trim() && (
-                    <div className='rounded-lg border border-purple-500/40 bg-purple-50/30 dark:bg-purple-950/30'>
-                      <div className='flex items-center justify-between border-border/40 border-b p-3'>
+                    <details
+                      open={editingNode.data.isLoading}
+                      className='group rounded-lg border border-purple-500/40 bg-purple-50/30 transition-all duration-300 ease-in-out dark:bg-purple-950/30'
+                    >
+                      <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all duration-200 hover:bg-purple-100/20 dark:hover:bg-purple-900/20'>
                         <div className="flex items-center gap-2">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-600 dark:text-purple-400">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-purple-600 transition-transform duration-200 group-open:rotate-90 dark:text-purple-400"
+                          >
+                            <path d="M9 18l6-6-6-6"/>
                           </svg>
                           <span className='font-medium text-purple-700 text-xs dark:text-purple-300'>Thinking & Reasoning</span>
+                          {editingNode.data.isLoading && (
+                            <span className='ml-2 animate-pulse text-[10px] italic text-purple-600/60 dark:text-purple-400/60'>streaming...</span>
+                          )}
                         </div>
-                        <button
-                          onClick={() => {
-                            setExpandedField('thinking');
-                            setExpandedContent(editingNode.data.thinking || '');
-                          }}
-                          className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-purple-100/50 dark:hover:bg-purple-900/50'
-                          title="Expand"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-600 dark:text-purple-400">
-                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              // Create and download markdown file
+                              const content = editingNode.data.thinking || '';
+                              const fileName = `${editingNode.data.variableName || 'ai-thinking'}-thinking-${Date.now()}.md`;
+                              const blob = new Blob([content], { type: 'text/markdown' });
+                              const url = URL.createObjectURL(blob);
+                              const link = document.createElement('a');
+                              link.href = url;
+                              link.download = fileName;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              URL.revokeObjectURL(url);
+                            }}
+                            className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-purple-100/50 dark:hover:bg-purple-900/50'
+                            title="Download as Markdown"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-600 dark:text-purple-400">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="7,10 12,15 17,10"/>
+                              <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setExpandedField('thinking');
+                              setExpandedContent(editingNode.data.thinking || '');
+                            }}
+                            className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-purple-100/50 dark:hover:bg-purple-900/50'
+                            title="Expand fullscreen"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-purple-600 dark:text-purple-400">
+                              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </summary>
+                      <div className="overflow-hidden transition-all duration-300 ease-in-out">
+                        <div className="p-4 animate-in fade-in duration-200">
+                          <div className='max-h-48 overflow-y-auto whitespace-pre-wrap italic text-purple-800 text-sm leading-relaxed dark:text-purple-200'>
+                            {editingNode.data.thinking}
+                          </div>
+                        </div>
+                      </div>
+                    </details>
+                  )}
+
+                  {/* Generated Content - Collapsible, show when NOT loading */}
+                  {!editingNode.data.isLoading && (
+                    <details
+                      open
+                      className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300 ease-in-out'
+                    >
+                      <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all duration-200 hover:bg-muted/50'>
+                        <div className="flex items-center gap-2">
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                          >
+                            <path d="M9 18l6-6-6-6"/>
                           </svg>
-                        </button>
-                      </div>
-                      <div className="p-4">
-                        <div className='max-h-48 overflow-y-auto whitespace-pre-wrap italic text-purple-800 text-sm leading-relaxed dark:text-purple-200'>
-                          {editingNode.data.thinking}
+                          <span className='font-medium text-muted-foreground text-xs'>Generated Content</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              // Create and download markdown file
+                              const content = editingNode.data.result || '';
+                              const fileName = `${editingNode.data.variableName || 'ai-result'}-${Date.now()}.md`;
+                              const blob = new Blob([content], { type: 'text/markdown' });
+                              const url = URL.createObjectURL(blob);
+                              const link = document.createElement('a');
+                              link.href = url;
+                              link.download = fileName;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              URL.revokeObjectURL(url);
+                            }}
+                            className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
+                            title="Download as Markdown"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="7,10 12,15 17,10"/>
+                              <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setExpandedField('result');
+                              setExpandedContent(editingNode.data.result || '');
+                            }}
+                            className='flex h-4 w-4 items-center justify-center rounded transition-colors hover:bg-muted/20'
+                            title="Expand fullscreen"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </summary>
+                      <div className="overflow-hidden transition-all duration-300 ease-in-out">
+                        <div className="p-4 animate-in fade-in duration-200">
+                          <div className='max-h-48 overflow-y-auto whitespace-pre-wrap text-foreground text-sm leading-relaxed'>
+                            {editingNode.data.result}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </details>
                   )}
 
                   {/* Metadata */}
