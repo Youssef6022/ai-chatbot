@@ -273,3 +273,46 @@
   transform: translate(-50%, -50%) scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
+/* Beautiful scrollbar for variables panel */
+.variables-panel-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.variables-panel-scrollbar::-webkit-scrollbar-track {
+  background: rgb(243 244 246);
+  border-radius: 10px;
+}
+
+.variables-panel-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(156 163 175);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.variables-panel-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(107 114 128);
+}
+
+/* Dark mode scrollbar */
+.dark .variables-panel-scrollbar::-webkit-scrollbar-track {
+  background: rgb(31 41 55);
+}
+
+.dark .variables-panel-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(75 85 99);
+}
+
+.dark .variables-panel-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(107 114 128);
+}
+
+/* Firefox scrollbar */
+.variables-panel-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(156 163 175) rgb(243 244 246);
+}
+
+.dark .variables-panel-scrollbar {
+  scrollbar-color: rgb(75 85 99) rgb(31 41 55);
+}

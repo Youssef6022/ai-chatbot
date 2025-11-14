@@ -8,7 +8,7 @@ interface HighlightedTextareaProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
-  variables?: Array<{ name: string; value: string }>;
+  variables?: Array<{ name: string; value: string; type?: 'predefined' | 'global' | 'global-ask' | 'ai' }>;
   onVariableValidation?: (hasInvalidVariables: boolean, invalidVariables: string[]) => void;
   noBorder?: boolean;
 }
@@ -73,6 +73,30 @@ export function HighlightedTextarea({
       .replace(/'/g, '&#039;');
   };
 
+  // Get color class based on variable type
+  const getVariableColorClass = useCallback((variableName: string) => {
+    const variableInfo = variables.find(v => v.name === variableName);
+
+    if (!variableInfo) {
+      // Invalid variable - orange (same as global-ask)
+      return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300';
+    }
+
+    // Return color based on type
+    switch (variableInfo.type) {
+      case 'predefined':
+        return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300';
+      case 'global':
+        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300';
+      case 'global-ask':
+        return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300';
+      case 'ai':
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+      default:
+        return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300';
+    }
+  }, [variables]);
+
   // Create highlighted HTML
   const createHighlightedText = useCallback((text: string) => {
     const { foundVariables, invalidVariables } = validateVariables(text);
@@ -90,12 +114,9 @@ export function HighlightedTextarea({
       const beforeText = text.slice(lastIndex, variable.start);
       highlightedText += escapeHtml(beforeText);
 
-      // Add highlighted variable (escape HTML)
+      // Add highlighted variable (escape HTML) - always use color based on type
       const variableText = text.slice(variable.start, variable.end);
-      const isInvalid = invalidVariables.includes(variable.name);
-      const colorClass = isInvalid
-        ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+      const colorClass = getVariableColorClass(variable.name);
 
       highlightedText += `<span class="rounded ${colorClass}" style="padding: 0 2px; margin: 0 -2px; box-decoration-break: clone; -webkit-box-decoration-break: clone;">${escapeHtml(variableText)}</span>`;
 
@@ -109,7 +130,7 @@ export function HighlightedTextarea({
     highlightedText += '\n';
 
     return highlightedText;
-  }, [validateVariables]);
+  }, [validateVariables, getVariableColorClass]);
 
   // Track previous validation result to prevent infinite loops
   const prevValidationResultRef = useRef<{
