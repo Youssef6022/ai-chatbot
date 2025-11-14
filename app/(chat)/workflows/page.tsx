@@ -4525,9 +4525,9 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
       {expandedField !== null && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-8 backdrop-blur-sm'>
           <div className='h-[70vh] w-[90vw] rounded-lg border border-border bg-background shadow-lg'>
-            {expandedField === 'result' ? (
+            {expandedField === 'result' || expandedField === 'thinking' ? (
               <div className='h-full overflow-y-auto p-6'>
-                <div className='whitespace-pre-wrap text-foreground text-sm leading-relaxed'>
+                <div className={`whitespace-pre-wrap text-sm leading-relaxed ${expandedField === 'thinking' ? 'italic text-purple-800 dark:text-purple-200' : 'text-foreground'}`}>
                   {expandedContent}
                 </div>
               </div>
