@@ -44,43 +44,29 @@ export async function POST(request: NextRequest) {
 
           for (const file of files) {
             if (file.url && file.contentType) {
-              if (file.contentType.startsWith('image/')) {
-                // For images, fetch and convert to base64 for AI vision
-                console.log('🖼️ Processing image:', file.url);
-                try {
-                  const fileResponse = await fetch(file.url);
-                  console.log('✅ Image fetch status:', fileResponse.status);
+              // Treat all files as binary data (images, PDFs, etc.)
+              console.log('📄 Processing file:', file.url, 'type:', file.contentType);
+              try {
+                const fileResponse = await fetch(file.url);
+                console.log('✅ File fetch status:', fileResponse.status);
 
-                  if (fileResponse.ok) {
-                    const arrayBuffer = await fileResponse.arrayBuffer();
-                    console.log('📦 ArrayBuffer size:', arrayBuffer.byteLength);
+                if (fileResponse.ok) {
+                  const arrayBuffer = await fileResponse.arrayBuffer();
+                  console.log('📦 ArrayBuffer size:', arrayBuffer.byteLength);
 
-                    const base64Data = Buffer.from(arrayBuffer).toString('base64');
-                    console.log('🔐 Base64 data length:', base64Data.length);
+                  const base64Data = Buffer.from(arrayBuffer).toString('base64');
+                  console.log('🔐 Base64 data length:', base64Data.length);
 
-                    messageParts.push({
-                      inlineData: {
-                        mimeType: file.contentType,
-                        data: base64Data,
-                      },
-                    });
-                    console.log('✅ Image part added successfully');
-                  }
-                } catch (error) {
-                  console.error(`❌ Error fetching image ${file.name}:`, error);
+                  messageParts.push({
+                    inlineData: {
+                      mimeType: file.contentType,
+                      data: base64Data,
+                    },
+                  });
+                  console.log('✅ File part added successfully');
                 }
-              } else {
-                // For text files, fetch content and add as text
-                try {
-                  const fileResponse = await fetch(file.url);
-                  if (fileResponse.ok) {
-                    const fileContent = await fileResponse.text();
-                    currentMessage += `\n\n--- Content of ${file.name} ---\n${fileContent}\n--- End of ${file.name} ---\n`;
-                  }
-                } catch (error) {
-                  console.error(`Error fetching file ${file.name}:`, error);
-                  currentMessage += `\n\n--- Error loading file ${file.name} ---\n`;
-                }
+              } catch (error) {
+                console.error(`❌ Error fetching file ${file.name}:`, error);
               }
             }
           }
