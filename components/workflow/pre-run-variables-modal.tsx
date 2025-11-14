@@ -45,27 +45,47 @@ export function PreRunVariablesModal({
   const [expandedVariable, setExpandedVariable] = useState<string | null>(null);
   const [filePickerNodeId, setFilePickerNodeId] = useState<string | null>(null);
   const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Filter to only show variables that should be asked before run
   const variablesToAsk = variables.filter(v => v.askBeforeRun);
 
-  // Initialize temp values when modal opens
+  // Initialize temp values ONLY on first open or when new variables/nodes are added
   useEffect(() => {
     if (isOpen) {
-      const initialValues: Record<string, string> = {};
-      variablesToAsk.forEach(variable => {
-        initialValues[variable.id] = variable.value;
-      });
-      setTempValues(initialValues);
+      // Only initialize if not yet initialized OR if new variables/nodes were added
+      const currentVarIds = Object.keys(tempValues);
+      const newVarIds = variablesToAsk.map(v => v.id);
+      const hasNewVariables = newVarIds.some(id => !currentVarIds.includes(id));
 
-      // Initialize file selections
-      const initialFiles = new Map<string, Array<{ url: string; name: string; contentType: string }>>();
-      filesNodes.forEach(node => {
-        initialFiles.set(node.id, node.selectedFiles || []);
-      });
-      setTempFiles(initialFiles);
+      const currentFileNodeIds = Array.from(tempFiles.keys());
+      const newFileNodeIds = filesNodes.map(n => n.id);
+      const hasNewFileNodes = newFileNodeIds.some(id => !currentFileNodeIds.includes(id));
+
+      if (!hasInitialized || hasNewVariables || hasNewFileNodes) {
+        const initialValues: Record<string, string> = { ...tempValues };
+        variablesToAsk.forEach(variable => {
+          // Only set if not already set
+          if (initialValues[variable.id] === undefined) {
+            initialValues[variable.id] = variable.value;
+          }
+        });
+        setTempValues(initialValues);
+
+        // Initialize file selections
+        const initialFiles = new Map(tempFiles);
+        filesNodes.forEach(node => {
+          // Only set if not already set
+          if (!initialFiles.has(node.id)) {
+            initialFiles.set(node.id, node.selectedFiles || []);
+          }
+        });
+        setTempFiles(initialFiles);
+
+        setHasInitialized(true);
+      }
     }
-  }, [isOpen, variables, filesNodes]);
+  }, [isOpen, variables, filesNodes, hasInitialized, tempValues, tempFiles, variablesToAsk]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, nodeId: string) => {
     const files = event.target.files;
@@ -304,8 +324,16 @@ export function PreRunVariablesModal({
               onClick={handleConfirm}
               size="sm"
               className='flex-1'
+              disabled={uploadingFiles.size > 0}
             >
-              Lancer
+              {uploadingFiles.size > 0 ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Upload en cours...
+                </>
+              ) : (
+                'Lancer'
+              )}
             </Button>
           </div>
         </div>

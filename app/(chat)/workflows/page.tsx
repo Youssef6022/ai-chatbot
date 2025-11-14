@@ -63,6 +63,49 @@ interface UserFile {
 
 function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/files/upload/', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        const data = await response.json();
+        return {
+          url: data.url,
+          name: file.name,
+          contentType: file.type,
+        };
+      });
+
+      const uploadedFiles = await Promise.all(uploadPromises);
+
+      // Add uploaded files to the selected files list
+      onFilesChange([...selectedFiles, ...uploadedFiles]);
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      alert('Erreur lors de l\'upload des fichiers');
+    } finally {
+      setIsUploading(false);
+      // Reset file input
+      event.target.value = '';
+    }
+  };
 
   return (
     <div className="space-y-2">
@@ -88,16 +131,42 @@ function FilesSelector({ selectedFiles, onFilesChange }: FilesSelectorProps) {
         </div>
       )}
 
-      {/* Add Files Button */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className='flex w-full items-center justify-center gap-2 rounded border border-border border-dashed bg-muted/20 px-3 py-2 text-muted-foreground text-xs transition-colors hover:bg-muted/40'
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 5v14M5 12h14"/>
-        </svg>
-        Ajouter des fichiers
-      </button>
+      {/* Upload status */}
+      {isUploading && (
+        <div className='flex items-center gap-2 rounded bg-blue-50 px-2 py-1.5 dark:bg-blue-900/20'>
+          <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
+          <span className='text-blue-600 text-xs dark:text-blue-400'>Upload en cours...</span>
+        </div>
+      )}
+
+      {/* Add Files Buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className='flex flex-1 items-center justify-center gap-2 rounded border border-border border-dashed bg-muted/20 px-3 py-2 text-muted-foreground text-xs transition-colors hover:bg-muted/40'
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Bibliothèque
+        </button>
+        <label className='flex flex-1 cursor-pointer items-center justify-center gap-2 rounded border border-border border-dashed bg-muted/20 px-3 py-2 text-muted-foreground text-xs transition-colors hover:bg-muted/40'>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload
+          <input
+            type="file"
+            multiple
+            className="hidden"
+            onChange={handleFileUpload}
+            disabled={isUploading}
+          />
+        </label>
+      </div>
 
       {/* File Library Modal */}
       {isModalOpen && (
