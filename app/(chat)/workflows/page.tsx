@@ -3647,6 +3647,24 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
             {isRunning ? 'Running...' : 'Run'}
           </Button>
 
+          {/* History Button */}
+          <Button
+            onClick={() => {
+              setResultsModalView('history');
+              setSelectedHistoryExecution(null);
+              loadHistoryExecutions();
+              setShowResultsModal(true);
+            }}
+            size="sm"
+            className='flex h-10 items-center gap-2 rounded-full border-2 border-purple-500/60 bg-gradient-to-r from-purple-600 to-purple-700 px-4 shadow-purple-500/20 shadow-lg backdrop-blur-sm transition-all duration-200 hover:from-purple-700 hover:to-purple-800 hover:shadow-purple-500/30'
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Historique
+          </Button>
+
           {/* View Results Button - Only visible after workflow has run */}
           {!isRunning && nodes.some(n => (n.type === 'generate' || n.type === 'decision') && n.data.result) && (
             <Button
