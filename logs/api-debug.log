@@ -33890,3 +33890,571 @@
   "textPreview": "Excellente question. C'est un point fondamental qui touche à l'équilibre entre l'efficacité du recouvrement pour la banque et la protection du consommateur. Votre interrogation est parfaitement légiti"
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:19.458Z] 📥 INCOMING REQUEST
+{
+  "chatId": "a6ed0cce-ee25-4e17-919a-d3a4eaa82814",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?tab=t.0#heading=h.8fb9u1x4xzt"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:20.154Z] 🔗 URL Context tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:20.155Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "urlContext": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:20.157Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile et serviable.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:20.159Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:20.162Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:20.164Z] 📋 MESSAGE PARTS DETAILS
+{
+  "parts": [
+    {
+      "index": 0,
+      "type": "text",
+      "hasText": true,
+      "textPreview": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?",
+      "hasInlineData": false,
+      "hasFileData": false,
+      "hasVideoMetadata": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:21.819Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:21.824Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 316,
+      "textPreview": "**Processing Document Request**\n\nI've initiated the process of interpreting the user's intent. My fi",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:22.958Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 260,
+      "textPreview": "**Communicating Access Issues**\n\nI've just run into a snag. The `browse` tool couldn't retrieve the ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:22.981Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Je n'ai pas pu accéder au document à l'adresse https://docs.google.com/document/d/1zRKswSnSz_FkT8UNa",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 118,
+      "textPreview": "Je n'ai pas pu accéder au document à l'adresse https://docs.google.com/document/d/1zRKswSnSz_FkT8UNa",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:23.002Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "DDjCRXDk/edit?tab=t.0#heading=h.8fb9u1x4xzt. Il est possible que le document soit privé ou bloqué.",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 98,
+      "textPreview": "DDjCRXDk/edit?tab=t.0#heading=h.8fb9u1x4xzt. Il est possible que le document soit privé ou bloqué.",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:01:23.010Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 4,
+  "totalTextLength": 216,
+  "hadToolCalls": false,
+  "textPreview": "Je n'ai pas pu accéder au document à l'adresse https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?tab=t.0#heading=h.8fb9u1x4xzt. Il est possible que le document soit "
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:05.219Z] 📥 INCOMING REQUEST
+{
+  "chatId": "a9865c26-bf30-4953-b0ea-061b3af8f528",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?usp=sharing"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:06.157Z] 🔗 URL Context tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:06.158Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "urlContext": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:06.159Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile et serviable.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:06.160Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:06.162Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:06.163Z] 📋 MESSAGE PARTS DETAILS
+{
+  "parts": [
+    {
+      "index": 0,
+      "type": "text",
+      "hasText": true,
+      "textPreview": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?",
+      "hasInlineData": false,
+      "hasFileData": false,
+      "hasVideoMetadata": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:07.402Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:07.405Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 274,
+      "textPreview": "**Beginning Summarization Task**\n\nI'm starting the process of understanding the user's request. I ne",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:08.570Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 275,
+      "textPreview": "**Notifying the User**\n\nI've hit a roadblock. It seems I can't access the content of the Google Docs",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:08.594Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Je n'ai pas pu accéder au document à l'adresse https://docs.google.com/document/d/1zRKswSnSz_FkT8UNa",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 118,
+      "textPreview": "Je n'ai pas pu accéder au document à l'adresse https://docs.google.com/document/d/1zRKswSnSz_FkT8UNa",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:08.622Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "DDjCRXDk/edit?usp=sharing. Il est possible que le document soit bloqué ou qu'il nécessite des autori",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 139,
+      "textPreview": "DDjCRXDk/edit?usp=sharing. Il est possible que le document soit bloqué ou qu'il nécessite des autori",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:02:08.627Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 4,
+  "totalTextLength": 257,
+  "hadToolCalls": false,
+  "textPreview": "Je n'ai pas pu accéder au document à l'adresse https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?usp=sharing. Il est possible que le document soit bloqué ou qu'il né"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:15.461Z] 📥 INCOMING REQUEST
+{
+  "chatId": "a1af7cf3-67af-45da-9639-378761ae038a",
+  "model": "chat-model-medium",
+  "groundingType": "none",
+  "isReasoningEnabled": true,
+  "message": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?usp=sharing"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:16.426Z] 🔗 URL Context tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:16.427Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "urlContext": {}
+    }
+  ],
+  "toolsCount": 1,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:16.428Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un assistant utile et serviable.",
+  "hasTools": true,
+  "toolsCount": 1,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:16.429Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-flash",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:16.430Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:16.431Z] 📋 MESSAGE PARTS DETAILS
+{
+  "parts": [
+    {
+      "index": 0,
+      "type": "text",
+      "hasText": true,
+      "textPreview": "que dit ce doc https://docs.google.com/document/d/1zRKswSnSz_FkT8UNaLS8RDo387StN6IDIa3DDjCRXDk/edit?",
+      "hasInlineData": false,
+      "hasFileData": false,
+      "hasVideoMetadata": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:18.099Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:18.102Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 355,
+      "textPreview": "**Processing Document Request**\n\nI've initiated the process of accessing the Google Doc requested. C",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:19.151Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 356,
+      "textPreview": "**Reporting on Browse Attempt**\n\nI'm hitting a snag with the `browse` tool. It seems to have been bl",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:19.162Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": true,
+  "textPreview": "Je n'ai pas pu accéder au document à l'adresse fournie. Il est possible que le document soit privé o",
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text"
+      ],
+      "hasText": true,
+      "textLength": 148,
+      "textPreview": "Je n'ai pas pu accéder au document à l'adresse fournie. Il est possible que le document soit privé o",
+      "hasThought": false,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T21:03:19.168Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 3,
+  "totalTextLength": 148,
+  "hadToolCalls": false,
+  "textPreview": "Je n'ai pas pu accéder au document à l'adresse fournie. Il est possible que le document soit privé ou que les permissions ne permettent pas l'accès."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

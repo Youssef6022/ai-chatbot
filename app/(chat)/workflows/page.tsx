@@ -778,6 +778,10 @@ export default function WorkflowsPage() {
   // Pre-run variables modal state
   const [showPreRunModal, setShowPreRunModal] = useState(false);
 
+  // Results modal state
+  const [showResultsModal, setShowResultsModal] = useState(false);
+  const [selectedResultNodeId, setSelectedResultNodeId] = useState<string | null>(null);
+
   // Delete variable confirmation state
   const [deleteVariableConfirmation, setDeleteVariableConfirmation] = useState<{
     variableId: string;
@@ -3490,6 +3494,27 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
             )}
             {isRunning ? 'Running...' : 'Run'}
           </Button>
+
+          {/* View Results Button - Only visible after workflow has run */}
+          {!isRunning && nodes.some(n => (n.type === 'generate' || n.type === 'decision') && n.data.result) && (
+            <Button
+              onClick={() => {
+                const firstResultNode = nodes.find(n => (n.type === 'generate' || n.type === 'decision') && n.data.result);
+                if (firstResultNode) {
+                  setSelectedResultNodeId(firstResultNode.id);
+                  setShowResultsModal(true);
+                }
+              }}
+              size="sm"
+              className='flex h-10 items-center gap-2 rounded-full border-2 border-blue-500/60 bg-gradient-to-r from-blue-600 to-blue-700 px-4 shadow-blue-500/20 shadow-lg backdrop-blur-sm transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-blue-500/30'
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Voir les résultats
+            </Button>
+          )}
         </div>
       </div>
       
@@ -5299,6 +5324,288 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                 </Button>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Results Modal */}
+      {showResultsModal && (
+        <div className='fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-8 backdrop-blur-sm' onClick={() => setShowResultsModal(false)}>
+          <div className='flex h-[80vh] w-[90vw] flex-col rounded-lg border border-border bg-background shadow-lg' onClick={(e) => e.stopPropagation()}>
+            <div className='relative flex flex-1 overflow-hidden'>
+              {/* Left side - AI Agents List */}
+              <div className='w-80 border-border border-r p-4'>
+                <div className='mb-4'>
+                  <h3 className='font-semibold text-lg'>AI Agents exécutés</h3>
+                  <p className='text-muted-foreground text-xs'>Cliquez pour voir les détails</p>
+                </div>
+                <div className='space-y-2'>
+                  {nodes
+                    .filter(n => (n.type === 'generate' || n.type === 'decision') && n.data.result)
+                    .map((node) => (
+                      <button
+                        key={node.id}
+                        onClick={() => setSelectedResultNodeId(node.id)}
+                        className={`w-full rounded-lg border p-3 text-left transition-all ${
+                          selectedResultNodeId === node.id
+                            ? 'border-blue-500 bg-blue-50 shadow-sm dark:bg-blue-900/20'
+                            : 'border-border bg-background hover:bg-muted/50'
+                        }`}
+                      >
+                        <div className='flex items-center gap-2'>
+                          {node.type === 'generate' ? (
+                            <div className='flex h-6 w-6 items-center justify-center rounded bg-blue-100 dark:bg-blue-900/30'>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                              </svg>
+                            </div>
+                          ) : (
+                            <div className='flex h-6 w-6 items-center justify-center rounded bg-purple-100 dark:bg-purple-900/30'>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                              </svg>
+                            </div>
+                          )}
+                          <div className='flex-1'>
+                            <div className='font-medium text-sm'>
+                              {node.data.variableName || `${node.type === 'generate' ? 'AI Agent' : 'Decision'} ${node.id.slice(0, 6)}`}
+                            </div>
+                            <div className='text-muted-foreground text-xs'>
+                              {node.type === 'generate' ? 'Génération AI' : 'Décision'}
+                            </div>
+                          </div>
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className={selectedResultNodeId === node.id ? 'text-blue-500' : 'text-muted-foreground'}
+                          >
+                            <polyline points="9 18 15 12 9 6"/>
+                          </svg>
+                        </div>
+                      </button>
+                    ))}
+                </div>
+              </div>
+
+              {/* Right side - Content */}
+              <div className='flex-1 flex flex-col overflow-hidden'>
+                <div className='flex items-center justify-end border-border border-b p-4'>
+                  <button
+                    onClick={() => setShowResultsModal(false)}
+                    className='rounded-full p-2 transition-colors hover:bg-muted'
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <div className='flex-1 overflow-y-auto p-6'>
+                  {(() => {
+                    const selectedNode = nodes.find(n => n.id === selectedResultNodeId);
+                    if (!selectedNode) return null;
+
+                    return (
+                      <div className='space-y-3'>
+                        {/* Generated Content */}
+                        <details
+                          open
+                          className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300'
+                        >
+                          <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all hover:bg-muted/50'>
+                            <div className="flex items-center gap-2">
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                              >
+                                <path d="M9 18l6-6-6-6"/>
+                              </svg>
+                              <span className='font-medium text-muted-foreground text-xs'>Generated Content</span>
+                            </div>
+                          </summary>
+                          <div className="overflow-hidden transition-all duration-300">
+                            <div className="p-4">
+                              <div className='max-h-96 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed'>
+                                {selectedNode.data.result || 'Aucune réponse'}
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+
+                        {/* User Prompt */}
+                        {selectedNode.data.userPrompt && (
+                          <details
+                            className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300'
+                          >
+                            <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all hover:bg-muted/50'>
+                              <div className="flex items-center gap-2">
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                                >
+                                  <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                                <span className='font-medium text-muted-foreground text-xs'>User Prompt</span>
+                              </div>
+                            </summary>
+                            <div className="overflow-hidden transition-all duration-300">
+                              <div className="p-4">
+                                <div className='max-h-48 overflow-y-auto whitespace-pre-wrap font-mono text-sm leading-relaxed'>
+                                  {selectedNode.data.userPrompt}
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        )}
+
+                        {/* System Prompt */}
+                        {selectedNode.data.systemPrompt && (
+                          <details
+                            className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300'
+                          >
+                            <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all hover:bg-muted/50'>
+                              <div className="flex items-center gap-2">
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                                >
+                                  <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                                <span className='font-medium text-muted-foreground text-xs'>System Prompt</span>
+                              </div>
+                            </summary>
+                            <div className="overflow-hidden transition-all duration-300">
+                              <div className="p-4">
+                                <div className='max-h-48 overflow-y-auto whitespace-pre-wrap font-mono text-sm leading-relaxed'>
+                                  {selectedNode.data.systemPrompt}
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        )}
+
+                        {/* Thinking */}
+                        {selectedNode.data.thinking && (
+                          <details
+                            className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300'
+                          >
+                            <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all hover:bg-muted/50'>
+                              <div className="flex items-center gap-2">
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                                >
+                                  <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                                <span className='font-medium text-muted-foreground text-xs'>Thinking</span>
+                              </div>
+                            </summary>
+                            <div className="overflow-hidden transition-all duration-300">
+                              <div className="p-4">
+                                <div className='max-h-48 overflow-y-auto whitespace-pre-wrap font-mono text-sm leading-relaxed'>
+                                  {selectedNode.data.thinking}
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        )}
+
+                        {/* Decision Details (if decision node) */}
+                        {selectedNode.type === 'decision' && selectedNode.data.selectedChoice && (
+                          <div className='mt-4 rounded-lg border border-border/40 bg-background/50 p-3'>
+                            <h4 className='mb-2 font-medium text-foreground text-xs'>Decision Details</h4>
+                            <div className='space-y-2'>
+                              <div className="flex justify-between text-muted-foreground text-xs">
+                                <span>Available Choices:</span>
+                                <span>{(selectedNode.data.choices || []).length}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground text-xs">Decision Made:</span>
+                                <div className="flex items-center gap-2">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-green-600 dark:text-green-400">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                  </svg>
+                                  <span className="font-semibold text-green-600 text-sm dark:text-green-400">
+                                    {selectedNode.data.selectedChoice}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer - Model Info */}
+            {(() => {
+              const selectedNode = nodes.find(n => n.id === selectedResultNodeId);
+              if (!selectedNode) return null;
+
+              return (
+                <div className='border-border border-t bg-muted/50 px-6 py-3'>
+                  <div className='flex items-center justify-between text-xs'>
+                    <div className='flex items-center gap-6'>
+                      <div className='flex items-center gap-2'>
+                        <span className='text-muted-foreground'>Modèle:</span>
+                        <span className='font-medium'>
+                          {selectedNode.data.model === 'chat-model-small' && 'Gemini 2.5 Flash Lite'}
+                          {selectedNode.data.model === 'chat-model-medium' && 'Gemini 2.5 Flash'}
+                          {selectedNode.data.model === 'chat-model-large' && 'Gemini 2.5 Pro'}
+                        </span>
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        <span className='text-muted-foreground'>Température:</span>
+                        <span className='font-medium'>{selectedNode.data.temperature ?? 0.7}</span>
+                      </div>
+                      {selectedNode.data.topP !== undefined && (
+                        <div className='flex items-center gap-2'>
+                          <span className='text-muted-foreground'>Top P:</span>
+                          <span className='font-medium'>{selectedNode.data.topP}</span>
+                        </div>
+                      )}
+                      {selectedNode.data.maxTokens !== undefined && (
+                        <div className='flex items-center gap-2'>
+                          <span className='text-muted-foreground'>Max Tokens:</span>
+                          <span className='font-medium'>{selectedNode.data.maxTokens}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
