@@ -5628,7 +5628,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         <p className='text-muted-foreground text-sm'>Aucune exécution</p>
                       </div>
                     ) : (
-                      <div className='space-y-2'>
+                      <div className='space-y-1.5'>
                         {historyExecutions.map((execution) => (
                           <button
                             key={execution.id}
@@ -5640,20 +5640,31 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                                 setSelectedResultNodeId(firstAgent.id);
                               }
                             }}
-                            className='w-full rounded-lg border-2 p-4 text-left transition-all border-border hover:border-blue-300 hover:bg-muted/50'
+                            className='w-full rounded-md border p-2.5 text-left transition-all border-border hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/30'
                           >
-                            <div className='mb-2 flex items-start justify-between'>
-                              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${getHistoryStatusColor(execution.status)}`}>
+                            <div className='flex items-center justify-between gap-2 mb-1'>
+                              <span className='text-xs text-muted-foreground font-medium truncate flex-1'>
+                                {formatHistoryDate(execution.createdAt)}
+                              </span>
+                              <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold shrink-0 ${getHistoryStatusColor(execution.status)}`}>
                                 {getHistoryStatusLabel(execution.status)}
                               </span>
                             </div>
-                            <p className='text-muted-foreground text-xs'>
-                              {formatHistoryDate(execution.createdAt)}
-                            </p>
-                            <div className='mt-2 flex items-center gap-2 text-xs text-muted-foreground'>
-                              <span>{execution.executionData.nodes.filter((n: any) => n.data?.result).length} résultats</span>
-                              <span>•</span>
-                              <span>{execution.executionData.executionLogs.length} logs</span>
+                            <div className='flex items-center gap-3 text-[11px] text-muted-foreground'>
+                              <div className='flex items-center gap-1'>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                  <path d="M14 2v6h6"/>
+                                </svg>
+                                <span>{execution.executionData.nodes.filter((n: any) => n.data?.result).length}</span>
+                              </div>
+                              <div className='flex items-center gap-1'>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                  <path d="M16 13H8M16 17H8M10 9H8"/>
+                                </svg>
+                                <span>{execution.executionData.executionLogs.length}</span>
+                              </div>
                             </div>
                           </button>
                         ))}
@@ -5673,9 +5684,10 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         className='flex items-center gap-2 rounded-full px-3 py-2 transition-colors hover:bg-muted'
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M19 12H5M12 19l-7-7 7-7"/>
+                          <circle cx="12" cy="12" r="10"/>
+                          <polyline points="12 6 12 12 16 14"/>
                         </svg>
-                        <span className='text-sm'>Retour à la liste</span>
+                        <span className='text-sm'>Historique</span>
                       </button>
                     ) : (
                       <button
@@ -5685,7 +5697,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M19 12H5M12 19l-7-7 7-7"/>
                         </svg>
-                        <span className='text-sm'>Retour aux résultats</span>
+                        <span className='text-sm'>Historique</span>
                       </button>
                     )
                   ) : (
