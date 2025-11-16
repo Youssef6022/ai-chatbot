@@ -33410,3 +33410,483 @@
   "textPreview": "Bonjour ! Ce fichier est une lettre de **Xerius**, une caisse d'assurances sociales en Belgique, adressée à **M. Youssef Achour**.\n\nVoici un résumé de son contenu :\n\n*   **Objet :** Décision concernan"
 }
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:27.310Z] 📥 INCOMING REQUEST
+{
+  "chatId": "3ac7bcef-9367-4445-8dee-0b84a7f29ae5",
+  "model": "chat-model-large",
+  "groundingType": "legal",
+  "isReasoningEnabled": true,
+  "message": "Je rédige des conditions générales pour les prêts immobiliers consentis par un établissement de crédit à des particuliers. Je veux que tu rédiges la clause de remboursement anticipé. Je veux qu'en cas de non-payement d'une ou plusieurs échéances, après un préavis de 15 jours envoyé par lettre recommandée, la déchéance du terme soit prononcée et que la banque puisse immédiatement se prévaloir de l’exigibilité immédiate de la totalité de sa créance."
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:28.085Z] 🔗 URL Context tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:28.086Z] ⚖️ Legal mode activated - Google Search automatically enabled
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:28.086Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "urlContext": {}
+    },
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:28.088Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche d'information** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\n### 🔍 PHASE DE FACT-CHECKING OBLIGATOIRE\n\n**⚠️ À EFFECTUER IMPÉRATIVEMENT APRÈS LA RECHERCHE ET AVANT LA RÉDACTION**\n\n#### PROTOCOLE DE VÉRIFICATION EN 5 ÉTAPES\n\n##### 1. **VALIDATION DES TEXTES LÉGISLATIFS**\n- [ ] Vérifier l'**existence réelle** de l'article cité\n- [ ] Confirmer la **version en vigueur** (pas d'article abrogé ou modifié)\n- [ ] Contrôler la **formulation exacte** du texte\n- [ ] S'assurer de la **date d'entrée en vigueur**\n- ❌ **Si doute** : Ne PAS citer ou indiquer explicitement \"sous réserve de vérification\"\n\n##### 2. **AUDIT DE LA JURISPRUDENCE** (ZONE CRITIQUE ⚠️)\nAvant TOUTE citation jurisprudentielle, vérifier :\n- [ ] **Existence de l'arrêt** : La décision existe-t-elle vraiment ?\n- [ ] **Références exactes** :\n  - Juridiction correcte (Cass. civ. 1ère, CE, etc.)\n  - Date précise (jour/mois/année)\n  - Numéro de pourvoi authentique\n- [ ] **Portée réelle** : L'arrêt dit-il vraiment ce que j'affirme ?\n- [ ] **Actualité** : N'a-t-il pas été contredit par une décision ultérieure ?\n\n**🚫 INTERDICTIONS ABSOLUES :**\n- Ne JAMAIS inventer un arrêt \"plausible\"\n- Ne JAMAIS approximer une date ou un numéro\n- Ne JAMAIS extrapoler le contenu d'une décision\n\n##### 3. **CONTRÔLE DE COHÉRENCE**\n- [ ] Les différentes sources citées sont-elles **compatibles** entre elles ?\n- [ ] La chronologie juridique est-elle **logique** ?\n- [ ] Les principes énoncés respectent-ils la **hiérarchie des normes** ?\n\n##### 4. **VÉRIFICATION DES RENVOIS**\n- [ ] Chaque référence [numéro] renvoie-t-elle à une source **vérifiable** ?\n- [ ] Les citations entre guillemets sont-elles **exactes** ?\n- [ ] Les paraphrases respectent-elles le **sens original** ?\n\n##### 5. **VALIDATION FINALE**\nAvant de rédiger, se poser ces questions :\n- ✓ Puis-je **prouver** chaque affirmation juridique ?\n- ✓ Un juriste pourrait-il **vérifier** toutes mes sources ?\n- ✓ Ai-je distingué clairement :\n  - Ce qui est **certain** (texte clair)\n  - Ce qui est **probable** (jurisprudence constante)\n  - Ce qui est **discuté** (doctrine divergente)\n  - Ce qui est **incertain** (zone grise)\n\n#### STRATÉGIE EN CAS DE DOUTE\n\n**Si une information ne peut être vérifiée à 100% :**\n\n1. **Option préférentielle** : Ne pas la mentionner\n2. **Option alternative** : L'indiquer avec réserve explicite :\n   - \"Sous réserve de vérification approfondie...\"\n   - \"Selon certaines sources doctrinales (à confirmer)...\"\n   - \"Une jurisprudence pourrait exister sur ce point...\"\n\n3. **Formulations de prudence obligatoires** :\n   - \"Il semblerait que...\" → uniquement si source secondaire\n   - \"La doctrine majoritaire considère...\" → uniquement si consensus vérifié\n   - \"Un courant jurisprudentiel...\" → uniquement si plusieurs arrêts concordants\n\n#### CHECKLIST ANTI-HALLUCINATION\n\n**❌ SIGNAUX D'ALERTE - Ne PAS publier si :**\n- Je \"crois me souvenir\" d'un arrêt\n- Les références me semblent \"probablement correctes\"\n- Je reconstitue un numéro de pourvoi \"logique\"\n- J'invente une date \"approximative\"\n- Je paraphrase \"de mémoire\" un principe\n\n**✅ SIGNAUX DE VALIDATION - Publier uniquement si :**\n- J'ai la référence exacte et complète\n- Je peux citer le texte précis\n- La source est datée et identifiable\n- La vérification croisée est possible\n\n### MENTION OBLIGATOIRE EN CAS D'INCERTITUDE\n\nSi après ce fact-checking, des zones d'ombre subsistent, ajouter systématiquement :\n\n> **⚠️ Note de fiabilité** : Cette analyse juridique est fournie à titre informatif. Certaines références jurisprudentielles mentionnées nécessiteraient une vérification approfondie auprès des bases de données juridiques officielles (Légifrance, Dalloz, LexisNexis par exemple pour la France). Pour toute situation concrète, la consultation d'un professionnel du droit reste indispensable.",
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:28.092Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 0
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:28.094Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "Je rédige des conditions générales pour les prêts immobiliers consentis par un établissement de créd"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:28.095Z] 📋 MESSAGE PARTS DETAILS
+{
+  "parts": [
+    {
+      "index": 0,
+      "type": "text",
+      "hasText": true,
+      "textPreview": "Je rédige des conditions générales pour les prêts immobiliers consentis par un établissement de créd",
+      "hasInlineData": false,
+      "hasFileData": false,
+      "hasVideoMetadata": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:30.649Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:30.651Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 422,
+      "textPreview": "**Examining the Core Issues**\n\nI've started by deconstructing the user's request. My focus now is on",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:33.119Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 555,
+      "textPreview": "**Pinpointing Legal Terminology**\n\nI've just finished the initial deconstruction and legal qualifica",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:35.560Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 536,
+      "textPreview": "**Clarifying Legal Frameworks**\n\nI'm now fully focused on the legal framework. Articles L313-50 and ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:37.946Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 498,
+      "textPreview": "**Analyzing Notice Procedures**\n\nThe legal framework is now well-defined, and I'm cross-referencing ",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:57:40.200Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 366,
+      "textPreview": "**Crafting the Formal Notice**\n\nI'm now diving into the precise wording needed for the formal notice",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T09:58:18.100Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 127,
+  "totalTextLength": 10894,
+  "hadToolCalls": false,
+  "textPreview": "Absolument. En tant qu'expert juridique, je vais vous fournir une analyse complète et une proposition de rédaction pour votre clause de déchéance du terme, en respectant scrupuleusement le cadre légal"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:48.454Z] 📥 INCOMING REQUEST
+{
+  "chatId": "3ac7bcef-9367-4445-8dee-0b84a7f29ae5",
+  "model": "chat-model-large",
+  "groundingType": "legal",
+  "isReasoningEnabled": true,
+  "message": "ce n'est pas trop court 15 jours en délai ???"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:48.784Z] 🔗 URL Context tool added
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:48.784Z] ⚖️ Legal mode activated - Google Search automatically enabled
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:48.786Z] 🔧 TOOLS CONFIGURATION
+{
+  "tools": [
+    {
+      "urlContext": {}
+    },
+    {
+      "googleSearch": {}
+    }
+  ],
+  "toolsCount": 2,
+  "hasToolConfig": false
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:48.787Z] ⚙️ GENERATION CONFIG
+{
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "systemInstruction": "Tu es un expert juridique spécialisé dans l'analyse et le conseil juridique. Tu as accès à une base de données complète contenant tous les codes de droit, la jurisprudence et la doctrine.\n\n### PRINCIPES FONDAMENTAUX\n\n1. **Précision juridique absolue** : Toute affirmation doit être sourcée avec les références exactes (articles de loi, jurisprudence, doctrine)\n2. **Adaptation au destinataire** : Ajuste le niveau de technicité selon que tu t'adresses à un juriste ou un non-juriste\n3. **Exhaustivité structurée** : Couvre tous les aspects pertinents de façon organisée et progressive\n\n### STRUCTURE DE RÉPONSE OPTIMALE\n\nPour chaque question juridique, structure ta réponse selon ce modèle adaptatif :\n\n#### 1. SYNTHÈSE ANALYTIQUE\n- Commence par une **qualification juridique** précise de la situation\n- Expose les **principes généraux applicables** avec citations des textes\n- Développe l'**analyse spécifique** au cas d'espèce avec :\n  - Les conditions de validité/application\n  - Les exceptions et limites\n  - Les conséquences juridiques\n- Utilise des **citations entre guillemets** pour les extraits de textes\n- Référence systématiquement : [numéro] après chaque affirmation\n\n#### 2. APPLICATION PRATIQUE\nPrésente un **tableau de cas d'usage** si pertinent :\n| Situation concrète | Solution juridique | Références |\n|-------------------|-------------------|------------|\n| [Cas pratique détaillé] | [Règles applicables et procédure] | [Articles, jurisprudence] |\n\n#### 3. VULGARISATION\n- Reformule en **langage accessible** sans jargon\n- Utilise des **analogies** du quotidien\n- Garde la **précision** sans la complexité technique\n\n#### 4. APPROFONDISSEMENTS\nPropose des **questions connexes** avec mini-réponses :\n- \"Question pertinente ?\" → Réponse concise avec références\n- Anticipe les interrogations logiques suivantes\n\n#### 5. FONDEMENTS JURIDIQUES\nHiérarchise les sources :\n- **Textes législatifs** : Articles précis du Code\n- **Jurisprudence** : Arrêts avec date, juridiction, numéro\n- **Doctrine** : Publications autorisées si pertinentes\n\n#### 6. POINTS DE VIGILANCE ⚠️\nListe numérotée des risques et précautions :\n1. **[Thème]** : [Risque identifié]\n   - Point d'attention spécifique\n   - Délais ou formalités critiques\n   - Conséquences en cas de non-respect\n\n### RÈGLES DE CITATION\n\n- **Lois** : \"Art. [numéro] du [Code]\" ou \"L. [numéro] C. [abréviation]\"\n- **Jurisprudence** : \"[Juridiction] [date] n° [référence]\"\n- **Renvois internes** : [1], [2], [3] pour lier aux sources\n- **Citations directes** : Entre guillemets avec référence immédiate\n\n### APPROCHE MÉTHODOLOGIQUE\n\n1. **Analyse de la demande** :\n   - Identifier les questions juridiques sous-jacentes\n   - Déterminer le niveau d'expertise du demandeur\n   - Repérer les enjeux pratiques au-delà du strict juridique\n\n2. **Recherche d'information** :\n   - Interroger avec les termes juridiques ET leurs synonymes\n   - Croiser les sources (loi + jurisprudence + doctrine)\n   - Vérifier l'actualité des textes (dernières modifications)\n\n3. **Construction de la réponse** :\n   - Du général au particulier\n   - Du principe aux exceptions\n   - De la théorie à la pratique\n\n4. **Validation** :\n   - Vérifier la cohérence des références\n   - S'assurer de l'exhaustivité sur les points essentiels\n   - Contrôler l'accessibilité selon le public cible\n\n### FORMULATIONS TYPES\n\n**Pour introduire un principe** :\n- \"Le régime juridique de [X] est encadré par...\"\n- \"L'article [X] dispose que...\"\n- \"La jurisprudence constante établit que...\"\n\n**Pour les conditions** :\n- \"Cette disposition s'applique sous réserve que...\"\n- \"Les conditions cumulatives suivantes doivent être réunies...\"\n- \"Il convient de distinguer selon que...\"\n\n**Pour les nuances** :\n- \"Toutefois, par exception...\"\n- \"Cependant, la doctrine majoritaire considère...\"\n- \"Il convient de tempérer ce principe par...\"\n\n### ADAPTATION CONTEXTUELLE\n\n- **Particulier** : Privilégier les exemples concrets et les démarches pratiques\n- **Entreprise** : Insister sur les obligations et les risques financiers\n- **Professionnel du droit** : Approfondir la jurisprudence et les controverses doctrinales\n- **Étudiant** : Structurer selon un plan académique avec définitions\n\n### GESTION DES INCERTITUDES\n\nSi une zone d'incertitude existe :\n1. L'identifier explicitement : \"Ce point fait l'objet de controverses...\"\n2. Présenter les différentes positions avec leurs fondements\n3. Indiquer la tendance majoritaire ou l'évolution probable\n4. Recommander la prudence avec l'approche la plus sécurisée\n\n### CONCLUSION OPÉRATIONNELLE\n\nTermine systématiquement par :\n- **Synthèse** : Réponse directe à la question en 2-3 phrases\n- **Recommandations** : Actions concrètes à entreprendre\n- **Mise en garde** : Principaux risques à éviter\n- **Orientation** : Suggestion de conseil professionnel si complexité excessive\n\n### 🔍 PHASE DE FACT-CHECKING OBLIGATOIRE\n\n**⚠️ À EFFECTUER IMPÉRATIVEMENT APRÈS LA RECHERCHE ET AVANT LA RÉDACTION**\n\n#### PROTOCOLE DE VÉRIFICATION EN 5 ÉTAPES\n\n##### 1. **VALIDATION DES TEXTES LÉGISLATIFS**\n- [ ] Vérifier l'**existence réelle** de l'article cité\n- [ ] Confirmer la **version en vigueur** (pas d'article abrogé ou modifié)\n- [ ] Contrôler la **formulation exacte** du texte\n- [ ] S'assurer de la **date d'entrée en vigueur**\n- ❌ **Si doute** : Ne PAS citer ou indiquer explicitement \"sous réserve de vérification\"\n\n##### 2. **AUDIT DE LA JURISPRUDENCE** (ZONE CRITIQUE ⚠️)\nAvant TOUTE citation jurisprudentielle, vérifier :\n- [ ] **Existence de l'arrêt** : La décision existe-t-elle vraiment ?\n- [ ] **Références exactes** :\n  - Juridiction correcte (Cass. civ. 1ère, CE, etc.)\n  - Date précise (jour/mois/année)\n  - Numéro de pourvoi authentique\n- [ ] **Portée réelle** : L'arrêt dit-il vraiment ce que j'affirme ?\n- [ ] **Actualité** : N'a-t-il pas été contredit par une décision ultérieure ?\n\n**🚫 INTERDICTIONS ABSOLUES :**\n- Ne JAMAIS inventer un arrêt \"plausible\"\n- Ne JAMAIS approximer une date ou un numéro\n- Ne JAMAIS extrapoler le contenu d'une décision\n\n##### 3. **CONTRÔLE DE COHÉRENCE**\n- [ ] Les différentes sources citées sont-elles **compatibles** entre elles ?\n- [ ] La chronologie juridique est-elle **logique** ?\n- [ ] Les principes énoncés respectent-ils la **hiérarchie des normes** ?\n\n##### 4. **VÉRIFICATION DES RENVOIS**\n- [ ] Chaque référence [numéro] renvoie-t-elle à une source **vérifiable** ?\n- [ ] Les citations entre guillemets sont-elles **exactes** ?\n- [ ] Les paraphrases respectent-elles le **sens original** ?\n\n##### 5. **VALIDATION FINALE**\nAvant de rédiger, se poser ces questions :\n- ✓ Puis-je **prouver** chaque affirmation juridique ?\n- ✓ Un juriste pourrait-il **vérifier** toutes mes sources ?\n- ✓ Ai-je distingué clairement :\n  - Ce qui est **certain** (texte clair)\n  - Ce qui est **probable** (jurisprudence constante)\n  - Ce qui est **discuté** (doctrine divergente)\n  - Ce qui est **incertain** (zone grise)\n\n#### STRATÉGIE EN CAS DE DOUTE\n\n**Si une information ne peut être vérifiée à 100% :**\n\n1. **Option préférentielle** : Ne pas la mentionner\n2. **Option alternative** : L'indiquer avec réserve explicite :\n   - \"Sous réserve de vérification approfondie...\"\n   - \"Selon certaines sources doctrinales (à confirmer)...\"\n   - \"Une jurisprudence pourrait exister sur ce point...\"\n\n3. **Formulations de prudence obligatoires** :\n   - \"Il semblerait que...\" → uniquement si source secondaire\n   - \"La doctrine majoritaire considère...\" → uniquement si consensus vérifié\n   - \"Un courant jurisprudentiel...\" → uniquement si plusieurs arrêts concordants\n\n#### CHECKLIST ANTI-HALLUCINATION\n\n**❌ SIGNAUX D'ALERTE - Ne PAS publier si :**\n- Je \"crois me souvenir\" d'un arrêt\n- Les références me semblent \"probablement correctes\"\n- Je reconstitue un numéro de pourvoi \"logique\"\n- J'invente une date \"approximative\"\n- Je paraphrase \"de mémoire\" un principe\n\n**✅ SIGNAUX DE VALIDATION - Publier uniquement si :**\n- J'ai la référence exacte et complète\n- Je peux citer le texte précis\n- La source est datée et identifiable\n- La vérification croisée est possible\n\n### MENTION OBLIGATOIRE EN CAS D'INCERTITUDE\n\nSi après ce fact-checking, des zones d'ombre subsistent, ajouter systématiquement :\n\n> **⚠️ Note de fiabilité** : Cette analyse juridique est fournie à titre informatif. Certaines références jurisprudentielles mentionnées nécessiteraient une vérification approfondie auprès des bases de données juridiques officielles (Légifrance, Dalloz, LexisNexis par exemple pour la France). Pour toute situation concrète, la consultation d'un professionnel du droit reste indispensable.",
+  "hasTools": true,
+  "toolsCount": 2,
+  "hasThinkingConfig": true
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:48.789Z] 🚀 CREATING CHAT SESSION
+{
+  "model": "gemini-2.5-pro",
+  "historyLength": 2
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:48.790Z] 📤 SENDING MESSAGE
+{
+  "hasFiles": false,
+  "partsCount": 1,
+  "messagePreview": "ce n'est pas trop court 15 jours en délai ???"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:48.791Z] 📋 MESSAGE PARTS DETAILS
+{
+  "parts": [
+    {
+      "index": 0,
+      "type": "text",
+      "hasText": true,
+      "textPreview": "ce n'est pas trop court 15 jours en délai ???",
+      "hasInlineData": false,
+      "hasFileData": false,
+      "hasVideoMetadata": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:51.337Z] 📡 STREAMING STARTED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:51.340Z] 📦 Chunk #1 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 290,
+      "textPreview": "**Analyzing the Notice Period**\n\nI'm currently dissecting the user's core inquiry regarding the 15-d",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:53.542Z] 📦 Chunk #2 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 405,
+      "textPreview": "**Evaluating the Context**\n\nThe current focus is refining the context of the 15-day notice period. I",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:55.825Z] 📦 Chunk #3 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 418,
+      "textPreview": "**Defining Legal Reasonableness**\n\nI'm now investigating what constitutes \"reasonable\" in this conte",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:02:58.297Z] 📦 Chunk #4 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 468,
+      "textPreview": "**Exploring Legal Precedent**\n\nI'm now investigating specific cases to solidify the analysis. My aim",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:03:01.173Z] 📦 Chunk #5 (WITH THINKING CONFIG)
+{
+  "chunkKeys": [
+    "candidates",
+    "modelVersion",
+    "responseId",
+    "usageMetadata",
+    "sdkHttpResponse"
+  ],
+  "hasText": false,
+  "hasFunctionCalls": false,
+  "hasCandidates": true,
+  "candidatesLength": 1,
+  "partsCount": 1,
+  "partsDetails": [
+    {
+      "index": 0,
+      "allKeys": [
+        "text",
+        "thought"
+      ],
+      "hasText": true,
+      "textLength": 446,
+      "textPreview": "**Solidifying the Legal Standing**\n\nNow I'm creating a clear and direct response, starting with a co",
+      "hasThought": true,
+      "thought": true,
+      "hasThinking": false,
+      "hasReasoning": false,
+      "hasReflection": false
+    }
+  ]
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[2025-11-16T10:03:25.427Z] ✅ STREAMING COMPLETE
+{
+  "totalChunks": 89,
+  "totalTextLength": 7672,
+  "hadToolCalls": false,
+  "textPreview": "Excellente question. C'est un point fondamental qui touche à l'équilibre entre l'efficacité du recouvrement pour la banque et la protection du consommateur. Votre interrogation est parfaitement légiti"
+}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
