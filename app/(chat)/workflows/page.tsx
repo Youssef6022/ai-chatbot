@@ -782,9 +782,9 @@ export default function WorkflowsPage() {
   // Results modal state
   const [showResultsModal, setShowResultsModal] = useState(false);
   const [selectedResultNodeId, setSelectedResultNodeId] = useState<string | null>(null);
+  const [resultsModalView, setResultsModalView] = useState<'current' | 'history'>('current');
 
-  // History modal state
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  // History state (used in results modal)
   const [historyExecutions, setHistoryExecutions] = useState<any[]>([]);
   const [selectedHistoryExecution, setSelectedHistoryExecution] = useState<any | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(false);
@@ -3630,23 +3630,6 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
             </div>
           )}
 
-          {/* History Button */}
-          <Button
-            onClick={() => {
-              setShowHistoryModal(true);
-              loadHistoryExecutions();
-            }}
-            size="sm"
-            variant="ghost"
-            className='flex h-10 items-center gap-2 rounded-full border-2 border-border/60 bg-background/60 px-4 shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-muted'
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            Historique
-          </Button>
-
           {/* Run Button */}
           <Button
             onClick={handleRun}
@@ -5502,71 +5485,230 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
         <div className='fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-8 backdrop-blur-sm' onClick={() => setShowResultsModal(false)}>
           <div className='flex h-[80vh] w-[90vw] flex-col rounded-lg border border-border bg-background shadow-lg' onClick={(e) => e.stopPropagation()}>
             <div className='relative flex flex-1 overflow-hidden'>
-              {/* Left side - AI Agents List */}
+              {/* Left side - AI Agents List or History List */}
               <div className='w-80 border-border border-r p-4'>
-                <div className='mb-4'>
-                  <h3 className='font-semibold text-lg'>AI Agents exécutés</h3>
-                  <p className='text-muted-foreground text-xs'>Cliquez pour voir les détails</p>
-                </div>
-                <div className='space-y-2'>
-                  {nodes
-                    .filter(n => (n.type === 'generate' || n.type === 'decision') && n.data.result)
-                    .map((node) => (
-                      <button
-                        key={node.id}
-                        onClick={() => setSelectedResultNodeId(node.id)}
-                        className={`w-full rounded-lg border p-3 text-left transition-all ${
-                          selectedResultNodeId === node.id
-                            ? 'border-blue-500 bg-blue-50 shadow-sm dark:bg-blue-900/20'
-                            : 'border-border bg-background hover:bg-muted/50'
-                        }`}
-                      >
-                        <div className='flex items-center gap-2'>
-                          {node.type === 'generate' ? (
-                            <div className='flex h-6 w-6 items-center justify-center rounded bg-blue-100 dark:bg-blue-900/30'>
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
-                              </svg>
-                            </div>
-                          ) : (
-                            <div className='flex h-6 w-6 items-center justify-center rounded bg-purple-100 dark:bg-purple-900/30'>
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
-                              </svg>
-                            </div>
-                          )}
-                          <div className='flex-1'>
-                            <div className='font-medium text-sm'>
-                              {node.data.variableName || `${node.type === 'generate' ? 'AI Agent' : 'Decision'} ${node.id.slice(0, 6)}`}
-                            </div>
-                            <div className='text-muted-foreground text-xs'>
-                              {node.type === 'generate' ? 'Génération AI' : 'Décision'}
-                            </div>
-                          </div>
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            className={selectedResultNodeId === node.id ? 'text-blue-500' : 'text-muted-foreground'}
+                {resultsModalView === 'current' ? (
+                  <>
+                    <div className='mb-4'>
+                      <h3 className='font-semibold text-lg'>AI Agents exécutés</h3>
+                      <p className='text-muted-foreground text-xs'>Cliquez pour voir les détails</p>
+                    </div>
+                    <div className='space-y-2'>
+                      {nodes
+                        .filter(n => (n.type === 'generate' || n.type === 'decision') && n.data.result)
+                        .map((node) => (
+                          <button
+                            key={node.id}
+                            onClick={() => setSelectedResultNodeId(node.id)}
+                            className={`w-full rounded-lg border p-3 text-left transition-all ${
+                              selectedResultNodeId === node.id
+                                ? 'border-blue-500 bg-blue-50 shadow-sm dark:bg-blue-900/20'
+                                : 'border-border bg-background hover:bg-muted/50'
+                            }`}
                           >
-                            <polyline points="9 18 15 12 9 6"/>
-                          </svg>
-                        </div>
-                      </button>
-                    ))}
-                </div>
+                            <div className='flex items-center gap-2'>
+                              {node.type === 'generate' ? (
+                                <div className='flex h-6 w-6 items-center justify-center rounded bg-blue-100 dark:bg-blue-900/30'>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                  </svg>
+                                </div>
+                              ) : (
+                                <div className='flex h-6 w-6 items-center justify-center rounded bg-purple-100 dark:bg-purple-900/30'>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                  </svg>
+                                </div>
+                              )}
+                              <div className='flex-1'>
+                                <div className='font-medium text-sm'>
+                                  {node.data.variableName || `${node.type === 'generate' ? 'AI Agent' : 'Decision'} ${node.id.slice(0, 6)}`}
+                                </div>
+                                <div className='text-muted-foreground text-xs'>
+                                  {node.type === 'generate' ? 'Génération AI' : 'Décision'}
+                                </div>
+                              </div>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className={selectedResultNodeId === node.id ? 'text-blue-500' : 'text-muted-foreground'}
+                              >
+                                <polyline points="9 18 15 12 9 6"/>
+                              </svg>
+                            </div>
+                          </button>
+                        ))}
+                    </div>
+                  </>
+                ) : selectedHistoryExecution ? (
+                  // Show AI Agents from selected history execution
+                  <>
+                    <div className='mb-4'>
+                      <h3 className='font-semibold text-lg'>AI Agents exécutés</h3>
+                      <p className='text-muted-foreground text-xs'>{formatHistoryDate(selectedHistoryExecution.createdAt)}</p>
+                    </div>
+                    <div className='space-y-2'>
+                      {selectedHistoryExecution.executionData.nodes
+                        .filter((n: any) => (n.type === 'generate' || n.type === 'decision') && n.data?.result)
+                        .map((node: any) => (
+                          <button
+                            key={node.id}
+                            onClick={() => setSelectedResultNodeId(node.id)}
+                            className={`w-full rounded-lg border p-3 text-left transition-all ${
+                              selectedResultNodeId === node.id
+                                ? 'border-blue-500 bg-blue-50 shadow-sm dark:bg-blue-900/20'
+                                : 'border-border bg-background hover:bg-muted/50'
+                            }`}
+                          >
+                            <div className='flex items-center gap-2'>
+                              {node.type === 'generate' ? (
+                                <div className='flex h-6 w-6 items-center justify-center rounded bg-blue-100 dark:bg-blue-900/30'>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                  </svg>
+                                </div>
+                              ) : (
+                                <div className='flex h-6 w-6 items-center justify-center rounded bg-purple-100 dark:bg-purple-900/30'>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                  </svg>
+                                </div>
+                              )}
+                              <div className='flex-1'>
+                                <div className='font-medium text-sm'>
+                                  {node.data.variableName || `${node.type === 'generate' ? 'AI Agent' : 'Decision'} ${node.id.slice(0, 6)}`}
+                                </div>
+                                <div className='text-muted-foreground text-xs'>
+                                  {node.type === 'generate' ? 'Génération AI' : 'Décision'}
+                                </div>
+                              </div>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className={selectedResultNodeId === node.id ? 'text-blue-500' : 'text-muted-foreground'}
+                              >
+                                <polyline points="9 18 15 12 9 6"/>
+                              </svg>
+                            </div>
+                          </button>
+                        ))}
+                    </div>
+                  </>
+                ) : (
+                  // Show list of history executions
+                  <>
+                    <div className='mb-4'>
+                      <h3 className='font-semibold text-lg'>Historique</h3>
+                      <p className='text-muted-foreground text-xs'>{historyExecutions.length} exécution{historyExecutions.length !== 1 ? 's' : ''}</p>
+                    </div>
+                    {loadingHistory ? (
+                      <div className='flex items-center justify-center p-8'>
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      </div>
+                    ) : historyExecutions.length === 0 ? (
+                      <div className='flex flex-col items-center justify-center p-8 text-center'>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground mb-4">
+                          <rect x="3" y="3" width="7" height="7" />
+                          <rect x="14" y="3" width="7" height="7" />
+                          <rect x="14" y="14" width="7" height="7" />
+                          <rect x="3" y="14" width="7" height="7" />
+                        </svg>
+                        <p className='text-muted-foreground text-sm'>Aucune exécution</p>
+                      </div>
+                    ) : (
+                      <div className='space-y-2'>
+                        {historyExecutions.map((execution) => (
+                          <button
+                            key={execution.id}
+                            onClick={() => {
+                              setSelectedHistoryExecution(execution);
+                              // Select first AI agent of this execution
+                              const firstAgent = execution.executionData.nodes.find((n: any) => (n.type === 'generate' || n.type === 'decision') && n.data?.result);
+                              if (firstAgent) {
+                                setSelectedResultNodeId(firstAgent.id);
+                              }
+                            }}
+                            className='w-full rounded-lg border-2 p-4 text-left transition-all border-border hover:border-blue-300 hover:bg-muted/50'
+                          >
+                            <div className='mb-2 flex items-start justify-between'>
+                              <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${getHistoryStatusColor(execution.status)}`}>
+                                {getHistoryStatusLabel(execution.status)}
+                              </span>
+                            </div>
+                            <p className='text-muted-foreground text-xs'>
+                              {formatHistoryDate(execution.createdAt)}
+                            </p>
+                            <div className='mt-2 flex items-center gap-2 text-xs text-muted-foreground'>
+                              <span>{execution.executionData.nodes.filter((n: any) => n.data?.result).length} résultats</span>
+                              <span>•</span>
+                              <span>{execution.executionData.executionLogs.length} logs</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Right side - Content */}
               <div className='flex-1 flex flex-col overflow-hidden'>
-                <div className='flex items-center justify-end border-border border-b p-4'>
+                <div className='flex items-center justify-between border-border border-b p-4'>
+                  {resultsModalView === 'history' ? (
+                    selectedHistoryExecution ? (
+                      <button
+                        onClick={() => setSelectedHistoryExecution(null)}
+                        className='flex items-center gap-2 rounded-full px-3 py-2 transition-colors hover:bg-muted'
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        <span className='text-sm'>Retour à la liste</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setResultsModalView('current')}
+                        className='flex items-center gap-2 rounded-full px-3 py-2 transition-colors hover:bg-muted'
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        <span className='text-sm'>Retour aux résultats</span>
+                      </button>
+                    )
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setResultsModalView('history');
+                        setSelectedHistoryExecution(null);
+                        loadHistoryExecutions();
+                      }}
+                      className='flex items-center gap-2 rounded-full px-3 py-2 transition-colors hover:bg-muted'
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                      <span className='text-sm'>Historique</span>
+                    </button>
+                  )}
                   <button
-                    onClick={() => setShowResultsModal(false)}
+                    onClick={() => {
+                      setShowResultsModal(false);
+                      setResultsModalView('current');
+                    }}
                     className='rounded-full p-2 transition-colors hover:bg-muted'
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -5577,8 +5719,172 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                 </div>
 
                 <div className='flex-1 overflow-y-auto p-6'>
-                  {(() => {
+                  {resultsModalView === 'current' ? (() => {
                     const selectedNode = nodes.find(n => n.id === selectedResultNodeId);
+                    if (!selectedNode) return null;
+
+                    return (
+                      <div className='space-y-3'>
+                        {/* Generated Content */}
+                        <details
+                          open
+                          className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300'
+                        >
+                          <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all hover:bg-muted/50'>
+                            <div className="flex items-center gap-2">
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                              >
+                                <path d="M9 18l6-6-6-6"/>
+                              </svg>
+                              <span className='font-medium text-muted-foreground text-xs'>Generated Content</span>
+                            </div>
+                          </summary>
+                          <div className="overflow-hidden transition-all duration-300">
+                            <div className="p-4">
+                              <div className='max-h-96 overflow-y-auto whitespace-pre-wrap text-sm leading-relaxed'>
+                                {selectedNode.data.result || 'Aucune réponse'}
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+
+                        {/* User Prompt */}
+                        {selectedNode.data.userPrompt && (
+                          <details
+                            className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300'
+                          >
+                            <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all hover:bg-muted/50'>
+                              <div className="flex items-center gap-2">
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                                >
+                                  <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                                <span className='font-medium text-muted-foreground text-xs'>User Prompt</span>
+                              </div>
+                            </summary>
+                            <div className="overflow-hidden transition-all duration-300">
+                              <div className="p-4">
+                                <div className='max-h-48 overflow-y-auto whitespace-pre-wrap font-mono text-sm leading-relaxed'>
+                                  {selectedNode.data.userPrompt}
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        )}
+
+                        {/* System Prompt */}
+                        {selectedNode.data.systemPrompt && (
+                          <details
+                            className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300'
+                          >
+                            <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all hover:bg-muted/50'>
+                              <div className="flex items-center gap-2">
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                                >
+                                  <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                                <span className='font-medium text-muted-foreground text-xs'>System Prompt</span>
+                              </div>
+                            </summary>
+                            <div className="overflow-hidden transition-all duration-300">
+                              <div className="p-4">
+                                <div className='max-h-48 overflow-y-auto whitespace-pre-wrap font-mono text-sm leading-relaxed'>
+                                  {selectedNode.data.systemPrompt}
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        )}
+
+                        {/* Thinking */}
+                        {selectedNode.data.thinking && (
+                          <details
+                            className='group rounded-lg border border-border/40 bg-muted/30 transition-all duration-300'
+                          >
+                            <summary className='flex cursor-pointer items-center justify-between border-border/40 border-b p-3 transition-all hover:bg-muted/50'>
+                              <div className="flex items-center gap-2">
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className="text-muted-foreground transition-transform duration-200 group-open:rotate-90"
+                                >
+                                  <path d="M9 18l6-6-6-6"/>
+                                </svg>
+                                <span className='font-medium text-muted-foreground text-xs'>Thinking</span>
+                              </div>
+                            </summary>
+                            <div className="overflow-hidden transition-all duration-300">
+                              <div className="p-4">
+                                <div className='max-h-48 overflow-y-auto whitespace-pre-wrap font-mono text-sm leading-relaxed'>
+                                  {selectedNode.data.thinking}
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        )}
+
+                        {/* Decision Details (if decision node) */}
+                        {selectedNode.type === 'decision' && selectedNode.data.selectedChoice && (
+                          <div className='mt-4 rounded-lg border border-border/40 bg-background/50 p-3'>
+                            <h4 className='mb-2 font-medium text-foreground text-xs'>Decision Details</h4>
+                            <div className='space-y-2'>
+                              <div className="flex justify-between text-muted-foreground text-xs">
+                                <span>Available Choices:</span>
+                                <span>{(selectedNode.data.choices || []).length}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground text-xs">Decision Made:</span>
+                                <div className="flex items-center gap-2">
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-green-600 dark:text-green-400">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                  </svg>
+                                  <span className="font-semibold text-green-600 text-sm dark:text-green-400">
+                                    {selectedNode.data.selectedChoice}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })() : (() => {
+                    // History view - show same details as current view
+                    if (!selectedHistoryExecution) {
+                      return (
+                        <div className='flex h-full items-center justify-center'>
+                          <p className='text-muted-foreground'>Sélectionnez une exécution pour voir les détails</p>
+                        </div>
+                      );
+                    }
+
+                    const selectedNode = selectedHistoryExecution.executionData.nodes.find((n: any) => n.id === selectedResultNodeId);
                     if (!selectedNode) return null;
 
                     return (
@@ -5739,7 +6045,10 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
 
             {/* Footer - Model Info */}
             {(() => {
-              const selectedNode = nodes.find(n => n.id === selectedResultNodeId);
+              const selectedNode = resultsModalView === 'current'
+                ? nodes.find(n => n.id === selectedResultNodeId)
+                : selectedHistoryExecution?.executionData.nodes.find((n: any) => n.id === selectedResultNodeId);
+
               if (!selectedNode) return null;
 
               return (
@@ -5771,95 +6080,7 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         </div>
                       )}
                     </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
-
-      {/* History Modal */}
-      {showHistoryModal && (
-        <div className='fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-8 backdrop-blur-sm' onClick={() => setShowHistoryModal(false)}>
-          <div className='flex h-[80vh] w-[90vw] rounded-lg border border-border bg-background shadow-lg' onClick={(e) => e.stopPropagation()}>
-            {/* Left: Executions List */}
-            <div className='w-96 border-border border-r bg-muted/20 overflow-y-auto'>
-              <div className='sticky top-0 z-10 border-border border-b bg-background/95 p-4 backdrop-blur-sm'>
-                <h3 className='font-semibold text-lg'>Historique</h3>
-                <p className='text-muted-foreground text-sm'>{historyExecutions.length} exécution{historyExecutions.length !== 1 ? 's' : ''}</p>
-              </div>
-
-              {loadingHistory ? (
-                <div className='flex items-center justify-center p-8'>
-                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                </div>
-              ) : historyExecutions.length === 0 ? (
-                <div className='flex flex-col items-center justify-center p-8 text-center'>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground mb-4">
-                    <rect x="3" y="3" width="7" height="7" />
-                    <rect x="14" y="3" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" />
-                    <rect x="3" y="14" width="7" height="7" />
-                  </svg>
-                  <p className='text-muted-foreground mb-2'>Aucune exécution</p>
-                  <p className='text-muted-foreground text-sm'>Lancez un workflow pour voir l'historique</p>
-                </div>
-              ) : (
-                <div className='p-4 space-y-2'>
-                  {historyExecutions.map((execution) => (
-                    <button
-                      key={execution.id}
-                      onClick={() => setSelectedHistoryExecution(execution)}
-                      className={`w-full rounded-lg border-2 p-4 text-left transition-all ${
-                        selectedHistoryExecution?.id === execution.id
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-border hover:border-blue-300 hover:bg-muted/50'
-                      }`}
-                    >
-                      <div className='mb-2 flex items-start justify-between'>
-                        <h3 className='font-medium text-sm line-clamp-1'>{execution.workflowTitle}</h3>
-                        <span className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${getHistoryStatusColor(execution.status)}`}>
-                          {getHistoryStatusLabel(execution.status)}
-                        </span>
-                      </div>
-                      <p className='text-muted-foreground text-xs'>
-                        {formatHistoryDate(execution.createdAt)}
-                      </p>
-                      <div className='mt-2 flex items-center gap-2 text-xs text-muted-foreground'>
-                        <span>{execution.executionData.nodes.filter((n: any) => n.data?.result).length} résultats</span>
-                        <span>•</span>
-                        <span>{execution.executionData.executionLogs.length} logs</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Right: Execution Details */}
-            <div className='flex-1 flex flex-col overflow-hidden'>
-              <div className='flex items-center justify-between border-border border-b bg-background/95 p-4 backdrop-blur-sm'>
-                <h3 className='font-semibold text-lg'>Détails de l'exécution</h3>
-                <button
-                  onClick={() => setShowHistoryModal(false)}
-                  className='rounded-full p-2 transition-colors hover:bg-muted'
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              </div>
-
-              <div className='flex-1 overflow-y-auto p-6'>
-                {selectedHistoryExecution ? (
-                  <div>
-                    <div className='mb-6 flex items-start justify-between'>
-                      <div>
-                        <h2 className='mb-2 font-semibold text-2xl'>{selectedHistoryExecution.workflowTitle}</h2>
-                        <p className='text-muted-foreground'>{formatHistoryDate(selectedHistoryExecution.createdAt)}</p>
-                      </div>
+                    {resultsModalView === 'history' && selectedHistoryExecution && (
                       <Button
                         onClick={() => deleteHistoryExecution(selectedHistoryExecution.id)}
                         size="sm"
@@ -5871,92 +6092,30 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                         </svg>
                         Supprimer
                       </Button>
-                    </div>
-
-                    {/* Variables */}
-                    {selectedHistoryExecution.executionData.variables.length > 0 && (
-                      <div className='mb-6'>
-                        <h3 className='mb-3 font-medium text-lg'>Variables</h3>
-                        <div className='grid gap-3 grid-cols-2'>
-                          {selectedHistoryExecution.executionData.variables.map((variable: any, index: number) => (
-                            <div key={index} className='rounded-lg border border-border bg-muted/30 p-3'>
-                              <div className='mb-1 font-medium text-sm'>{variable.name}</div>
-                              <div className='text-muted-foreground text-xs line-clamp-2'>{variable.value || '(vide)'}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
                     )}
-
-                    {/* AI Agents Results */}
-                    <div className='mb-6'>
-                      <h3 className='mb-3 font-medium text-lg'>Résultats des AI Agents</h3>
-                      <div className='space-y-3'>
-                        {selectedHistoryExecution.executionData.nodes
-                          .filter((n: any) => (n.type === 'generate' || n.type === 'decision') && n.data?.result)
-                          .map((node: any, index: number) => (
-                            <div key={index} className='rounded-lg border border-border bg-background p-4'>
-                              <div className='mb-3 flex items-center justify-between'>
-                                <h4 className='font-medium'>{node.data.variableName || `AI Agent ${index + 1}`}</h4>
-                                {node.type === 'decision' && node.data.selectedChoice && (
-                                  <span className='rounded-full bg-green-100 px-3 py-1 font-medium text-green-700 text-sm dark:bg-green-900/30 dark:text-green-300'>
-                                    {node.data.selectedChoice}
-                                  </span>
-                                )}
-                              </div>
-                              <div className='mb-3 whitespace-pre-wrap rounded border border-border/50 bg-muted/30 p-3 text-sm'>
-                                {node.data.result}
-                              </div>
-                              {node.data.thinking && (
-                                <details className='mt-2'>
-                                  <summary className='cursor-pointer font-medium text-muted-foreground text-sm'>Thinking</summary>
-                                  <div className='mt-2 whitespace-pre-wrap rounded border border-border/50 bg-muted/20 p-3 font-mono text-xs'>
-                                    {node.data.thinking}
-                                  </div>
-                                </details>
-                              )}
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-
-                    {/* Execution Logs */}
-                    <div>
-                      <h3 className='mb-3 font-medium text-lg'>Logs d'exécution</h3>
-                      <div className='space-y-2'>
-                        {selectedHistoryExecution.executionData.executionLogs.map((log: any, index: number) => (
-                          <div
-                            key={index}
-                            className={`rounded border-l-4 p-3 ${
-                              log.type === 'error'
-                                ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                                : log.type === 'success'
-                                ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                                : 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                            }`}
-                          >
-                            <div className='flex items-start gap-2'>
-                              <span className='font-mono text-xs text-muted-foreground'>{new Date(log.timestamp).toLocaleTimeString('fr-FR')}</span>
-                              <span className='flex-1 text-sm'>{log.message}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
-                ) : (
-                  <div className='flex h-full items-center justify-center'>
-                    <div className='text-center'>
-                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto text-muted-foreground mb-4">
-                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
-                      </svg>
-                      <p className='text-muted-foreground'>Sélectionnez une exécution pour voir les détails</p>
-                    </div>
-                  </div>
-                )}
+                </div>
+              );
+            })()}
+
+            {/* Old Delete Button - removed, now in footer */}
+            {false && resultsModalView === 'history' && selectedHistoryExecution && (
+              <div className='border-border border-t bg-muted/50 px-6 py-3'>
+                <div className='flex items-center justify-end'>
+                  <Button
+                    onClick={() => deleteHistoryExecution(selectedHistoryExecution.id)}
+                    size="sm"
+                    variant="destructive"
+                    className='gap-2'
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                    </svg>
+                    Supprimer
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
