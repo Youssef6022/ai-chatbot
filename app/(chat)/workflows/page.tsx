@@ -2,7 +2,7 @@
 
 import { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   ReactFlow,
   useNodesState,
@@ -738,6 +738,7 @@ function AutoFitView({ nodes }: { nodes: any[] }) {
 }
 
 export default function WorkflowsPage() {
+  const router = useRouter();
   const [nodes, setNodes, onNodesChangeInternal] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChangeInternal] = useEdgesState(initialEdges);
   const [isRunning, setIsRunning] = useState(false);
@@ -782,6 +783,12 @@ export default function WorkflowsPage() {
   const [showResultsModal, setShowResultsModal] = useState(false);
   const [selectedResultNodeId, setSelectedResultNodeId] = useState<string | null>(null);
 
+  // History modal state
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyExecutions, setHistoryExecutions] = useState<any[]>([]);
+  const [selectedHistoryExecution, setSelectedHistoryExecution] = useState<any | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
   // Delete variable confirmation state
   const [deleteVariableConfirmation, setDeleteVariableConfirmation] = useState<{
     variableId: string;
@@ -821,7 +828,7 @@ export default function WorkflowsPage() {
     }, 0);
     return () => clearTimeout(timer);
   }, [historyIndex]);
-  
+
   // Get execution order for nodes
   const getExecutionOrder = useCallback(() => {
     const visited = new Set<string>();
@@ -1054,6 +1061,21 @@ export default function WorkflowsPage() {
     nodeName?: string;
     message: string;
   }>>([]);
+
+  // Ref to store current execution logs (for saving to database)
+  const executionLogsRef = useRef<Array<{
+    id: string;
+    timestamp: Date;
+    type: 'info' | 'success' | 'error' | 'warning';
+    nodeId?: string;
+    nodeName?: string;
+    message: string;
+  }>>([]);
+
+  // Keep executionLogsRef in sync with executionLogs state
+  useEffect(() => {
+    executionLogsRef.current = executionLogs;
+  }, [executionLogs]);
 
   // Notification state
   const [notification, setNotification] = useState<{
@@ -2647,8 +2669,59 @@ export default function WorkflowsPage() {
       // Clear processing nodes set
       processingNodesRef.current.clear();
       console.log('[executeWorkflow] Cleared processing nodes set');
+
+      // Save execution to database
+      try {
+        const executionDataToSave = {
+          nodes: nodes.map(n => ({
+            id: n.id,
+            type: n.type,
+            data: {
+              variableName: n.data?.variableName,
+              userPrompt: n.data?.userPrompt,
+              systemPrompt: n.data?.systemPrompt,
+              instructions: n.data?.instructions,
+              result: n.data?.result,
+              thinking: n.data?.thinking,
+              selectedChoice: n.data?.selectedChoice,
+              model: n.data?.selectedModel || n.data?.model,
+              temperature: n.data?.temperature,
+              topP: n.data?.topP,
+              maxTokens: n.data?.maxTokens,
+            },
+          })),
+          variables: currentVariablesRef.current || [],
+          executionLogs: executionLogsRef.current || [],
+        };
+
+        const statusToSave = nodes.some(n => n.data?.executionState === 'error') ? 'error' :
+                nodes.filter(n => (n.type === 'generate' || n.type === 'decision') && n.data?.result).length > 0 ? 'success' : 'partial';
+
+        // Save to database via API
+        const response = await fetch('/api/workflow-executions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            workflowId: currentWorkflowId || 'temp_' + Date.now(),
+            workflowTitle: workflowTitle || 'Untitled Workflow',
+            executionData: executionDataToSave,
+            status: statusToSave,
+          }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('[executeWorkflow] Saved execution to database:', result.execution?.id);
+        } else {
+          console.error('[executeWorkflow] Failed to save execution:', await response.text());
+        }
+      } catch (error) {
+        console.error('[executeWorkflow] Failed to save execution to database:', error);
+      }
     }
-  }, [nodes, updateNodeData, setNodes, invalidVariables, showNotification]);
+  }, [nodes, updateNodeData, setNodes, invalidVariables, showNotification, currentWorkflowId, workflowTitle]);
 
   // Handler for Run button - checks if we need to show pre-run modal
   const handleRun = useCallback(() => {
@@ -3341,6 +3414,85 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
     };
   }), [nodes, edges, variables, connectingFrom, isHandleHighlighted, updateNodeData, deleteNode, validateVariableName]);
 
+  // Load history executions
+  const loadHistoryExecutions = async () => {
+    try {
+      setLoadingHistory(true);
+      const response = await fetch('/api/workflow-executions');
+      if (response.ok) {
+        const data = await response.json();
+        setHistoryExecutions(data.executions || []);
+      } else {
+        console.error('Failed to load history:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error loading history:', error);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  // Delete history execution
+  const deleteHistoryExecution = async (id: string) => {
+    try {
+      const response = await fetch(`/api/workflow-executions?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        const filtered = historyExecutions.filter(e => e.id !== id);
+        setHistoryExecutions(filtered);
+        if (selectedHistoryExecution?.id === id) {
+          setSelectedHistoryExecution(null);
+        }
+      } else {
+        console.error('Failed to delete execution:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error deleting execution:', error);
+    }
+  };
+
+  // Format date for history
+  const formatHistoryDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  };
+
+  // Get status color
+  const getHistoryStatusColor = (status: string) => {
+    switch (status) {
+      case 'success':
+        return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30';
+      case 'error':
+        return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30';
+      case 'partial':
+        return 'text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-900/30';
+      default:
+        return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/30';
+    }
+  };
+
+  // Get status label
+  const getHistoryStatusLabel = (status: string) => {
+    switch (status) {
+      case 'success':
+        return 'Succès';
+      case 'error':
+        return 'Erreur';
+      case 'partial':
+        return 'Partiel';
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className='fixed inset-0 z-50 bg-background'>
       {/* Notification Toast */}
@@ -3477,6 +3629,23 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
               )}
             </div>
           )}
+
+          {/* History Button */}
+          <Button
+            onClick={() => {
+              setShowHistoryModal(true);
+              loadHistoryExecutions();
+            }}
+            size="sm"
+            variant="ghost"
+            className='flex h-10 items-center gap-2 rounded-full border-2 border-border/60 bg-background/60 px-4 shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-muted'
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Historique
+          </Button>
 
           {/* Run Button */}
           <Button
@@ -5606,6 +5775,188 @@ IMPORTANT: Your response must be EXACTLY one of the choices listed above. Do not
                 </div>
               );
             })()}
+          </div>
+        </div>
+      )}
+
+      {/* History Modal */}
+      {showHistoryModal && (
+        <div className='fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-8 backdrop-blur-sm' onClick={() => setShowHistoryModal(false)}>
+          <div className='flex h-[80vh] w-[90vw] rounded-lg border border-border bg-background shadow-lg' onClick={(e) => e.stopPropagation()}>
+            {/* Left: Executions List */}
+            <div className='w-96 border-border border-r bg-muted/20 overflow-y-auto'>
+              <div className='sticky top-0 z-10 border-border border-b bg-background/95 p-4 backdrop-blur-sm'>
+                <h3 className='font-semibold text-lg'>Historique</h3>
+                <p className='text-muted-foreground text-sm'>{historyExecutions.length} exécution{historyExecutions.length !== 1 ? 's' : ''}</p>
+              </div>
+
+              {loadingHistory ? (
+                <div className='flex items-center justify-center p-8'>
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                </div>
+              ) : historyExecutions.length === 0 ? (
+                <div className='flex flex-col items-center justify-center p-8 text-center'>
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground mb-4">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
+                  <p className='text-muted-foreground mb-2'>Aucune exécution</p>
+                  <p className='text-muted-foreground text-sm'>Lancez un workflow pour voir l'historique</p>
+                </div>
+              ) : (
+                <div className='p-4 space-y-2'>
+                  {historyExecutions.map((execution) => (
+                    <button
+                      key={execution.id}
+                      onClick={() => setSelectedHistoryExecution(execution)}
+                      className={`w-full rounded-lg border-2 p-4 text-left transition-all ${
+                        selectedHistoryExecution?.id === execution.id
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-border hover:border-blue-300 hover:bg-muted/50'
+                      }`}
+                    >
+                      <div className='mb-2 flex items-start justify-between'>
+                        <h3 className='font-medium text-sm line-clamp-1'>{execution.workflowTitle}</h3>
+                        <span className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${getHistoryStatusColor(execution.status)}`}>
+                          {getHistoryStatusLabel(execution.status)}
+                        </span>
+                      </div>
+                      <p className='text-muted-foreground text-xs'>
+                        {formatHistoryDate(execution.createdAt)}
+                      </p>
+                      <div className='mt-2 flex items-center gap-2 text-xs text-muted-foreground'>
+                        <span>{execution.executionData.nodes.filter((n: any) => n.data?.result).length} résultats</span>
+                        <span>•</span>
+                        <span>{execution.executionData.executionLogs.length} logs</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Right: Execution Details */}
+            <div className='flex-1 flex flex-col overflow-hidden'>
+              <div className='flex items-center justify-between border-border border-b bg-background/95 p-4 backdrop-blur-sm'>
+                <h3 className='font-semibold text-lg'>Détails de l'exécution</h3>
+                <button
+                  onClick={() => setShowHistoryModal(false)}
+                  className='rounded-full p-2 transition-colors hover:bg-muted'
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+
+              <div className='flex-1 overflow-y-auto p-6'>
+                {selectedHistoryExecution ? (
+                  <div>
+                    <div className='mb-6 flex items-start justify-between'>
+                      <div>
+                        <h2 className='mb-2 font-semibold text-2xl'>{selectedHistoryExecution.workflowTitle}</h2>
+                        <p className='text-muted-foreground'>{formatHistoryDate(selectedHistoryExecution.createdAt)}</p>
+                      </div>
+                      <Button
+                        onClick={() => deleteHistoryExecution(selectedHistoryExecution.id)}
+                        size="sm"
+                        variant="destructive"
+                        className='gap-2'
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        </svg>
+                        Supprimer
+                      </Button>
+                    </div>
+
+                    {/* Variables */}
+                    {selectedHistoryExecution.executionData.variables.length > 0 && (
+                      <div className='mb-6'>
+                        <h3 className='mb-3 font-medium text-lg'>Variables</h3>
+                        <div className='grid gap-3 grid-cols-2'>
+                          {selectedHistoryExecution.executionData.variables.map((variable: any, index: number) => (
+                            <div key={index} className='rounded-lg border border-border bg-muted/30 p-3'>
+                              <div className='mb-1 font-medium text-sm'>{variable.name}</div>
+                              <div className='text-muted-foreground text-xs line-clamp-2'>{variable.value || '(vide)'}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* AI Agents Results */}
+                    <div className='mb-6'>
+                      <h3 className='mb-3 font-medium text-lg'>Résultats des AI Agents</h3>
+                      <div className='space-y-3'>
+                        {selectedHistoryExecution.executionData.nodes
+                          .filter((n: any) => (n.type === 'generate' || n.type === 'decision') && n.data?.result)
+                          .map((node: any, index: number) => (
+                            <div key={index} className='rounded-lg border border-border bg-background p-4'>
+                              <div className='mb-3 flex items-center justify-between'>
+                                <h4 className='font-medium'>{node.data.variableName || `AI Agent ${index + 1}`}</h4>
+                                {node.type === 'decision' && node.data.selectedChoice && (
+                                  <span className='rounded-full bg-green-100 px-3 py-1 font-medium text-green-700 text-sm dark:bg-green-900/30 dark:text-green-300'>
+                                    {node.data.selectedChoice}
+                                  </span>
+                                )}
+                              </div>
+                              <div className='mb-3 whitespace-pre-wrap rounded border border-border/50 bg-muted/30 p-3 text-sm'>
+                                {node.data.result}
+                              </div>
+                              {node.data.thinking && (
+                                <details className='mt-2'>
+                                  <summary className='cursor-pointer font-medium text-muted-foreground text-sm'>Thinking</summary>
+                                  <div className='mt-2 whitespace-pre-wrap rounded border border-border/50 bg-muted/20 p-3 font-mono text-xs'>
+                                    {node.data.thinking}
+                                  </div>
+                                </details>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* Execution Logs */}
+                    <div>
+                      <h3 className='mb-3 font-medium text-lg'>Logs d'exécution</h3>
+                      <div className='space-y-2'>
+                        {selectedHistoryExecution.executionData.executionLogs.map((log: any, index: number) => (
+                          <div
+                            key={index}
+                            className={`rounded border-l-4 p-3 ${
+                              log.type === 'error'
+                                ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                                : log.type === 'success'
+                                ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                                : 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            }`}
+                          >
+                            <div className='flex items-start gap-2'>
+                              <span className='font-mono text-xs text-muted-foreground'>{new Date(log.timestamp).toLocaleTimeString('fr-FR')}</span>
+                              <span className='flex-1 text-sm'>{log.message}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className='flex h-full items-center justify-center'>
+                    <div className='text-center'>
+                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto text-muted-foreground mb-4">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                      </svg>
+                      <p className='text-muted-foreground'>Sélectionnez une exécution pour voir les détails</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

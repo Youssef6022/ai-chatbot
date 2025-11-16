@@ -27,6 +27,8 @@ import {
   type DBMessage,
   type Chat,
   stream,
+  workflowExecution,
+  type WorkflowExecution,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateUUID } from '../utils';
@@ -585,6 +587,149 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to get stream ids by chat id',
+    );
+  }
+}
+
+// Workflow Execution queries
+
+export async function saveWorkflowExecution({
+  workflowId,
+  userId,
+  workflowTitle,
+  executionData,
+  status = 'success',
+}: {
+  workflowId: string;
+  userId: string;
+  workflowTitle: string;
+  executionData: any;
+  status?: 'success' | 'error' | 'partial';
+}) {
+  try {
+    const [execution] = await db
+      .insert(workflowExecution)
+      .values({
+        workflowId,
+        userId,
+        workflowTitle,
+        executionData,
+        status,
+        createdAt: new Date(),
+      })
+      .returning();
+
+    return execution;
+  } catch (error) {
+    console.error('Failed to save workflow execution:', error);
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to save workflow execution',
+    );
+  }
+}
+
+export async function getWorkflowExecutionsByUserId({
+  userId,
+  limit = 50,
+}: {
+  userId: string;
+  limit?: number;
+}) {
+  try {
+    const executions = await db
+      .select()
+      .from(workflowExecution)
+      .where(eq(workflowExecution.userId, userId))
+      .orderBy(desc(workflowExecution.createdAt))
+      .limit(limit);
+
+    return executions;
+  } catch (error) {
+    console.error('Failed to get workflow executions:', error);
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get workflow executions',
+    );
+  }
+}
+
+export async function getWorkflowExecutionsByWorkflowId({
+  workflowId,
+  userId,
+  limit = 50,
+}: {
+  workflowId: string;
+  userId: string;
+  limit?: number;
+}) {
+  try {
+    const executions = await db
+      .select()
+      .from(workflowExecution)
+      .where(
+        and(
+          eq(workflowExecution.workflowId, workflowId),
+          eq(workflowExecution.userId, userId),
+        ),
+      )
+      .orderBy(desc(workflowExecution.createdAt))
+      .limit(limit);
+
+    return executions;
+  } catch (error) {
+    console.error('Failed to get workflow executions by workflow id:', error);
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get workflow executions by workflow id',
+    );
+  }
+}
+
+export async function getWorkflowExecutionById({
+  id,
+  userId,
+}: {
+  id: string;
+  userId: string;
+}) {
+  try {
+    const [execution] = await db
+      .select()
+      .from(workflowExecution)
+      .where(
+        and(eq(workflowExecution.id, id), eq(workflowExecution.userId, userId)),
+      )
+      .limit(1);
+
+    return execution;
+  } catch (error) {
+    console.error('Failed to get workflow execution by id:', error);
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get workflow execution by id',
+    );
+  }
+}
+
+export async function deleteWorkflowExecution({
+  id,
+  userId,
+}: {
+  id: string;
+  userId: string;
+}) {
+  try {
+    await db
+      .delete(workflowExecution)
+      .where(
+        and(eq(workflowExecution.id, id), eq(workflowExecution.userId, userId)),
+      );
+  } catch (error) {
+    console.error('Failed to delete workflow execution:', error);
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to delete workflow execution',
     );
   }
 }

@@ -249,3 +249,21 @@ export const workflow = pgTable('Workflow', {
 });
 
 export type Workflow = InferSelectModel<typeof workflow>;
+
+export const workflowExecution = pgTable('WorkflowExecution', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  workflowId: uuid('workflowId')
+    .notNull()
+    .references(() => workflow.id),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  workflowTitle: text('workflowTitle').notNull(),
+  executionData: jsonb('executionData').notNull(), // Stores nodes results, variables, execution logs
+  status: varchar('status', { enum: ['success', 'error', 'partial'] })
+    .notNull()
+    .default('success'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type WorkflowExecution = InferSelectModel<typeof workflowExecution>;
